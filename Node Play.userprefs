@@ -1,0 +1,15 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GuiTest.cs">
+    <Files>
+      <File FileName="Assets/NodeSimple.cs" Line="19" Column="1" />
+      <File FileName="Assets/NodeManager.cs" Line="40" Column="4" />
+      <File FileName="Assets/GuiTest.cs" Line="12" Column="23" />
+      <File FileName="Assets/DragState.cs" Line="6" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
