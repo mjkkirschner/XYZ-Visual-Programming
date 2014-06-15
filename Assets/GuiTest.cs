@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 
 public class GuiTest:MonoBehaviour
 {	
+		public GameObject NodeManager;
 
 		// GuiController generates new ui states based on previous state
 		// and current event
@@ -46,28 +47,10 @@ public class GuiTest:MonoBehaviour
 		}
 
 
-		static Node selection = null;
-		static bool connecting = false;
-		float dist_to_camera;
 
-		string name;
-		public List<Node> targets = new List<Node> ();
+		public List<NodeSimple> CurrentSelection(){
 
-		public List<GameObject> lines = new List<GameObject> ();
-
-
-		public static Node Selection {
-				get {
-						Debug.Log (selection);
-						return selection;
-				}
-				set {
-						selection = value;
-						Debug.Log (selection);
-						if (selection == null) {
-								connecting = false;
-						}
-				}
+				return NodeManager.GetComponent<NodeManager> ().getSelection ();
 		}
 
 		public static Vector3 ProjectCurrentDrag (float distance)
@@ -117,30 +100,12 @@ public class GuiTest:MonoBehaviour
 				return false;
 		}
 
-		public ReadOnlyCollection<Node> Targets {
-				get {
-						return targets.AsReadOnly ();
-				}
-		}
-
-		public void removeTarget (Node target)
-		{
-				if (targets.Contains (target)) {
-						targets.Remove (target);
-				}
-
-				return;
-		}
 
 
-		public void ConnectTo (Node target)
-		{
-				if (targets.Contains (target)) {
-						return;
-				}
 
-				targets.Add (target);
-		}
+
+
+
 
 
 		public void OnGUI ()
@@ -151,16 +116,31 @@ public class GuiTest:MonoBehaviour
 
 				switch (Event.current.type) {
 				case EventType.mouseDown:
-							
-						var state = new DragState (false, false, Event.current.mousePosition,// this needs to be  list of simple nodes);
-						Debug.Log (state);
+
+						// generate a new state with the current mouse position 
+						var currentSel = CurrentSelection ();
+						
+						var state = new DragState (false, false, Event.current.mousePosition, currentSel);
+						//Debug.Log (state);
+
 						if (onMouseDown != null) {
 								Debug.Log("calling function");
 								onMouseDown (state);
 						}
 
-								if (Event.current.clickCount == 2) {					// If we double-clicked it, enter connect mode
-										connecting = true;
+						if (Event.current.clickCount == 2) {// If we double-clicked it, enter connect mode
+
+								// current selection should be the node we single clicked on previously
+								currentSel = CurrentSelection ();
+								state = new DragState (true, false, Event.current.mousePosition, currentSel);
+									//Debug.Log (state);
+
+									if (onMouseDown != null) {
+										Debug.Log("calling doubleclick function");
+										onMouseDown (state);
+								}
+
+
 								}
 
 								Event.current.Use ();

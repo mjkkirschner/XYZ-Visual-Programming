@@ -344,9 +344,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bc19e62d61574566971db0090876331, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NodeManager: {fileID: 1472077727}
   nodes_to_notify: []
-  targets: []
-  lines: []
 --- !u!4 &922893847
 Transform:
   m_ObjectHideFlags: 0
@@ -451,6 +450,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1472077728}
+  - 114: {fileID: 1472077729}
   m_Layer: 0
   m_Name: NodeManager
   m_TagString: Untagged
@@ -470,6 +470,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
+--- !u!114 &1472077729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1472077727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83b28b1d9420b4de0abd4467c8d9f24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1787881235
 GameObject:
   m_ObjectHideFlags: 0
