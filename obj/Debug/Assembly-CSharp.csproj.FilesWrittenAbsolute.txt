@@ -1,10 +1,6 @@
-/Users/Mike/Node Play/Temp/bin/Debug/Assembly-CSharp.dll.mdb
-/Users/Mike/Node Play/Temp/bin/Debug/Assembly-CSharp.dll
-/Users/Mike/Node Play/obj/Debug/Assembly-CSharp.dll
-/Users/Mike/Node Play/obj/Debug/Assembly-CSharp.dll.mdb
-/Users/Mike/Node Play/Temp/bin/Debug/UnityEngine.dll
-/Users/Mike/Node Play/Temp/bin/Debug/UnityEditor.dll
-/Users/Mike/Node Play/Temp/bin/Debug/Mono.Cecil.dll
-/Users/Mike/Node Play/Temp/bin/Debug/nunit.framework.dll
-/Users/Mike/Node Play/Temp/bin/Debug/Unity.DataContract.dll
-/Users/Mike/Node Play/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/Mike/Nodply/Temp/bin/Debug/UnityEngine.dll
+/Users/Mike/Nodply/Temp/bin/Debug/UnityEditor.dll
+/Users/Mike/Nodply/Temp/bin/Debug/Mono.Cecil.dll
+/Users/Mike/Nodply/Temp/bin/Debug/nunit.framework.dll
+/Users/Mike/Nodply/Temp/bin/Debug/Unity.DataContract.dll
+/Users/Mike/Nodply/Temp/bin/Debug/ICSharpCode.NRefactory.dll
