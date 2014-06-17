@@ -2,10 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GuiTest.cs">
     <Files>
-      <File FileName="Assets/DragState.cs" Line="1" Column="1" />
-      <File FileName="Assets/GuiTest.cs" Line="7" Column="1" />
-      <File FileName="Assets/NodeManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/NodeSimple.cs" Line="1" Column="1" />
+      <File FileName="Assets/GuiTest.cs" Line="68" Column="43" />
+      <File FileName="Assets/NodeManager.cs" Line="31" Column="2" />
+      <File FileName="Assets/NodeSimple.cs" Line="110" Column="1" />
+      <File FileName="Assets/DragState.cs" Line="22" Column="58" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

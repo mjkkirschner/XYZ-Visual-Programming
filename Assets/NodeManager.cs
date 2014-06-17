@@ -27,21 +27,8 @@ public class NodeManager : MonoBehaviour
 		List<GameObject> lines = new List<GameObject>();
 
 
-		List<NodeSimple> selection = new List<NodeSimple>();
 
-		public void addNodeToSelection(NodeSimple node){
-				if ( selection.Contains(node) == false){
-						selection.Add(node);
-				}
-		
-
-		}
-
-		public List<NodeSimple> getSelection (){
-
-				return this.selection;
-
-		}
+	
 
 
 		// Use this for initialization

@@ -9,10 +9,43 @@ public class NodeSimple : MonoBehaviour
 {
 		NodeManager NodeManager;
 
+		DragState GeneratedDragState;
+
+		public List<NodeSimple> targets = new List<NodeSimple> ();
+
 		void Start(){
 
 				NodeManager = GameObject.FindObjectOfType<NodeManager> ();
 		}
+
+		public ReadOnlyCollection<NodeSimple> Targets {
+				get {
+						return targets.AsReadOnly ();
+				}
+		}
+
+		public void removeTarget (NodeSimple target)
+		{
+				if (targets.Contains (target)) {
+						targets.Remove (target);
+				}
+
+				return;
+		}
+
+
+		public void ConnectTo (NodeSimple target)
+		{
+				if (targets.Contains (target)) {
+						return;
+				}
+
+				targets.Add (target);
+		}
+
+
+
+
 
 		public bool HitTest (NodeSimple node_to_test, DragState state)
 		{		
@@ -34,11 +67,37 @@ public class NodeSimple : MonoBehaviour
 				return false;
 		}
 
-	
+		public DragState MyOnMouseUp(DragState current_state){
+				// if we're connecting to this node, then add this node
+				// to the target list of each of the nodes in the selection.
 
-		public GameObject MyOnMouseDown (DragState current_state)
+				Debug.Log ("Mouse up even handler called");
+
+				if (current_state._connecting && HitTest (this, current_state)) {
+						foreach (NodeSimple node in current_state.selection) {
+								node.ConnectTo (this);
+								Debug.Log("added" +  this.ToString() + "to" + node.ToString() + "target list");
+						}
+
+				}
+
+
+				else if (current_state._connecting && !HitTest(this,current_state)){
+						Debug.Log("need to destroy line, mouseup while connecting, but not over a node");
+						targets.Clear();
+				}
+
+				var newState = new DragState (false, false, current_state._mousepos, new List<NodeSimple> ());
+				return newState;
+
+
+		}
+
+		
+
+		public DragState MyOnMouseDown (DragState current_state)
 		{
-				Debug.Log ("event handler called");
+				Debug.Log ("mouse down event handler called");
 				// check if this node was actually clicked on
 				if (HitTest (this,current_state)) {
 						Debug.Log ("I" + this.name + " was just clicked");
@@ -47,21 +106,30 @@ public class NodeSimple : MonoBehaviour
 						// check the dragstate from the GUI, either this is a connecting click
 						// or a selection click
 						if (current_state._connecting == false) {
-								// it might be possible to eliminate the node manager selection propery
-								// and just store it in the drag state.
-								// we need to add this node to the current selection
-								// as well as possibly update the dragstate
 
-								NodeManager.addNodeToSelection (this);
+								// add this node to the current selection
+								// update the drag state
+								// store this drag state in the list of all dragstates
+
+								List<NodeSimple> new_sel = (new List<NodeSimple> (current_state.selection));
+								new_sel.Add (this);
+								var newState = new DragState (current_state._connecting, current_state._dragging, current_state._mousepos, new_sel); 
+								GuiTest.statelist.Add (newState);
+								GeneratedDragState = newState;
+
 
 						} else 
 						{
 								//a double click occured on a node
 								Debug.Log ("I" + this.name + " was just DOUBLE clicked");
+
 						}
 
-
-						return this.gameObject;
+						// finally return the new dragstate(not what this function should return)
+						// since we actually have the dragstate stored
+						// it might make more sense not to allow the Node to 
+						// store the state on the GUI...
+						return GeneratedDragState;
 
 						
 

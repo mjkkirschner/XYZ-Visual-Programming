@@ -6,30 +6,31 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 public class GuiTest:MonoBehaviour
-{		
-		public GameObject NodeManager;
+{
 
-		public List<DragState> statelist = new List<DragState> ();
+		public static List<DragState> statelist = new List<DragState> ();
 
 		// GuiController generates new ui states based on previous state
 		// and current event
 
 		//define delegates
 		// will need to revist these.
-		public delegate GameObject Mouse_Down (DragState currentstate);
+		public delegate DragState Mouse_Down (DragState currentstate);
 		//maybe on click
-		delegate GameObject Mouse_Up (DragState currentstate);
+		public delegate DragState Mouse_Up (DragState currentstate);
 
-		delegate void Mouse_Drag (DragState currentstate);
+		public delegate DragState Mouse_Drag (DragState currentstate);
 
 		//define our events
 
 		public event Mouse_Down onMouseDown;
 		public event Mouse_Up onMouseUp;
+		public event Mouse_Drag onMouseDrag;
 
 		public List<NodeSimple> nodes_to_notify = new List<NodeSimple> ();
 
-		public bool connecting(){
+		public bool connecting ()
+		{
 		
 				return statelist.Last ()._connecting;
 		}
@@ -63,8 +64,12 @@ public class GuiTest:MonoBehaviour
 
 		public List<NodeSimple> CurrentSelection ()
 		{
+				if (statelist.Count > 0) {
+						return statelist.Last ().selection;
+				} else {
 
-				return NodeManager.GetComponent<NodeManager> ().getSelection ();
+						return new List<NodeSimple> ();
+				}
 		}
 
 		public static Vector3 ProjectCurrentDrag (float distance)
@@ -115,11 +120,11 @@ public class GuiTest:MonoBehaviour
 				case EventType.mouseDown:
 
 						// generate a new state with the current mouse position 
-						var currentSel = CurrentSelection ();
-						
+						//var currentSel = CurrentSelection ();
+						var currentSel = new List<NodeSimple> ();
 						var state = new DragState (false, false, Event.current.mousePosition, currentSel);
 						statelist.Add (state);
-						//Debug.Log (state);
+						Debug.Log (state);
 
 						if (onMouseDown != null) {
 								Debug.Log ("sending event onmousedown");
@@ -153,53 +158,64 @@ public class GuiTest:MonoBehaviour
 						// the last dragstate and check the current selection there
 						// instead of even keeping any properties on the node manager.
 						// refactor that out if this works for connecting variable
+					
 
-						// BEFORE PROCEEDING, MAYBE I SHOULD JUST CALL
-						// THE EVENTS AND LET THE NODES FIGURE THIS STUFF OUT
-						// INSTEAD OF MOVING THE DATA BACK HERE
-						// Observable collections
-
-						if (CurrentSelection().Count == 0) {				
+						if (CurrentSelection ().Count == 0) {				
 								Debug.Log ("ignoring event");
-
+								state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple> ());
+								statelist.Add (state);
+								Debug.Log ("calling mouseup function, this was an ignored event");
 								if (onMouseUp != null) {
 										// not sure about this dragstate
-										state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple>());
-										statelist.Add (state);
-										Debug.Log ("calling mouseup function, this was an ignored event");
+
 										onMouseUp (state);
 
+								}
 
+
+										// ... while some node was active selection
+										// then we need to clear the selection
+								} else if (CurrentSelection ().Count > 0) {
+
+
+										if (!connecting ()) {					// ... and we were not in connect mode, clear the selection
+
+												Debug.Log ("not connecting mouse up");
+												// clear the selection, and create a new state
+												state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple> ());
+												statelist.Add (state);
+												Event.current.Use ();
+												if (onMouseUp != null) {
+														onMouseUp (state);
+												}
+												break;
+												// send the mouseup event
+
+										
+										}
+
+
+						
+								}
+								
 								break;
 
-								// ... while some node was active selection
-								// then we need to clear the selection
-						} else if (CurrentSelection().Count>0) {
-										// we may need to know the latest state reported by the nodes
-										// keep this in a list of returned drag states?
-								if (!connecting) {					// ... and we were not in connect mode, clear the selection
-										Debug.Log ("not connecting mouse up");
-										//do we send an event?
-										// to nodemanager that actually clears the selection?
-										state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple>());
-										statelist.Add (state);
-										Event.current.Use ();
-								}
-						} else if (connecting && HitTest (this)) {				// ... over this component while in connect mode, connect selection to this node and clear selection
-								Debug.Log ("connecting mouse up");
-								selection.ConnectTo (this);
-								Selection = null;
-								Event.current.Use ();
-						} else if (connecting && !HitTest (this)) {
-
-								Debug.Log ("need to destroy line");
-								targets.Clear ();
 
 
-						}
 
 
-						break;
+
+
+
+
+
+
+
+
+
+
+
+
 //				case EventType.mouseDrag:
 //						if (selection == this)
 //						{				// If doing a mouse drag with this component selected...
@@ -286,6 +302,9 @@ public class GuiTest:MonoBehaviour
 //						2.0f
 //				);
 //		}
+
 				}
+
 		}
+
 }

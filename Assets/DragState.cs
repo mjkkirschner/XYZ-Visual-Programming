@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class DragState
 {
@@ -14,8 +15,17 @@ public class DragState
 		public Boolean _connecting{ get; set; }
 		public Boolean _dragging{ get; set; }
 		public Vector2 _mousepos{ get; set; }
-		public List<NodeSimple> _selection{ get; set; }
+		private List<NodeSimple> _selection;
+		public List<NodeSimple> selection
 
+		{ 
+				get{ return _selection;} 
+				// make sure we don't add duplicates to the selection
+				set{_selection =  value.Distinct().ToList();}
+		}
+
+
+	
 
 
 		public DragState (Boolean connecting, Boolean dragging, Vector2 mousepos,List<NodeSimple> selection)
