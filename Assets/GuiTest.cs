@@ -7,7 +7,7 @@ using System.Linq;
 
 public class GuiTest:MonoBehaviour
 {
-
+		public NodeManager NManager;
 		public static List<DragState> statelist = new List<DragState> ();
 
 		// GuiController generates new ui states based on previous state
@@ -21,11 +21,14 @@ public class GuiTest:MonoBehaviour
 
 		public delegate DragState Mouse_Drag (DragState currentstate);
 
+		public delegate DragState Canvas_Double_Click (DragState currentstate);
+
 		//define our events
 
 		public event Mouse_Down onMouseDown;
 		public event Mouse_Up onMouseUp;
 		public event Mouse_Drag onMouseDrag;
+		public event Canvas_Double_Click onCanvasDoubleClick;
 
 		public List<NodeSimple> nodes_to_notify = new List<NodeSimple> ();
 
@@ -38,7 +41,7 @@ public class GuiTest:MonoBehaviour
 		void Start ()
 		{		
 				// collect all nodes to 
-
+				NManager = GameObject.FindObjectOfType<NodeManager> ();
 				nodes_to_notify = new List<NodeSimple> (GameObject.FindObjectsOfType<NodeSimple> ());
 
 				// add all nodes as listeners to the mouse downevent
@@ -46,8 +49,10 @@ public class GuiTest:MonoBehaviour
 
 						this.onMouseDown += new Mouse_Down (node.MyOnMouseDown);
 						this.onMouseUp += new Mouse_Up (node.MyOnMouseUp);
-
+						this.onMouseDrag += new Mouse_Drag (node.MyOnMouseDrag);
 				}
+
+				this.onCanvasDoubleClick += new Canvas_Double_Click (NManager.onCanvasDoubleClick);
 		}
 
 
@@ -72,33 +77,9 @@ public class GuiTest:MonoBehaviour
 				}
 		}
 
-		public static Vector3 ProjectCurrentDrag (float distance)
-		{
-
-				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-				var output = ray.GetPoint (distance);
-				return output;
-		}
 
 
-		public static Vector3 HitPosition (Node node_to_test)
-		{
 
-				// return the coordinate in world space where hit occured
-
-				Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-				var hit = new RaycastHit ();
-				if (Physics.Raycast (ray, out hit)) {
-						Debug.Log ("Mouse Down Hit " + hit.collider.gameObject);
-
-						if (hit.collider.gameObject == node_to_test.gameObject) {
-								return hit.point;
-								// I was previoulsy returning hit.barycenter ... triangle?
-						}
-
-				}
-				return node_to_test.transform.position;
-		}
 
 
 
@@ -113,7 +94,17 @@ public class GuiTest:MonoBehaviour
 		public void OnGUI ()
 		{
 
-				//Debug.Log (selection);
+				if (DragState.selection_changed(statelist)){
+			Debug.Log("selection has changed");
+			Debug.Log(CurrentSelection().TocommaString());
+
+				
+		}
+
+				
+
+
+				Debug.Log (CurrentSelection().TocommaString());
 				//Debug.Log (connecting);
 
 				switch (Event.current.type) {
@@ -140,9 +131,22 @@ public class GuiTest:MonoBehaviour
 								//Debug.Log (state);
 
 								if (onMouseDown != null) {
+										var results = new List<DragState> ();
 										// should this really just be generating a different event on the node?
 										Debug.Log ("calling doubleclick function");
-										onMouseDown (state);
+										foreach (Mouse_Down d in onMouseDown.GetInvocationList()) {
+												results.Add(d(state));
+
+										}
+										if (results.All (element => element == null)) {
+												Debug.Log ("just double clicked to the canvas, all nodes returned null");
+												Debug.Log("should create new node");
+												// Send a different event
+												// One that the nodemanager subscribes to
+												if (onCanvasDoubleClick != null) {
+														onCanvasDoubleClick (state);
+												}
+										}
 								}
 
 
@@ -178,21 +182,35 @@ public class GuiTest:MonoBehaviour
 								} else if (CurrentSelection ().Count > 0) {
 
 
-										if (!connecting ()) {					// ... and we were not in connect mode, clear the selection
+								if (!connecting ()) {					// ... and we were not in connect mode, clear the selection
 
-												Debug.Log ("not connecting mouse up");
-												// clear the selection, and create a new state
-												state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple> ());
-												statelist.Add (state);
-												Event.current.Use ();
-												if (onMouseUp != null) {
-														onMouseUp (state);
-												}
-												break;
-												// send the mouseup event
+										Debug.Log ("not connecting mouse up");
+										// clear the selection, and create a new state
+										state = new DragState (false, false, Event.current.mousePosition, new List<NodeSimple> ());
+										statelist.Add (state);
+										Event.current.Use ();
+										if (onMouseUp != null) {
+												onMouseUp (state);
+										}
+										break;
+										// send the mouseup event
 
 										
+								} else {
+										// we are connecting
+										// send a similar state but with connecting true
+
+										// how do we know this selection is empty.... it actually cant be.. sooo?
+										// we'll need to rely on the last instead of genning a new one,
+										// this is broken right now because we need drag events to modify the mouse postion
+
+										Event.current.Use ();
+										if (onMouseUp != null) {
+												onMouseUp (statelist.Last());
 										}
+										break;
+
+								}
 
 
 						
@@ -204,7 +222,15 @@ public class GuiTest:MonoBehaviour
 
 
 
-
+				case EventType.mouseDrag:
+						var laststate = statelist.Last ();
+						state = new DragState (laststate._connecting, true, Event.current.mousePosition, CurrentSelection ());
+						statelist.Add (state);
+						if (onMouseDrag != null) {
+								onMouseDrag (state);
+						}
+						Event.current.Use();
+						break;
 
 
 

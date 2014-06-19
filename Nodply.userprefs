@@ -1,12 +1,20 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GuiTest.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/ListExtensions.cs">
     <Files>
-      <File FileName="Assets/GuiTest.cs" Line="68" Column="43" />
-      <File FileName="Assets/NodeManager.cs" Line="31" Column="2" />
-      <File FileName="Assets/NodeSimple.cs" Line="110" Column="1" />
-      <File FileName="Assets/DragState.cs" Line="22" Column="58" />
+      <File FileName="Assets/GuiTest.cs" Line="7" Column="1" />
+      <File FileName="Assets/NodeSimple.cs" Line="1" Column="1" />
+      <File FileName="Assets/NodeManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/DragState.cs" Line="1" Column="1" />
+      <File FileName="Assets/ListExtensions.cs" Line="10" Column="4" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

@@ -347,6 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bc19e62d61574566971db0090876331, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NManager: {fileID: 0}
   nodes_to_notify: []
 --- !u!4 &922893847
 Transform:

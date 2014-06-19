@@ -49,6 +49,7 @@
      <Compile Include="Assets\DragState.cs" />
      <Compile Include="Assets\EditorWindowExample.cs" />
      <Compile Include="Assets\GuiTest.cs" />
+     <Compile Include="Assets\ListExtensions.cs" />
      <Compile Include="Assets\Node.cs" />
      <Compile Include="Assets\NodeManager.cs" />
      <Compile Include="Assets\NodeSimple.cs" />
