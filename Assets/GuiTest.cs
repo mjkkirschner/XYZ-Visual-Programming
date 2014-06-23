@@ -22,6 +22,8 @@ public class GuiTest:MonoBehaviour
 		public delegate DragState Mouse_Drag (DragState currentstate);
 
 		public delegate DragState Canvas_Double_Click (DragState currentstate);
+		
+		public delegate void GuiRepaint ();
 
 		//define our events
 
@@ -29,15 +31,35 @@ public class GuiTest:MonoBehaviour
 		public event Mouse_Up onMouseUp;
 		public event Mouse_Drag onMouseDrag;
 		public event Canvas_Double_Click onCanvasDoubleClick;
+		public event GuiRepaint onGuiRepaint;
 
 		public List<NodeSimple> nodes_to_notify = new List<NodeSimple> ();
-
+		
+		/// <summary>
+		/// returns the most recent state's connecting bool
+		/// </summary>
 		public bool connecting ()
 		{
 		
 				return statelist.Last ()._connecting;
 		}
-
+		
+		/// <summary>
+		/// Returns the most recent states's selection list 
+		/// </summary>
+		/// <returns>The selection.</returns>
+		public List<NodeSimple> CurrentSelection ()
+		{
+				if (statelist.Count > 0) {
+						return statelist.Last ().selection;
+				} else {
+			
+						return new List<NodeSimple> ();
+				}
+		}
+		/// <summary>
+		/// initialization of nodes, node manager, and adds nodes as listeners to events.   
+		/// </summary>
 		void Start ()
 		{		
 				// collect all nodes to 
@@ -50,12 +72,16 @@ public class GuiTest:MonoBehaviour
 						this.onMouseDown += new Mouse_Down (node.MyOnMouseDown);
 						this.onMouseUp += new Mouse_Up (node.MyOnMouseUp);
 						this.onMouseDrag += new Mouse_Drag (node.MyOnMouseDrag);
+						this.onGuiRepaint += new GuiRepaint (node.onGuiRepaint);
+
 				}
 
 				this.onCanvasDoubleClick += new Canvas_Double_Click (NManager.onCanvasDoubleClick);
+				this.onGuiRepaint += new GuiRepaint (NManager.onGuiRepaint);
 		}
+		
 
-
+		//TODO remove the need for this code by subscribing node to needed events at creation time
 		void Update ()
 		{
 				// must be something better than this, whenever a new node is created it needs to add itself to some list so we dont need to do this
@@ -64,58 +90,34 @@ public class GuiTest:MonoBehaviour
 
 
 		}
-
-
-
-		public List<NodeSimple> CurrentSelection ()
-		{
-				if (statelist.Count > 0) {
-						return statelist.Last ().selection;
-				} else {
-
-						return new List<NodeSimple> ();
-				}
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		/// <summary>
+		/// Raises the GUI events and creates states that reflect the state of the UI.
+		/// </summary>
 		public void OnGUI ()
 		{
 
-				if (DragState.selection_changed(statelist)){
-			Debug.Log("selection has changed");
-			Debug.Log(CurrentSelection().TocommaString());
+				if (DragState.selection_changed (statelist)) {
+						Debug.Log ("selection has changed");
+						Debug.Log (CurrentSelection ().TocommaString ());
 
 				
-		}
+				}
 
 				
 
 
-				Debug.Log (CurrentSelection().TocommaString());
+				Debug.Log (CurrentSelection ().TocommaString ());
 				//Debug.Log (connecting);
 
 				switch (Event.current.type) {
 				case EventType.mouseDown:
 
 						// generate a new state with the current mouse position 
-						//var currentSel = CurrentSelection ();
+						
 						var currentSel = new List<NodeSimple> ();
 						var state = new DragState (false, false, Event.current.mousePosition, currentSel);
 						statelist.Add (state);
-						Debug.Log (state);
+						//Debug.Log (state);
 
 						if (onMouseDown != null) {
 								Debug.Log ("sending event onmousedown");
@@ -135,12 +137,12 @@ public class GuiTest:MonoBehaviour
 										// should this really just be generating a different event on the node?
 										Debug.Log ("calling doubleclick function");
 										foreach (Mouse_Down d in onMouseDown.GetInvocationList()) {
-												results.Add(d(state));
+												results.Add (d (state));
 
 										}
 										if (results.All (element => element == null)) {
 												Debug.Log ("just double clicked to the canvas, all nodes returned null");
-												Debug.Log("should create new node");
+												Debug.Log ("should create new node");
 												// Send a different event
 												// One that the nodemanager subscribes to
 												if (onCanvasDoubleClick != null) {
@@ -161,7 +163,7 @@ public class GuiTest:MonoBehaviour
 						// all these current selection checks might as well go into 
 						// the last dragstate and check the current selection there
 						// instead of even keeping any properties on the node manager.
-						// refactor that out if this works for connecting variable
+						
 					
 
 						if (CurrentSelection ().Count == 0) {				
@@ -171,15 +173,15 @@ public class GuiTest:MonoBehaviour
 								Debug.Log ("calling mouseup function, this was an ignored event");
 								if (onMouseUp != null) {
 										// not sure about this dragstate
-
+										
 										onMouseUp (state);
 
 								}
 
 
-										// ... while some node was active selection
-										// then we need to clear the selection
-								} else if (CurrentSelection ().Count > 0) {
+								// ... while some node was active selection
+								// then we need to clear the selection
+						} else if (CurrentSelection ().Count > 0) {
 
 
 								if (!connecting ()) {					// ... and we were not in connect mode, clear the selection
@@ -202,11 +204,11 @@ public class GuiTest:MonoBehaviour
 
 										// how do we know this selection is empty.... it actually cant be.. sooo?
 										// we'll need to rely on the last instead of genning a new one,
-										// this is broken right now because we need drag events to modify the mouse postion
+										
 
 										Event.current.Use ();
 										if (onMouseUp != null) {
-												onMouseUp (statelist.Last());
+												onMouseUp (statelist.Last ());
 										}
 										break;
 
@@ -214,9 +216,9 @@ public class GuiTest:MonoBehaviour
 
 
 						
-								}
+						}
 								
-								break;
+						break;
 
 
 
@@ -229,7 +231,7 @@ public class GuiTest:MonoBehaviour
 						if (onMouseDrag != null) {
 								onMouseDrag (state);
 						}
-						Event.current.Use();
+						Event.current.Use ();
 						break;
 
 
@@ -238,8 +240,12 @@ public class GuiTest:MonoBehaviour
 
 
 
-
-
+				case EventType.repaint:
+						if (onGuiRepaint != null) {
+								onGuiRepaint ();
+						}
+								
+						break;
 
 
 //				case EventType.mouseDrag:

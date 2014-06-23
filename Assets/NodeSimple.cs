@@ -4,15 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-
 public class NodeSimple : MonoBehaviour
 {
 		NodeManager NodeManager;
-
 		DragState GeneratedDragState;
-
 		public List<NodeSimple> targets = new List<NodeSimple> ();
-
+		public List<GameObject> connectors = new List<GameObject> ();
 		private float dist_to_camera;
 
 		void Start ()
@@ -35,7 +32,6 @@ public class NodeSimple : MonoBehaviour
 
 				return;
 		}
-
 
 		public void ConnectTo (NodeSimple target)
 		{		
@@ -63,7 +59,7 @@ public class NodeSimple : MonoBehaviour
 				var hit = new RaycastHit ();
 				if (Physics.Raycast (ray, out hit)) {
 						Debug.Log ("Mouse Down Hit " + hit.collider.gameObject);
-						Debug.DrawRay (ray.origin, ray.direction*dist_to_camera,Color.red,2.0f);
+						Debug.DrawRay (ray.origin, ray.direction * dist_to_camera, Color.red, 2.0f);
 						if (hit.collider.gameObject == node_to_test.gameObject) {
 								return hit.point;
 								// I was previoulsy returning hit.barycenter ... triangle?
@@ -72,7 +68,6 @@ public class NodeSimple : MonoBehaviour
 				}
 				return node_to_test.transform.position;
 		}
-
 
 		public bool HitTest (NodeSimple node_to_test, DragState state)
 		{		
@@ -85,7 +80,7 @@ public class NodeSimple : MonoBehaviour
 
 				if (Physics.Raycast (ray, out hit)) {
 						Debug.Log ("Mouse Down Hit  " + hit.collider.gameObject);
-						Debug.DrawRay (ray.origin, ray.direction*dist_to_camera);
+						Debug.DrawRay (ray.origin, ray.direction * dist_to_camera);
 						if (hit.collider.gameObject == node_to_test.gameObject) {
 								return true;
 						}
@@ -108,11 +103,21 @@ public class NodeSimple : MonoBehaviour
 								node.ConnectTo (this);
 								Debug.Log ("added" + this.ToString () + "to" + node.ToString () + "target list");
 						}
+						// TODO this logic no longer makes sense, all nodes recieve this event
+						// so they end up deleting their targets on any connection.
+						// we can either check all invocators and check all are null like before
+						// or the alternative is different logic here... It's best
+						// if the logic for this is another event, GUI should handle the case
+						// where we mouse up over the canvas and send the appropriate event and dragstate.
 
-				} else if (current_state._connecting && !HitTest (this, current_state)) {
+						// quick fix is to only clear the current selections targets...still broken...
+				} else if (current_state._connecting && !HitTest (this, current_state) && current_state.selection.Contains (this)) {
+						
 						Debug.Log ("need to destroy line, mouseup while connecting, but not over a node");
+						Debug.Log (current_state);
 						targets.Clear ();
 				}
+				
 
 				var newState = new DragState (false, false, current_state._mousepos, new List<NodeSimple> ());
 				return newState;
@@ -120,13 +125,12 @@ public class NodeSimple : MonoBehaviour
 
 		}
 
-
 		public DragState MyOnMouseDrag (DragState current_state)
 		{
 				DragState newstate = current_state;
 				Debug.Log ("drag even handler");
 
-				if (current_state.selection.Contains(this)) {				// If doing a mouse drag with this component selected...
+				if (current_state.selection.Contains (this)) {				// If doing a mouse drag with this component selected...
 						if (current_state._connecting) {					// ... and in connect mode, just use the event as we'll be painting the new connection
 
 								newstate = new DragState (true, false, Input.mousePosition, current_state.selection);
@@ -136,7 +140,7 @@ public class NodeSimple : MonoBehaviour
 								// for now just use the z coordinate of the first object
 						
 								// get the hit world coord
-								var pos = HitPosition(this);
+								var pos = HitPosition (this);
 								// calculate distance between hit loc and camera
 								//var dist_to_camera = Vector3.Distance (this.transform.position, Camera.main.transform.position); 
 						
@@ -155,8 +159,6 @@ public class NodeSimple : MonoBehaviour
 
 
 		}
-
-		
 
 		public DragState MyOnMouseDown (DragState current_state)
 		{
@@ -202,4 +204,10 @@ public class NodeSimple : MonoBehaviour
 						return null;
 				}
 		}
+
+		public void onGuiRepaint ()
+		{
+
+		}
+
 }

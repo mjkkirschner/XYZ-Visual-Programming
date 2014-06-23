@@ -24,7 +24,6 @@ public class NodeManager : MonoBehaviour
 				return linego;
 		}
 
-
 		List<NodeSimple> nodes = new List<NodeSimple> ();
 		List<GameObject> lines = new List<GameObject> ();
 
@@ -39,7 +38,6 @@ public class NodeManager : MonoBehaviour
 		
 	
 		}
-
 	
 		void Update ()
 		{
@@ -48,7 +46,6 @@ public class NodeManager : MonoBehaviour
 
 			
 		}
-
 
 		public DragState onCanvasDoubleClick (DragState currentstate)
 		{
@@ -78,9 +75,27 @@ public class NodeManager : MonoBehaviour
 				
 				Event.current.Use ();
 				
-				return new DragState(false,false,mousePos,new List<NodeSimple>(){newnode.GetComponent<NodeSimple>()});
+				return new DragState (false, false, mousePos, new List<NodeSimple> (){newnode.GetComponent<NodeSimple>()});
 		}
-	
+
+		public void onGuiRepaint ()
+		{
+		foreach (var line in lines) {
+			Destroy(line);
+				}
+		lines.Clear ();
+
+		foreach (var node in nodes) {
+			foreach (var target in node.Targets){
+				var DrawnLine = NodeManager.DrawLine(node.transform.position,target.transform.position);
+				this.lines.Add(DrawnLine);
+
+			}
+		}
+
+		}
+
+
 		// Update is called once per frame
 		//		void OnGUI ()
 		//		{
