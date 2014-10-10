@@ -67,14 +67,14 @@ public class GuiTest:MonoBehaviour
 				nodes_to_notify = new List<NodeSimple> (GameObject.FindObjectsOfType<NodeSimple> ());
 
 				// add all nodes as listeners to the mouse downevent
-				foreach (NodeSimple node in nodes_to_notify) {
+				//	foreach (NodeSimple node in nodes_to_notify) {
+				//
+				//				this.onMouseDown += new Mouse_Down (node.MyOnMouseDown);
+				//				this.onMouseUp += new Mouse_Up (node.MyOnMouseUp);
+				//				this.onMouseDrag += new Mouse_Drag (node.MyOnMouseDrag);
+				//				this.onGuiRepaint += new GuiRepaint (node.onGuiRepaint);
 
-						this.onMouseDown += new Mouse_Down (node.MyOnMouseDown);
-						this.onMouseUp += new Mouse_Up (node.MyOnMouseUp);
-						this.onMouseDrag += new Mouse_Drag (node.MyOnMouseDrag);
-						this.onGuiRepaint += new GuiRepaint (node.onGuiRepaint);
-
-				}
+				//		}
 
 				this.onCanvasDoubleClick += new Canvas_Double_Click (NManager.onCanvasDoubleClick);
 				this.onGuiRepaint += new GuiRepaint (NManager.onGuiRepaint);

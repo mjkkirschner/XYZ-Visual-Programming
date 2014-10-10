@@ -8,21 +8,37 @@ public class NodeSimple : MonoBehaviour
 {
 		NodeManager NodeManager;
 		DragState GeneratedDragState;
-		public List<NodeSimple> targets = new List<NodeSimple> ();
+		//possibly we store a list of connectors that we keep updated
+		// from ports, will need to add events on ports
 		public List<GameObject> connectors = new List<GameObject> ();
+		
+		//variable to help situate projection of mousecoords into worldspace
 		private float dist_to_camera;
 
 		void Start ()
 		{
-
+				// nodemanager manages nodes - like a workspacemodel
 				NodeManager = GameObject.FindObjectOfType<NodeManager> ();
+				// guimanager - like a GUIcontroller
+				var GuiManager = GameObject.FindObjectOfType<GuiTest> ();
+
+				GuiManager.onMouseDown += new GuiTest.Mouse_Down (this.MyOnMouseDown);
+				GuiManager.onMouseUp += new GuiTest.Mouse_Up (this.MyOnMouseUp);
+				GuiManager.onMouseDrag += new GuiTest.Mouse_Drag (this.MyOnMouseDrag);
+				GuiManager.onGuiRepaint += new GuiTest.GuiRepaint (this.onGuiRepaint);
 		}
 
+		// node should not know about targets or connecting etc, this is for ports to
+		// implement
+
+		/*
 		public ReadOnlyCollection<NodeSimple> Targets {
 				get {
 						return targets.AsReadOnly ();
 				}
 		}
+
+
 
 		public void removeTarget (NodeSimple target)
 		{
@@ -41,7 +57,7 @@ public class NodeSimple : MonoBehaviour
 
 				targets.Add (target);
 		}
-
+*/
 		public static Vector3 ProjectCurrentDrag (float distance)
 		{
 
@@ -50,6 +66,7 @@ public class NodeSimple : MonoBehaviour
 				return output;
 		}
 
+		
 		public Vector3 HitPosition (NodeSimple node_to_test)
 		{
 
@@ -68,7 +85,12 @@ public class NodeSimple : MonoBehaviour
 				}
 				return node_to_test.transform.position;
 		}
-
+		/// <summary>
+		/// check if we hit the current node to test, use the state to extract mouseposition
+		/// </summary>
+		/// <returns><c>true</c>, if test was hit, <c>false</c> otherwise.</returns>
+		/// <param name="node_to_test">Node_to_test.</param>
+		/// <param name="state">State.</param>
 		public bool HitTest (NodeSimple node_to_test, DragState state)
 		{		
 				// raycast from the camera through the mouse and check if we hit this current
@@ -94,7 +116,7 @@ public class NodeSimple : MonoBehaviour
 				// if we're connecting to this node, then add this node
 				// to the target list of each of the nodes in the selection.
 
-				Debug.Log ("Mouse up even handler called");
+				Debug.Log ("Mouse up event handler called");
 				//Debug.Log (current_state);
 				//Debug.Log (this);
 
@@ -135,7 +157,7 @@ public class NodeSimple : MonoBehaviour
 
 								newstate = new DragState (true, false, Input.mousePosition, current_state.selection);
 								Debug.Log ("connecting");
-								Event.current.Use ();
+								Event.current.Use (); 
 						} else {					// ... and not in connect mode, drag the component// since we are in 3d space now, we need to conver this to a vector3...
 								// for now just use the z coordinate of the first object
 						

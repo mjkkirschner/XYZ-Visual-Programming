@@ -8,8 +8,6 @@ using System.Linq;
 public class NodeManager : MonoBehaviour
 {
 
-
-
 		public static GameObject DrawLine (Vector3 from, Vector3 to)
 		{
 
@@ -80,18 +78,18 @@ public class NodeManager : MonoBehaviour
 
 		public void onGuiRepaint ()
 		{
-		foreach (var line in lines) {
-			Destroy(line);
+				foreach (var line in lines) {
+						Destroy (line);
 				}
-		lines.Clear ();
+				lines.Clear ();
 
-		foreach (var node in nodes) {
-			foreach (var target in node.Targets){
-				var DrawnLine = NodeManager.DrawLine(node.transform.position,target.transform.position);
-				this.lines.Add(DrawnLine);
+				foreach (var node in nodes) {
+						foreach (var target in node.Targets) {
+								var DrawnLine = NodeManager.DrawLine (node.transform.position, target.transform.position);
+								this.lines.Add (DrawnLine);
 
-			}
-		}
+						}
+				}
 
 		}
 
