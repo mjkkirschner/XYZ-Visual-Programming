@@ -22,13 +22,8 @@ public class NodeManager : MonoBehaviour
 				return linego;
 		}
 
-		List<NodeSimple> nodes = new List<NodeSimple> ();
+		List<NodeModel> nodes = new List<NodeModel> ();
 		List<GameObject> lines = new List<GameObject> ();
-
-
-
-	
-
 
 		// Use this for initialization
 		void Start ()
@@ -40,18 +35,18 @@ public class NodeManager : MonoBehaviour
 		void Update ()
 		{
 
-				nodes = new List<NodeSimple> (GameObject.FindObjectsOfType<NodeSimple> ());
+				nodes = new List<NodeModel> (GameObject.FindObjectsOfType<NodeModel> ());
 
 			
 		}
 
-		public DragState onCanvasDoubleClick (DragState currentstate)
+		public GuiState onCanvasDoubleClick (GuiState currentstate)
 		{
 
 				//TODO needs to also subscribe new nodes to all the neccesary events.
 				// Possibly these events should be inherited
 
-				var mousePos = currentstate._mousepos;
+				var mousePos = currentstate.MousePos;
 				// this is basically reduce with a conditional either passing min or next, to find the min closest node
 				// could replace with for loop...
 				var closestNode = nodes.Aggregate ((min, next) => Vector3.Distance (min.transform.position, mousePos) < Vector3.Distance (next.transform.position, mousePos) ? min : next);
@@ -60,36 +55,25 @@ public class NodeManager : MonoBehaviour
 				
 				var distToClosest = Vector3.Distance (Camera.main.transform.position, closestNode.transform.position);
 													
-				var creationPoint = NodeSimple.ProjectCurrentDrag (distToClosest);
+				var creationPoint = NodeModel.ProjectCurrentDrag (distToClosest);
 				
 				var newnode = GameObject.CreatePrimitive (PrimitiveType.Cube);
 				
 				
-				newnode.AddComponent<NodeSimple> ().name = "node" + (nodes.Count).ToString ();
+				newnode.AddComponent<NodeModel> ().name = "node" + (nodes.Count).ToString ();
 				newnode.transform.position = creationPoint;
 				
 				//Node.Selection = newnode.GetComponent<Node>();
-				nodes.Add (newnode.GetComponent<NodeSimple> ());
+				nodes.Add (newnode.GetComponent<NodeModel> ());
 				
 				Event.current.Use ();
 				
-				return new DragState (false, false, mousePos, new List<NodeSimple> (){newnode.GetComponent<NodeSimple>()});
+				return new GuiState (false, false, mousePos, new List<GameObject> (){newnode}, false);
 		}
 
 		public void onGuiRepaint ()
 		{
-				foreach (var line in lines) {
-						Destroy (line);
-				}
-				lines.Clear ();
-
-				foreach (var node in nodes) {
-						foreach (var target in node.Targets) {
-								var DrawnLine = NodeManager.DrawLine (node.transform.position, target.transform.position);
-								this.lines.Add (DrawnLine);
-
-						}
-				}
+				
 
 		}
 

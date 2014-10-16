@@ -3,11 +3,12 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Nodeplay.Interfaces;
 
-public class NodeSimple : MonoBehaviour
+public class NodeModel : MonoBehaviour, Iinteractable
 {
 		NodeManager NodeManager;
-		DragState GeneratedDragState;
+		GuiState GeneratedDragState;
 		//possibly we store a list of connectors that we keep updated
 		// from ports, will need to add events on ports
 		public List<GameObject> connectors = new List<GameObject> ();
@@ -15,12 +16,14 @@ public class NodeSimple : MonoBehaviour
 		//variable to help situate projection of mousecoords into worldspace
 		private float dist_to_camera;
 
+
 		void Start ()
 		{
 				// nodemanager manages nodes - like a workspacemodel
 				NodeManager = GameObject.FindObjectOfType<NodeManager> ();
 				// guimanager - like a GUIcontroller
 				var GuiManager = GameObject.FindObjectOfType<GuiTest> ();
+
 
 				GuiManager.onMouseDown += new GuiTest.Mouse_Down (this.MyOnMouseDown);
 				GuiManager.onMouseUp += new GuiTest.Mouse_Up (this.MyOnMouseUp);
@@ -67,7 +70,7 @@ public class NodeSimple : MonoBehaviour
 		}
 
 		
-		public Vector3 HitPosition (NodeSimple node_to_test)
+		public Vector3 HitPosition (NodeModel node_to_test)
 		{
 
 				// return the coordinate in world space where hit occured
@@ -91,12 +94,12 @@ public class NodeSimple : MonoBehaviour
 		/// <returns><c>true</c>, if test was hit, <c>false</c> otherwise.</returns>
 		/// <param name="node_to_test">Node_to_test.</param>
 		/// <param name="state">State.</param>
-		public bool HitTest (NodeSimple node_to_test, DragState state)
+		public bool HitTest (NodeModel node_to_test, GuiState state)
 		{		
 				// raycast from the camera through the mouse and check if we hit this current
 				// node, if we do return true
 
-				Ray ray = Camera.main.ScreenPointToRay (state._mousepos);
+				Ray ray = Camera.main.ScreenPointToRay (state.MousePos);
 				var hit = new RaycastHit ();
 			
 
@@ -111,78 +114,46 @@ public class NodeSimple : MonoBehaviour
 				return false;
 		}
 
-		public DragState MyOnMouseUp (DragState current_state)
+		public GuiState MyOnMouseUp (GuiState current_state)
 		{
 				// if we're connecting to this node, then add this node
 				// to the target list of each of the nodes in the selection.
 
 				Debug.Log ("Mouse up event handler called");
-				//Debug.Log (current_state);
-				//Debug.Log (this);
-
-				if (current_state._connecting && HitTest (this, current_state)) {
-						foreach (NodeSimple node in current_state.selection) {
-								node.ConnectTo (this);
-								Debug.Log ("added" + this.ToString () + "to" + node.ToString () + "target list");
-						}
-						// TODO this logic no longer makes sense, all nodes recieve this event
-						// so they end up deleting their targets on any connection.
-						// we can either check all invocators and check all are null like before
-						// or the alternative is different logic here... It's best
-						// if the logic for this is another event, GUI should handle the case
-						// where we mouse up over the canvas and send the appropriate event and dragstate.
-
-						// quick fix is to only clear the current selections targets...still broken...
-				} else if (current_state._connecting && !HitTest (this, current_state) && current_state.selection.Contains (this)) {
-						
-						Debug.Log ("need to destroy line, mouseup while connecting, but not over a node");
-						Debug.Log (current_state);
-						targets.Clear ();
-				}
-				
-
-				var newState = new DragState (false, false, current_state._mousepos, new List<NodeSimple> ());
+				var newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
 				return newState;
 
 
 		}
-
-		public DragState MyOnMouseDrag (DragState current_state)
+		//handler for dragging node event//
+		public GuiState MyOnMouseDrag (GuiState current_state)
 		{
-				DragState newstate = current_state;
+				GuiState newstate = current_state;
 				Debug.Log ("drag even handler");
 
-				if (current_state.selection.Contains (this)) {				// If doing a mouse drag with this component selected...
-						if (current_state._connecting) {					// ... and in connect mode, just use the event as we'll be painting the new connection
+				if (current_state.Selection.Contains (this.gameObject)) {				// If doing a mouse drag with this component selected...
+						// since we are in 3d space now, we need to conver this to a vector3...
+						// for now just use the z coordinate of the first object
+						
+						// get the hit world coord
+						var pos = HitPosition (this);
+						
+						// project from camera through mouse currently and use same distance
+						Vector3 to_point = ProjectCurrentDrag (dist_to_camera);
+						
+						// move object to new coordinate
+						this.gameObject.transform.position = to_point;
+						newstate = new GuiState (false, true, Input.mousePosition, current_state.Selection, false);
 
-								newstate = new DragState (true, false, Input.mousePosition, current_state.selection);
-								Debug.Log ("connecting");
-								Event.current.Use (); 
-						} else {					// ... and not in connect mode, drag the component// since we are in 3d space now, we need to conver this to a vector3...
-								// for now just use the z coordinate of the first object
+						Event.current.Use ();
 						
-								// get the hit world coord
-								var pos = HitPosition (this);
-								// calculate distance between hit loc and camera
-								//var dist_to_camera = Vector3.Distance (this.transform.position, Camera.main.transform.position); 
-						
-								// project from camera through mouse currently and use same distance
-								Vector3 to_point = ProjectCurrentDrag (dist_to_camera);
-						
-								// move object to new coordinate
-								this.gameObject.transform.position = to_point;
-								//this.gameObject.transform.position -= new Vector3(Event.current.delta.x/(Screen.width*(dist_to_camera)),Event.current.delta.y/(Screen.height*(dist_to_camera)),0);
-								newstate = new DragState (false, true, Input.mousePosition, current_state.selection);
-
-								Event.current.Use ();
-						}
 				}
 				return newstate;
 
 
 		}
-
-		public DragState MyOnMouseDown (DragState current_state)
+		//handler for clicks
+		public GuiState MyOnMouseDown (GuiState current_state)
 		{
 				Debug.Log ("mouse down event handler called");
 				// check if this node was actually clicked on
@@ -192,18 +163,18 @@ public class NodeSimple : MonoBehaviour
 
 						Debug.Log (current_state);
 
-						// check the dragstate from the GUI, either this is a connecting click
+						// check the dragstate from the GUI, either this is a double click
 						// or a selection click
 						// or possibly a click on nothing
-						if (current_state._connecting == false) {
+						if (current_state.DoubleClicked == false) {
 
 								// add this node to the current selection
 								// update the drag state
 								// store this drag state in the list of all dragstates
 
-								List<NodeSimple> new_sel = (new List<NodeSimple> (current_state.selection));
-								new_sel.Add (this);
-								var newState = new DragState (current_state._connecting, current_state._dragging, current_state._mousepos, new_sel); 
+								List<GameObject> new_sel = (new List<GameObject> (current_state.Selection));
+								new_sel.Add (this.gameObject);
+								var newState = new GuiState (current_state.Connecting, current_state.Dragging, current_state.MousePos, new_sel, false); 
 								GuiTest.statelist.Add (newState);
 								GeneratedDragState = newState;
 

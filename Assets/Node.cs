@@ -32,7 +32,7 @@ public class Node:MonoBehaviour
 				}
 		}
 
-		public void OnMouseDown(DragState current_state){
+		public void OnMouseDown(GuiState current_state){
 				Debug.Log ("I" + this.name +" was just clicked");
 				Debug.Log (current_state);
 
