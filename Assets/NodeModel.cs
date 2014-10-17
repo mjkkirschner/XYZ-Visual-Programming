@@ -12,7 +12,8 @@ public class NodeModel : MonoBehaviour, Iinteractable
 		//possibly we store a list of connectors that we keep updated
 		// from ports, will need to add events on ports
 		public List<GameObject> connectors = new List<GameObject> ();
-		
+		public List<PortModel> Inputs { get; set; }
+		public List<PortModel> Outputs { get; set; }
 		//variable to help situate projection of mousecoords into worldspace
 		private float dist_to_camera;
 
@@ -69,7 +70,53 @@ public class NodeModel : MonoBehaviour, Iinteractable
 				return output;
 		}
 
+
+		public void AddInputPort ()
+		{
+				// for now lets just add a child sphere - 
+				// add a portmodel component
+				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+				//need a position method that arranges the port depending on how many exist in the outs
+				newport.transform.position = this.gameObject.transform.position;
+				newport.transform.parent = this.gameObject;
+				newport.transform.Translate (0, 0, -1.2);
+				newport.transform.localScale (.33, .33, .33);
+				newport.AddComponent (PortModel);
 		
+				var currentPort = newport.GetComponent<PortModel> ();
+				Inputs.Add (currentPort);
+				// need a setup method
+				currentPort.Owner = this;
+				currentPort.Index = Outputs.Count;
+				currentPort.PortType = PortModel.porttype.input;
+
+		}
+		/// <summary>
+		/// Adds an output portmodel and geometry to the node.
+		/// also updates the outputs array
+		/// </summary>
+		public void AddOutPutPort ()
+		{
+				// for now lets just add a child sphere - 
+				// add a portmodel component
+				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+				//need a position method that arranges the port depending on how many exist in the outs
+				newport.transform.position = this.gameObject.transform.position;
+				newport.transform.parent = this.gameObject;
+				newport.transform.Translate (0, 0, 1.2);
+				newport.transform.localScale (.33, .33, .33);
+				newport.AddComponent (PortModel);
+
+				var currentPort = newport.GetComponent<PortModel> ();
+				Outputs.Add (currentPort);
+				// need a setup method
+				currentPort.Owner = this;
+				currentPort.Index = Outputs.Count;
+				currentPort.PortType = PortModel.porttype.output;
+				
+		}
+		
+
 		public Vector3 HitPosition (NodeModel node_to_test)
 		{
 

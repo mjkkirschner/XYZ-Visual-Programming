@@ -10,11 +10,26 @@ public class PortModel : MonoBehaviour, Iinteractable
 {
 
 		GuiState GeneratedDragState;
-
+		/// <summary>
+		/// The tempconnector that is drawn while dragging.
+		/// </summary>
+		
+		
+		private ConnectorView tempconnector;
 		public NodeModel Owner { get; set; }
 		public ConnectorModel Connector { get; set; }
 		public int Index { get; set; }
 		private float dist_to_camera;
+		public porttype PortType { get; set; }
+
+		private enum porttype
+		{
+
+				input,
+				output
+			}
+		;
+
 		// Use this for initialization
 		void Start ()
 		{
@@ -25,7 +40,16 @@ public class PortModel : MonoBehaviour, Iinteractable
 				GuiManager.onMouseUp += new GuiTest.Mouse_Up (this.MyOnMouseUp);
 				GuiManager.onMouseDrag += new GuiTest.Mouse_Drag (this.MyOnMouseDrag);
 				GuiManager.onGuiRepaint += new GuiTest.GuiRepaint (this.onGuiRepaint);
-		
+
+				if (Owner == null) {
+						Owner = this.GetComponentInParent<NodeModel> ();
+				}
+
+				if (PortType == null) {
+					if Owner.Inputs
+				}
+
+
 		}
 	
 		void Update ()
@@ -122,9 +146,18 @@ public class PortModel : MonoBehaviour, Iinteractable
 			
 						// project from camera through mouse currently and use same distance
 						Vector3 to_point = ProjectCurrentDrag (dist_to_camera);
-			
+						
+						//i
+						if (tempconnector != null) {
+								tempconnector.TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
+						}
+						// since this is a port, we need to instantiate a new 
+						//ConnectorView ( this is a temporary connector that we drag around in the UI)
+						
+						tempconnector = new ConnectorView (this.gameObject.transform.localPosition, to_point);
+						
 						// move object to new coordinate
-						this.gameObject.transform.position = to_point;
+						//this.gameObject.transform.position = to_point;
 						newstate = new GuiState (false, true, Input.mousePosition, current_state.Selection, false);
 			
 						Event.current.Use ();
@@ -150,10 +183,12 @@ public class PortModel : MonoBehaviour, Iinteractable
 						// or possibly a click on nothing
 						if (current_state.DoubleClicked == false) {
 				
-								// add this node to the current selection
+								// add this item to the current selection
 								// update the drag state
 								// store this drag state in the list of all dragstates
-				
+							
+								// eventually we'll need to check if this port is an input or output
+								
 								List<GameObject> new_sel = (new List<GameObject> (current_state.Selection));
 								new_sel.Add (this.gameObject);
 								var newState = new GuiState (current_state.Connecting, current_state.Dragging, current_state.MousePos, new_sel, false); 
