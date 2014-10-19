@@ -34,8 +34,14 @@ public class ConnectorModel : MonoBehaviour
 		
 		}
 		
+		void OnDestroy(){
+		View.Destroy();
+	// cleanup the view... TODO MOVE THIS LOGIC INTO A HANDELR THAT GETS CALLED ON DISCONNECT....s
+	}
 
-	
+
+		
+
 		public void init (PortModel start, PortModel end)
 		{
 		

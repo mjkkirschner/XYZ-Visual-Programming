@@ -78,26 +78,28 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 		
 				IsConnected = true;
 		}
-	
+		/// <summary>
+		/// Disconnect the specified connector from this port.
+		/// </summary>
+		/// <param name="connector">Connector.</param>
 		public void Disconnect (ConnectorModel connector)
 		{
 				if (!connectors.Contains (connector))
 						return;
 				//throw the event for a connection
 				OnPortDisconnected (EventArgs.Empty);
-		
-				//also trigger the model's connector deletion
-				Owner.OnConnectorDeleted (connector);
-		
 				connectors.Remove (connector);
-		
+				//TODO Right now portmodel has way too much responsibility... all of this needs to be moved out of here - 
+				// possibly a manager that recieves events and  constructs or destroys objets... eventually might need to
+				// recycle these objects anyway
+				GameObject.Destroy(connector.gameObject);
 				//don't set back to white if
 				//there are still connectors on this port
 				if (connectors.Count == 0) {
 						IsConnected = false;
 				}
-		
-				Owner.ValidateConnections ();
+				
+				//Owner.ValidateConnections ();
 		}
 
 
@@ -239,27 +241,49 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 				if (HitTest (this.gameObject, current_state)) {
 
 						if ((current_state.Connecting)) {
+							// TODO REFACTOR THIS AS A METHOD TO KEEP MOUSEUP CLEAN
 								Debug.Log ("I" + this.NickName + " was just MouseUpedOn");
-				
+								
 								newState = new GuiState (true, false, current_state.MousePos, new List<GameObject> (), false);
+								var startport = current_state.Selection [0].GetComponent<PortModel> ();
+								//TODO we need some logic to check if the port we just tried to connect to was an input or an output - 
+								// and if the port we are coming from is an input or an output
+								// Outputs - > Inputs
+								// Inputs - > Outputs
+				if (startport.PortType == this.PortType){
+					newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
+					GuiTest.statelist.Add (newState);
+					return newState;
+				}
+
+
                                 // if port is already connected then disconnect old port before creating new connector
                                 if (this.IsConnected)
-                                {
-                                    Dis
+                                {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
+									this.Disconnect(connectors[0]);
+					//TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
+					//probably take care of sending this event chains
+									
                                 }
 								//instantiate new connector etc
+								
 								var realConnector = new GameObject ();
 								realConnector.AddComponent<ConnectorModel> ();
 								realConnector.GetComponent<ConnectorModel> ().init (current_state.Selection [0].GetComponent<PortModel> (), this);
                                 this.Connect(realConnector.GetComponent<ConnectorModel>());
+								
+								//TODO the other port also needs a connect signal
+				current_state.Selection [0].GetComponent<PortModel> ().Connect(realConnector.GetComponent<ConnectorModel>());
+							
 
 						} else {
+				// if we were not connecting then gen a blank state, just a mouse up, and clear selection
 								newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
 						}
 						GuiTest.statelist.Add (newState);
 						return newState;
 				} else {
-
+						// if we mouseupped over nothing
 						return null;
 
 				}

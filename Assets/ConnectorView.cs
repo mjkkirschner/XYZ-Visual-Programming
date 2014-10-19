@@ -36,6 +36,18 @@ public class ConnectorView
 		
 		}
 
+
+		public void Destroy(){
+		if (TemporaryGeometry != null) {
+			TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
+		}
+		//TODO better placement for unsubcribing from events
+		Model.PStart.PropertyChanged -= HandlePortChanges;
+		Model.PEnd.PropertyChanged -= HandlePortChanges;
+		//TODO All Events
+
+	}
+
 		public List<GameObject> redraw ()
 		{
 				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
@@ -67,7 +79,7 @@ public class ConnectorView
 
 		public void HandlePortChanges (object sender, EventArgs args)
 		{
-				Debug.Log (sender + " just sent event that it was modified and we should update the connector");
+				Debug.Log (sender + " just sent event that port was modified and we should update the connector view");
 				redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
 		}
 

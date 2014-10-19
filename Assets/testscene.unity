@@ -330,7 +330,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f65e4093dda14c7ba6c77a659d3f15e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Connectors: []
 --- !u!23 &2124737305
 Renderer:
   m_ObjectHideFlags: 0

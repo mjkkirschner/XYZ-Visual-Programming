@@ -12,7 +12,6 @@ public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 		GuiState GeneratedDragState;
 		//possibly we store a list of connectors that we keep updated
 		// from ports, will need to add events on ports
-		public List<GameObject> Connectors = new List<GameObject> ();
 		public List<PortModel> Inputs { get; set; }
 		public List<PortModel> Outputs { get; set; }
 		
@@ -106,7 +105,7 @@ public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 		public void AddInputPort ()
 		{
 				// for now lets just add a child sphere - 
-				// add a portmodel component
+				// add a portmodel component to that sphere
 				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 				//need a position method that arranges the port depending on how many exist in the outs
 				newport.transform.position = this.gameObject.transform.position;
@@ -121,6 +120,8 @@ public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 
 				
 				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;	
+				newport.GetComponent<PortModel>().PortConnected += PortConnected;
+				newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
 
 		}
 		/// <summary>
@@ -147,8 +148,19 @@ public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 				// registers a listener on the port so it gets updates about the nodes property changes
 				// we use this to let the port notify it's attached connectors that they need to update
 				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;
+				newport.GetComponent<PortModel>().PortConnected += PortConnected;
+				newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
 		}
 		
+		public void PortConnected(object sender, EventArgs e){
+		Debug.Log("I just got a port connected event");
+
+	}
+
+	public void PortDisconnected(object sender, EventArgs e){
+		Debug.Log("I just got a port disconnected event");
+	}
+
 
 		public Vector3 HitPosition (NodeModel node_to_test)
 		{
