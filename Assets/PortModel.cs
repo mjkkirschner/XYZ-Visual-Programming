@@ -2,27 +2,110 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Interfaces;
+using System;
+using System.ComponentModel;
 
-/// <summary>
+// <summary>
 /// object representing an input port.
 /// </summary>
-public class PortModel : MonoBehaviour, Iinteractable
+public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 {
 
 		GuiState GeneratedDragState;
 		/// <summary>
-		/// The tempconnector that is drawn while dragging.
+		/// a tempconnector that is drawn while dragging.
 		/// </summary>
-		
-		
 		private ConnectorView tempconnector;
-		public NodeModel Owner { get; set; }
-		public ConnectorModel Connector { get; set; }
-		public int Index { get; set; }
-		private float dist_to_camera;
-		public porttype PortType { get; set; }
 
-		private enum porttype
+		public string NickName{ get; set; }
+
+		public NodeModel Owner { get; set; }
+
+		public int Index { get; set; }
+
+		private float dist_to_camera;
+
+		public Boolean IsConnected { get; set; }
+
+		public List<ConnectorModel> connectors = new List<ConnectorModel> ();
+
+		public delegate void PortConnectedHandler (object sender,EventArgs e);
+
+		public delegate void PortDisconnectedHandler (object sender,EventArgs e);
+		
+		public event PortConnectedHandler PortConnected;
+		public event PortConnectedHandler PortDisconnected;
+		public event PropertyChangedEventHandler PropertyChanged;
+	
+		private void NotifyPropertyChanged (String info)
+		{
+				Debug.Log ("sending some property change notification");
+				if (PropertyChanged != null) {
+						PropertyChanged (this, new PropertyChangedEventArgs (info));
+				}
+		}
+
+		protected virtual void OnPortConnected (EventArgs e)
+		{
+				if (PortConnected != null)
+						PortConnected (this, e);
+		}
+
+		protected virtual void OnPortDisconnected (EventArgs e)
+		{
+				if (PortDisconnected != null)
+						PortDisconnected (this, e);
+		}
+
+//		public void DestroyConnectors ()
+//		{
+//				if (Owner == null)
+//						return;
+//		
+//				while (connectors.Any()) {
+//						ConnectorModel connector = connectors [0];
+//						Owner.Connectors.Remove (connector);
+//						connector.NotifyConnectedPortsOfDeletion ();
+//				}
+//		}
+	
+		public void Connect (ConnectorModel connector)
+		{
+				connectors.Add (connector);
+		
+				//throw the event for a connection
+				OnPortConnected (EventArgs.Empty);
+		
+				IsConnected = true;
+		}
+	
+//		public void Disconnect (ConnectorModel connector)
+//		{
+//				if (!connectors.Contains (connector))
+//						return;
+//		
+//				//throw the event for a connection
+//				OnPortDisconnected (EventArgs.Empty);
+//		
+//				//also trigger the model's connector deletion
+//				Owner.OnConnectorDeleted (connector);
+//		
+//				connectors.Remove (connector);
+//		
+//				//don't set back to white if
+//				//there are still connectors on this port
+//				if (connectors.Count == 0) {
+//						IsConnected = false;
+//				}
+//		
+//				Owner.ValidateConnections ();
+//		}
+
+
+		public porttype PortType { get; set; }
+		
+		
+		public enum porttype
 		{
 
 				input,
@@ -40,22 +123,40 @@ public class PortModel : MonoBehaviour, Iinteractable
 				GuiManager.onMouseUp += new GuiTest.Mouse_Up (this.MyOnMouseUp);
 				GuiManager.onMouseDrag += new GuiTest.Mouse_Drag (this.MyOnMouseDrag);
 				GuiManager.onGuiRepaint += new GuiTest.GuiRepaint (this.onGuiRepaint);
-
-				if (Owner == null) {
-						Owner = this.GetComponentInParent<NodeModel> ();
-				}
-
-				if (PortType == null) {
-					if Owner.Inputs
-				}
-
-
+				
+				
+				
 		}
 	
 		void Update ()
 		{
 	
 		}
+
+		
+		/// this handler is used to respond to changes on the node owner of this port
+		// right now it just forwards the notification
+		public void NodePropertyChangeEventHandler (object sender, EventArgs args)
+		{
+				NotifyPropertyChanged ("OwnerProperties");
+
+		}
+
+		public void init (NodeModel owner, int index, porttype type, string nickname = null)
+		{
+				
+
+				this.Owner = owner;
+				this.Index = index;
+				this.PortType = type;
+				if (nickname == null) {
+						NickName = Owner.name;
+						NickName = this.NickName + PortType.ToString () + Index.ToString ();
+				}
+
+		}
+
+
 
 		//TODO MOVE THESE NEXT 3 menthods to a base class for all draggable items
 
@@ -66,7 +167,6 @@ public class PortModel : MonoBehaviour, Iinteractable
 				var output = ray.GetPoint (distance);
 				return output;
 		}
-	
 	
 		public Vector3 HitPosition (GameObject object_to_test)
 		{
@@ -99,7 +199,7 @@ public class PortModel : MonoBehaviour, Iinteractable
 		
 				Ray ray = Camera.main.ScreenPointToRay (state.MousePos);
 				var hit = new RaycastHit ();
-		
+				Debug.DrawRay (ray.origin, ray.direction * dist_to_camera);
 		
 				if (Physics.Raycast (ray, out hit)) {
 						Debug.Log ("Mouse Down Hit  " + hit.collider.gameObject);
@@ -121,49 +221,77 @@ public class PortModel : MonoBehaviour, Iinteractable
 		// ports will be responsible for creating connectors
 
 		public GuiState MyOnMouseUp (GuiState current_state)
-		{
-				// if we're connecting to this port, then add this node
-				// to the target list of each of the nodes in the selection.
-		
+		{		
+
+
+				//handle this here for now:
+				//destruction of temp connector
+				if (tempconnector != null) {
+						tempconnector.TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
+				}
+
+				//if we mouseUp over a port we need to check if we were connecting/dragging,
+				// and then we'll instantiate a new connectorModel, the model will create it's own view
+				// and the view will listen to its ports for property changes
+				GuiState newState;
 				Debug.Log ("Mouse up event handler called");
-				var newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
-				return newState;
+				
+				//appears current_state is does not have correct MOUSEPOS... what else is incorrect...
+				if (HitTest (this.gameObject, current_state)) {
+
+						if ((current_state.Connecting)) {
+								Debug.Log ("I" + this.NickName + " was just MouseUpedOn");
+				
+								newState = new GuiState (true, false, current_state.MousePos, new List<GameObject> (), false);
+
+								//instantiate new connector etc
+								var realConnector = new GameObject ();
+								realConnector.AddComponent<ConnectorModel> ();
+								realConnector.GetComponent<ConnectorModel> ().init (current_state.Selection [0].GetComponent<PortModel> (), this);
+						
+
+						} else {
+								newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
+						}
+						GuiTest.statelist.Add (newState);
+						return newState;
+				} else {
+
+						return null;
+
+				}
 		
 		
 		}
+		
 		//handler for dragging node event//
 		public GuiState MyOnMouseDrag (GuiState current_state)
 		{
-				GuiState newstate = current_state;
+				GuiState newState = current_state;
 				Debug.Log ("drag even handler, on a port");
 		
 				if (current_state.Selection.Contains (this.gameObject)) {				// If doing a mouse drag with this component selected...
 						// since we are in 3d space now, we need to conver this to a vector3...
 						// for now just use the z coordinate of the first object
-			
-						// get the hit world coord
-						var pos = HitPosition (this.gameObject);
-			
 						// project from camera through mouse currently and use same distance
 						Vector3 to_point = ProjectCurrentDrag (dist_to_camera);
 						
-						//i
+						
 						if (tempconnector != null) {
 								tempconnector.TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
 						}
 						// since this is a port, we need to instantiate a new 
 						//ConnectorView ( this is a temporary connector that we drag around in the UI)
 						
-						tempconnector = new ConnectorView (this.gameObject.transform.localPosition, to_point);
+						tempconnector = new ConnectorView (this.gameObject.transform.position, to_point);
 						
 						// move object to new coordinate
-						//this.gameObject.transform.position = to_point;
-						newstate = new GuiState (false, true, Input.mousePosition, current_state.Selection, false);
-			
+						newState = new GuiState (true, true, Input.mousePosition, current_state.Selection, false);
+						GuiTest.statelist.Add (newState);
 						Event.current.Use ();
 			
 				}
-				return newstate;
+				return newState;
 		
 		
 		}

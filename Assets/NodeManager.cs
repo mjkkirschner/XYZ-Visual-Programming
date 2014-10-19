@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-
+using Nodeplay.Nodes;
+using System;
 /// <summary>
 /// Node manager.
 /// </summary>
@@ -60,7 +61,7 @@ public class NodeManager : MonoBehaviour
 				var newnode = GameObject.CreatePrimitive (PrimitiveType.Cube);
 				
 				
-				newnode.AddComponent<NodeModel> ().name = "node" + (nodes.Count).ToString ();
+				newnode.AddComponent<TestNodeType> ().name = "node" + Guid.NewGuid ().ToString ();
 				newnode.transform.position = creationPoint;
 				
 				//Node.Selection = newnode.GetComponent<Node>();

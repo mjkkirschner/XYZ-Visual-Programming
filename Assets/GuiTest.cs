@@ -189,7 +189,11 @@ public class GuiTest:MonoBehaviour
 
 										Event.current.Use ();
 										if (onMouseUp != null) {
-												onMouseUp (statelist.Last ());
+												onMouseUp (new GuiState (statelist.Last ().Connecting,
+						                         statelist.Last ().Dragging,
+						                         Event.current.mousePosition,
+						                         statelist.Last ().Selection,
+						                         statelist.Last ().DoubleClicked));
 										}
 										break;
 

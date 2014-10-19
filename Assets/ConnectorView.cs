@@ -14,26 +14,62 @@ using System.Collections.Generic;
 
 
 public class ConnectorView
-{
+{	
+
+
+		public PortModel StartPort{ get; set; }
+		public PortModel EndPort{ get; set; }
+		public ConnectorModel Model{ get; set; }	
+		
 
 		public List<GameObject> TemporaryGeometry;
 		
 		public ConnectorView (Vector3 startpoint, Vector3 endpoint)
 		{
-			
-				var range = Enumerable.Range (0, 100).Select (i => i / 100F).ToList ();
-				var points = range.Select (x => Vector3.Slerp (startpoint, endpoint, x)).ToList ();
-			
-			
-				var spheres = points.Select (x => {
-						var y = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-						y.transform.position = x;
-						return y;}).ToList ();
-
-				TemporaryGeometry = spheres;
-			
+				redraw (startpoint, endpoint);
 			
 		}
 		
-}
+		public ConnectorView ()
+		{
 
+		
+		}
+
+		public List<GameObject> redraw ()
+		{
+				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
+				
+		}
+
+
+		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint)
+		{
+				if (TemporaryGeometry != null) {
+						TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
+				}
+
+				var range = Enumerable.Range (0, 100).Select (i => i / 100F).ToList ();
+				var points = range.Select (x => Vector3.Slerp (startPoint, endpoint, x)).ToList ();
+		
+		
+				var spheres = points.Select (x => {
+						var y = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+						GameObject.DestroyImmediate (y.collider);
+						y.transform.position = x;
+						y.transform.localScale = new Vector3 (.2f, .2f, .2f);
+						return y;}).ToList ();
+		
+				TemporaryGeometry = spheres;
+				return spheres;
+		}
+
+
+		public void HandlePortChanges (object sender, EventArgs args)
+		{
+				Debug.Log (sender + " just sent event that it was modified and we should update the connector");
+				redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
+		}
+
+
+}

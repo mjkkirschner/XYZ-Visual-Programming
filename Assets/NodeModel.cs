@@ -4,21 +4,48 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
-
-public class NodeModel : MonoBehaviour, Iinteractable
+using UnityEditor;
+using System.ComponentModel;
+using System;
+public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 {
 		NodeManager NodeManager;
 		GuiState GeneratedDragState;
 		//possibly we store a list of connectors that we keep updated
 		// from ports, will need to add events on ports
-		public List<GameObject> connectors = new List<GameObject> ();
+		public List<GameObject> Connectors = new List<GameObject> ();
 		public List<PortModel> Inputs { get; set; }
 		public List<PortModel> Outputs { get; set; }
+		
+		private Vector3 location;
+		public Vector3 Location {
+				get {
+						return this.location;
+	
+				}
+
+				set {
+						if (value != this.location) {
+								this.location = value;
+								NotifyPropertyChanged ("Location");
+						}
+				}
+		}
 		//variable to help situate projection of mousecoords into worldspace
 		private float dist_to_camera;
+		
+		
+		public event PropertyChangedEventHandler PropertyChanged;
 
+		private void NotifyPropertyChanged (String info)
+		{
+				Debug.Log ("sending some property change notification");
+				if (PropertyChanged != null) {
+						PropertyChanged (this, new PropertyChangedEventArgs (info));
+				}
+		}
 
-		void Start ()
+		protected virtual void Start ()
 		{
 				// nodemanager manages nodes - like a workspacemodel
 				NodeManager = GameObject.FindObjectOfType<NodeManager> ();
@@ -30,6 +57,12 @@ public class NodeModel : MonoBehaviour, Iinteractable
 				GuiManager.onMouseUp += new GuiTest.Mouse_Up (this.MyOnMouseUp);
 				GuiManager.onMouseDrag += new GuiTest.Mouse_Drag (this.MyOnMouseDrag);
 				GuiManager.onGuiRepaint += new GuiTest.GuiRepaint (this.onGuiRepaint);
+
+				Debug.Log ("this shit just happened");
+
+				Inputs = new List<PortModel> ();
+				Outputs = new List<PortModel> ();
+
 		}
 
 		// node should not know about targets or connecting etc, this is for ports to
@@ -78,17 +111,17 @@ public class NodeModel : MonoBehaviour, Iinteractable
 				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 				//need a position method that arranges the port depending on how many exist in the outs
 				newport.transform.position = this.gameObject.transform.position;
-				newport.transform.parent = this.gameObject;
-				newport.transform.Translate (0, 0, -1.2);
-				newport.transform.localScale (.33, .33, .33);
-				newport.AddComponent (PortModel);
+				newport.transform.parent = this.gameObject.transform;
+				newport.transform.Translate (0.0f, 0.0f, -1.2f);
+				newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
+				newport.AddComponent<PortModel> ();
 		
 				var currentPort = newport.GetComponent<PortModel> ();
 				Inputs.Add (currentPort);
-				// need a setup method
-				currentPort.Owner = this;
-				currentPort.Index = Outputs.Count;
-				currentPort.PortType = PortModel.porttype.input;
+				currentPort.init (this, Outputs.Count, PortModel.porttype.input);
+
+				
+				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;	
 
 		}
 		/// <summary>
@@ -102,18 +135,19 @@ public class NodeModel : MonoBehaviour, Iinteractable
 				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 				//need a position method that arranges the port depending on how many exist in the outs
 				newport.transform.position = this.gameObject.transform.position;
-				newport.transform.parent = this.gameObject;
-				newport.transform.Translate (0, 0, 1.2);
-				newport.transform.localScale (.33, .33, .33);
-				newport.AddComponent (PortModel);
+				newport.transform.parent = this.gameObject.transform;
+				newport.transform.Translate (0.0f, 0.0f, 1.2f);
+				newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
+				newport.AddComponent<PortModel> ();
 
 				var currentPort = newport.GetComponent<PortModel> ();
 				Outputs.Add (currentPort);
-				// need a setup method
-				currentPort.Owner = this;
-				currentPort.Index = Outputs.Count;
-				currentPort.PortType = PortModel.porttype.output;
-				
+				currentPort.init (this, Outputs.Count, PortModel.porttype.input);
+
+
+				// registers a listener on the port so it gets updates about the nodes property changes
+				// we use this to let the port notify it's attached connectors that they need to update
+				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;
 		}
 		
 
@@ -168,6 +202,7 @@ public class NodeModel : MonoBehaviour, Iinteractable
 
 				Debug.Log ("Mouse up event handler called");
 				var newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
+				//GuiTest.statelist.Add (newState);
 				return newState;
 
 
@@ -175,7 +210,7 @@ public class NodeModel : MonoBehaviour, Iinteractable
 		//handler for dragging node event//
 		public GuiState MyOnMouseDrag (GuiState current_state)
 		{
-				GuiState newstate = current_state;
+				GuiState newState = current_state;
 				Debug.Log ("drag even handler");
 
 				if (current_state.Selection.Contains (this.gameObject)) {				// If doing a mouse drag with this component selected...
@@ -190,12 +225,12 @@ public class NodeModel : MonoBehaviour, Iinteractable
 						
 						// move object to new coordinate
 						this.gameObject.transform.position = to_point;
-						newstate = new GuiState (false, true, Input.mousePosition, current_state.Selection, false);
-
+						newState = new GuiState (false, true, Input.mousePosition, current_state.Selection, false);
+						GuiTest.statelist.Add (newState);
 						Event.current.Use ();
 						
 				}
-				return newstate;
+				return newState;
 
 
 		}
@@ -238,16 +273,17 @@ public class NodeModel : MonoBehaviour, Iinteractable
 						// store the state on the GUI...
 						return GeneratedDragState;
 
-						
-
+						//TODO OVERHAUL STATE STREAM	
+						// this logic is important and ugly, we need to enforce that the callbacks return null if the event was not intended for that object so we don't
+						// store superflous states... this needs to be redesigned asap
 				} else {
 						return null;
 				}
 		}
 
 		public void onGuiRepaint ()
-		{
-
+		{	// if we need to repaint the UI then update the property location based on the gameobjects underly transform
+				Location = this.gameObject.transform.position;
 		}
 
 }
