@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
-using UnityEditor;
 using System.ComponentModel;
 using System;
 public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged

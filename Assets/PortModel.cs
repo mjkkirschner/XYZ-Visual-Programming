@@ -79,27 +79,26 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 				IsConnected = true;
 		}
 	
-//		public void Disconnect (ConnectorModel connector)
-//		{
-//				if (!connectors.Contains (connector))
-//						return;
-//		
-//				//throw the event for a connection
-//				OnPortDisconnected (EventArgs.Empty);
-//		
-//				//also trigger the model's connector deletion
-//				Owner.OnConnectorDeleted (connector);
-//		
-//				connectors.Remove (connector);
-//		
-//				//don't set back to white if
-//				//there are still connectors on this port
-//				if (connectors.Count == 0) {
-//						IsConnected = false;
-//				}
-//		
-//				Owner.ValidateConnections ();
-//		}
+		public void Disconnect (ConnectorModel connector)
+		{
+				if (!connectors.Contains (connector))
+						return;
+				//throw the event for a connection
+				OnPortDisconnected (EventArgs.Empty);
+		
+				//also trigger the model's connector deletion
+				Owner.OnConnectorDeleted (connector);
+		
+				connectors.Remove (connector);
+		
+				//don't set back to white if
+				//there are still connectors on this port
+				if (connectors.Count == 0) {
+						IsConnected = false;
+				}
+		
+				Owner.ValidateConnections ();
+		}
 
 
 		public porttype PortType { get; set; }
@@ -243,12 +242,16 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 								Debug.Log ("I" + this.NickName + " was just MouseUpedOn");
 				
 								newState = new GuiState (true, false, current_state.MousePos, new List<GameObject> (), false);
-
+                                // if port is already connected then disconnect old port before creating new connector
+                                if (this.IsConnected)
+                                {
+                                    Dis
+                                }
 								//instantiate new connector etc
 								var realConnector = new GameObject ();
 								realConnector.AddComponent<ConnectorModel> ();
 								realConnector.GetComponent<ConnectorModel> ().init (current_state.Selection [0].GetComponent<PortModel> (), this);
-						
+                                this.Connect(realConnector.GetComponent<ConnectorModel>());
 
 						} else {
 								newState = new GuiState (false, false, current_state.MousePos, new List<GameObject> (), false);
