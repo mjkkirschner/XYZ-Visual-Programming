@@ -142,7 +142,7 @@ public class NodeModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
 
 				var currentPort = newport.GetComponent<PortModel> ();
 				Outputs.Add (currentPort);
-				currentPort.init (this, Outputs.Count, PortModel.porttype.input);
+				currentPort.init (this, Outputs.Count, PortModel.porttype.output);
 
 
 				// registers a listener on the port so it gets updates about the nodes property changes
