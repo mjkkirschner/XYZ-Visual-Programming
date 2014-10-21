@@ -1,78 +1,114 @@
-﻿using System;
-using UnityEngine;
-using System.Linq;
+﻿using UnityEngine;
+using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
-
-
-/// <summary>
-/// class that is responsible for defining how a node looks
-/// this class instantiates gameobjects, geometry, and UI elements into the scene
-/// it's possible that an entire node will be serialzed as a prefab and will not require
-/// running the nodeview to be instantiated
-/// </summary>
-public class NodeView : BaseView{
-
-
-   
-    //variable to help situate projection of mousecoords into worldspace
+using System;
+public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
+{
+    public NodeManager NodeManager;
+    public GuiTest GuiManager;
+    public GuiState GeneratedDragState;
+    public event PropertyChangedEventHandler PropertyChanged;
     private float dist_to_camera;
-
-    private Vector3 location;
-    public Vector3 Location
+    protected virtual void NotifyPropertyChanged(String info)
     {
-        get
+        Debug.Log("sending some property change notification");
+        if (PropertyChanged != null)
         {
-            return this.location;
-
-        }
-
-        set
-        {
-            if (value != this.location)
-            {
-                this.location = value;
-                NotifyPropertyChanged("Location");
-            }
+            PropertyChanged(this, new PropertyChangedEventArgs(info));
         }
     }
-    protected override void Start()
+
+    protected virtual void Start()
     {
+        dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
         // guimanager - like a GUIcontroller
-        var GuiManager = GameObject.FindObjectOfType<GuiTest>();
+        GuiManager = GameObject.FindObjectOfType<GuiTest>();
 
-
+        //setup callbacks for all objects inheriting from base view
+        //todo can probably get rid of the interactable interface
         GuiManager.onMouseDown += new GuiTest.Mouse_Down(this.MyOnMouseDown);
         GuiManager.onMouseUp += new GuiTest.Mouse_Up(this.MyOnMouseUp);
         GuiManager.onMouseDrag += new GuiTest.Mouse_Drag(this.MyOnMouseDrag);
         GuiManager.onGuiRepaint += new GuiTest.GuiRepaint(this.onGuiRepaint);
 
-        Debug.Log("just started NodeView");
-
-        //Inputs = new List<PortModel>();
-       // Outputs = new List<PortModel>();
+        Debug.Log("just started BaseView");
 
     }
 
-   
-
-    public GuiState MyOnMouseUp(GuiState current_state)
+    public static Vector3 ProjectCurrentDrag(float distance)
     {
-        // if we're connecting to this node, then add this node
-        // to the target list of each of the nodes in the selection.
 
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var output = ray.GetPoint(distance);
+        return output;
+    }
+
+    public Vector3 HitPosition(GameObject go_to_test)
+    {
+
+        // return the coordinate in world space where hit occured
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var hit = new RaycastHit();
+        if (Physics.Raycast(ray, out hit))
+        {
+            Debug.Log("Mouse Down Hit " + hit.collider.gameObject);
+            //Debug.DrawRay(ray.origin, ray.direction * 1000000, Color.red, 2.0f);
+            if (hit.collider.gameObject == go_to_test.gameObject)
+            {
+                return hit.point;
+                // I was previoulsy returning hit.barycenter ... triangle?
+            }
+
+        }
+        return go_to_test.transform.position;
+    }
+    /// <summary>
+    /// check if we hit the current node to test, use the state to extract mouseposition
+    /// </summary>
+    /// <returns><c>true</c>, if test was hit, <c>false</c> otherwise.</returns>
+    /// <param name="go_to_test">Node_to_test.</param>
+    /// <param name="state">State.</param>
+    public bool HitTest(GameObject go_to_test, GuiState state)
+    {
+        // raycast from the camera through the mouse and check if we hit this current
+        // node, if we do return true
+
+        Ray ray = Camera.main.ScreenPointToRay(state.MousePos);
+        var hit = new RaycastHit();
+
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            Debug.Log("Mouse Down Hit  " + hit.collider.gameObject);
+            //Debug.DrawRay(ray.origin, ray.direction * 1000000);
+            if (hit.collider.gameObject == go_to_test.gameObject)
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public virtual GuiState MyOnMouseUp(GuiState current_state)
+    {
         Debug.Log("Mouse up event handler called");
         var newState = new GuiState(false, false, current_state.MousePos, new List<GameObject>(), false);
+        //todo figure out how to deal with this situation - adding multiple upstates from all base views...
         //GuiTest.statelist.Add (newState);
         return newState;
 
 
     }
     //handler for dragging node event//
-    public GuiState MyOnMouseDrag(GuiState current_state)
+    public virtual GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
         Debug.Log("drag even handler");
@@ -100,11 +136,11 @@ public class NodeView : BaseView{
 
     }
     //handler for clicks
-    public GuiState MyOnMouseDown(GuiState current_state)
+    public virtual GuiState MyOnMouseDown(GuiState current_state)
     {
         Debug.Log("mouse down event handler called");
         // check if this node was actually clicked on
-        if (HitTest(this, current_state))
+        if (HitTest(this.gameObject, current_state))
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
@@ -152,8 +188,9 @@ public class NodeView : BaseView{
         }
     }
 
-    public void onGuiRepaint()
+    public virtual void onGuiRepaint()
     {	// if we need to repaint the UI then update the property location based on the gameobjects underly transform
+        //todo not sure if this should go here, it seems location should actually be bound to the BaseModel and this logic flows into the view...
         Location = this.gameObject.transform.position;
     }
 
