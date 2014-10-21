@@ -44,15 +44,23 @@ public class NodeManager : MonoBehaviour
 		public GuiState onCanvasDoubleClick (GuiState currentstate)
 		{
 
-				//TODO needs to also subscribe new nodes to all the neccesary events.
-				// Possibly these events should be inherited
+				
 				var mousePos = currentstate.MousePos;
 				// this is basically reduce with a conditional either passing min or next, to find the min closest node
 				// could replace with for loop...
 				var closestNode = nodes.Aggregate ((min, next) => Vector3.Distance (min.transform.position, mousePos) < Vector3.Distance (next.transform.position, mousePos) ? min : next);
 				// get distance to closest node
 				var distToClosest = Vector3.Distance (Camera.main.transform.position, closestNode.transform.position);							
-				var creationPoint = NodeModel.ProjectCurrentDrag (distToClosest);
+				var creationPoint = BaseView.ProjectCurrentDrag (distToClosest);
+
+                //todo creation of a new node or element needs to be redesigned - 
+                // process will be in general - 
+                // create an empty gameobject
+                // add a Model to it
+                // Model will create a view which will also be added to the root GO
+                // the view will call a method on the model to construct UI elements
+                // which will be added to the scene and form some tree structure under the root
+
 				var newnode = GameObject.CreatePrimitive (PrimitiveType.Cube);
 				
 				
