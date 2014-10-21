@@ -8,3 +8,4 @@ Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEditor.xml
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEngine.UI.xml
 Y:\nodeply\obj\Debug\Assembly-CSharp.dll
 Y:\nodeply\obj\Debug\Assembly-CSharp.pdb
+Y:\nodeply\obj\Debug\UnityVS.nodeply.CSharp.csprojResolveAssemblyReference.cache

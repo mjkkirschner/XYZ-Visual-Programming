@@ -267,7 +267,8 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
                     return newState;
                 }
 
-
+                //TODO we must also look if we're about to create a cyclic dependencey, we should return a blank state
+                
                 // if port is already connected then disconnect old port before creating new connector
                 if (this.IsConnected)
                 {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
