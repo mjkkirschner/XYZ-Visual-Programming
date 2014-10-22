@@ -19,24 +19,7 @@ public class NodeView : BaseView{
     //variable to help situate projection of mousecoords into worldspace
     private float dist_to_camera;
 
-    private Vector3 location;
-    public Vector3 Location
-    {
-        get
-        {
-            return this.location;
-
-        }
-
-        set
-        {
-            if (value != this.location)
-            {
-                this.location = value;
-                NotifyPropertyChanged("Location");
-            }
-        }
-    }
+    
     protected override void Start()
     {
         // nodemanager manages nodes - like a workspacemodel
@@ -59,7 +42,7 @@ public class NodeView : BaseView{
 
    
 
-    public GuiState MyOnMouseUp(GuiState current_state)
+    public override GuiState MyOnMouseUp(GuiState current_state)
     {
         // if we're connecting to this node, then add this node
         // to the target list of each of the nodes in the selection.
@@ -72,7 +55,7 @@ public class NodeView : BaseView{
 
     }
     //handler for dragging node event//
-    public GuiState MyOnMouseDrag(GuiState current_state)
+    public override GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
         Debug.Log("drag even handler");
@@ -100,11 +83,11 @@ public class NodeView : BaseView{
 
     }
     //handler for clicks
-    public GuiState MyOnMouseDown(GuiState current_state)
+    public override GuiState MyOnMouseDown(GuiState current_state)
     {
         Debug.Log("mouse down event handler called");
         // check if this node was actually clicked on
-        if (HitTest(this, current_state))
+        if (HitTest(this.gameObject, current_state))
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
@@ -152,9 +135,8 @@ public class NodeView : BaseView{
         }
     }
 
-    public void onGuiRepaint()
-    {	// if we need to repaint the UI then update the property location based on the gameobjects underly transform
-        Location = this.gameObject.transform.position;
+    public override void onGuiRepaint()
+    {	
     }
 
 

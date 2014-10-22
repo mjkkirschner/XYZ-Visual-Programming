@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
-public class NodeModel : MonoBehaviour, INotifyPropertyChanged
+public class NodeModel : BaseModel
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
 
@@ -15,15 +15,7 @@ public class NodeModel : MonoBehaviour, INotifyPropertyChanged
 		public List<PortModel> Inputs { get; set; }
 		public List<PortModel> Outputs { get; set; }
 		
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void NotifyPropertyChanged (String info)
-		{
-				Debug.Log ("sending some property change notification");
-				if (PropertyChanged != null) {
-						PropertyChanged (this, new PropertyChangedEventArgs (info));
-				}
-		}
+		
 
 		protected virtual void Start ()
 		{

@@ -11,10 +11,27 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
 
-  
+    private Vector3 location;
+    public Vector3 Location
+    {
+        get
+        {
+            return this.location;
+
+        }
+
+        set
+        {
+            if (value != this.location)
+            {
+                this.location = value;
+                NotifyPropertyChanged("Location");
+            }
+        }
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
-    private void NotifyPropertyChanged(String info)
+    protected virtual void NotifyPropertyChanged(String info)
     {
         Debug.Log("sending some property change notification");
         if (PropertyChanged != null)
@@ -29,6 +46,14 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
        
 
     }
+
+
+    protected virtual void Update()
+    {
+        Location = this.gameObject.transform.position;
+        
+    }
+
     /// <summary>
     /// this code will either be a method or expression for generating UI elements
     /// it may also point to UI prefab data to load
