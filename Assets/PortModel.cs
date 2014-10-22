@@ -246,6 +246,7 @@ public class PortModel : MonoBehaviour, Iinteractable, INotifyPropertyChanged
         Debug.Log("Mouse up event handler called");
 
         //appears current_state is does not have correct MOUSEPOS... what else is incorrect...
+        // this bug was fixed by not adding all new generated states to the state stream, only those coming from elements being interacted with
         if (HitTest(this.gameObject, current_state))
         {
 

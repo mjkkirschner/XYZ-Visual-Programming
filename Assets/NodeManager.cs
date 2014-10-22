@@ -66,7 +66,7 @@ public class NodeManager : MonoBehaviour
 				
 				newnode.AddComponent<TestNodeType> ().name = "node" + Guid.NewGuid ().ToString ();
 				newnode.transform.position = creationPoint;
-				
+                newnode.AddComponent<NodeView>();
 				
 				nodes.Add (newnode.GetComponent<NodeModel> ());
 				

@@ -191,7 +191,7 @@ public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
     public virtual void onGuiRepaint()
     {	// if we need to repaint the UI then update the property location based on the gameobjects underly transform
         //todo not sure if this should go here, it seems location should actually be bound to the BaseModel and this logic flows into the view...
-        Location = this.gameObject.transform.position;
+        
     }
 
 

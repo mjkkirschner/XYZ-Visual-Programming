@@ -9,7 +9,7 @@ namespace Nodeplay.Nodes
 		{
 	
 				
-				protected override void Start ()
+				 protected override void Start ()
 				{
 						base.Start ();
 						AddOutPutPort ();
@@ -17,10 +17,7 @@ namespace Nodeplay.Nodes
 				
 				}
 	
-				void Update ()
-				{
-		
-				}
+				
 	
 	
 	
