@@ -12,7 +12,9 @@ public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
     public GuiTest GuiManager;
     public GuiState GeneratedDragState;
     public event PropertyChangedEventHandler PropertyChanged;
-    private float dist_to_camera;
+    protected float dist_to_camera;
+    public object Model;
+
     protected virtual void NotifyPropertyChanged(String info)
     {
         Debug.Log("sending some property change notification");
@@ -23,7 +25,11 @@ public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
     }
 
     protected virtual void Start()
-    {
+    {   //TODO contract for hierarchy
+        // we always search the root gameobject of this view for the model,
+        // need to enforce this contract somehow, I think can use requires component.
+        Model = this.gameObject.GetComponent<BaseModel>();
+
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
