@@ -17,7 +17,7 @@ public class NodeModel : BaseModel
 		
 		
 
-		protected virtual void Start ()
+		protected override void Start ()
 		{
 				
 				Debug.Log ("just started NodeModel");
