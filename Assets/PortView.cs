@@ -76,7 +76,8 @@ using System.ComponentModel;
 
                     }
                     //instantiate new connector etc
-
+                    //TODO move this method to portmodel?
+                    // or possibly all instantiation to a manager or WorldModel/Controller
                     var realConnector = new GameObject();
                     realConnector.AddComponent<ConnectorModel>();
                     realConnector.GetComponent<ConnectorModel>().init(current_state.Selection[0].GetComponent<PortModel>(), Model);
