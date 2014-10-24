@@ -125,6 +125,8 @@ public class PortModel :BaseModel
         {
             NickName = Owner.name;
             NickName = this.NickName + PortType.ToString() + Index.ToString();
+            // create the view here
+            this.gameObject.AddComponent<PortView>();
         }
 
     }

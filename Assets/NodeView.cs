@@ -12,7 +12,7 @@ using System.ComponentModel;
 /// it's possible that an entire node will be serialzed as a prefab and will not require
 /// running the nodeview to be instantiated
 /// </summary>
-public class NodeView : BaseView{
+public class NodeView : BaseView<NodeModel>{
 
 
    

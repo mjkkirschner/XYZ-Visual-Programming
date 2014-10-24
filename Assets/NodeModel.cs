@@ -71,12 +71,15 @@ public class NodeModel : BaseModel
 				newport.transform.Translate (0.0f, 0.0f, -1.2f);
 				newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
 				newport.AddComponent<PortModel> ();
-		
+		        
+                //add the current port to the list of inputs on this node
 				var currentPort = newport.GetComponent<PortModel> ();
 				Inputs.Add (currentPort);
+                // initialze the port
 				currentPort.init (this, Outputs.Count, PortModel.porttype.input);
-
-				
+                
+				//hookup the ports listener to the nodes propertychanged event, and hook
+                // handlers on the node back from the ports connection events
 				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;	
 				newport.GetComponent<PortModel>().PortConnected += PortConnected;
 				newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
