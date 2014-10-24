@@ -29,8 +29,12 @@ public class PortModel :BaseModel
 
     public event PortConnectedHandler PortConnected;
     public event PortConnectedHandler PortDisconnected;
-    
 
+     void OnEnable()
+    {
+        // create the view here
+        this.gameObject.AddComponent<PortView>();
+    }
     
     protected virtual void OnPortConnected(EventArgs e)
     {
@@ -125,8 +129,7 @@ public class PortModel :BaseModel
         {
             NickName = Owner.name;
             NickName = this.NickName + PortType.ToString() + Index.ToString();
-            // create the view here
-            this.gameObject.AddComponent<PortView>();
+
         }
 
     }
