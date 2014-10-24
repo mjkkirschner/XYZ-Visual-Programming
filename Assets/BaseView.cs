@@ -6,14 +6,14 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
-public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
+public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged where M:BaseModel
 {
     public NodeManager NodeManager;
     public GuiTest GuiManager;
     public GuiState GeneratedDragState;
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
-    public object Model;
+    public M Model;
 
     protected virtual void NotifyPropertyChanged(String info)
     {
@@ -28,7 +28,7 @@ public class BaseView : MonoBehaviour, Iinteractable, INotifyPropertyChanged
     {   //TODO contract for hierarchy
         // we always search the root gameobject of this view for the model,
         // need to enforce this contract somehow, I think can use requires component.
-        Model = this.gameObject.GetComponent<BaseModel>();
+        Model = this.gameObject.GetComponent<M>();
 
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel

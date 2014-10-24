@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 
 
-    class PortView:BaseView
+    class PortView:BaseView<PortModel>
     {
        
 
@@ -50,7 +50,7 @@ using System.ComponentModel;
                 if ((current_state.Connecting))
                 {
                     // TODO REFACTOR THIS AS A METHOD TO KEEP MOUSEUP CLEAN
-                    Debug.Log("I" + ((PortModel)Model).NickName + " was just MouseUpedOn");
+                    Debug.Log("I" + Model.NickName + " was just MouseUpedOn");
 
                     newState = new GuiState(true, false, current_state.MousePos, new List<GameObject>(), false);
                     var startport = current_state.Selection[0].GetComponent<PortModel>();
@@ -58,7 +58,7 @@ using System.ComponentModel;
                     // and if the port we are coming from is an input or an output
                     // Outputs - > Inputs
                     // Inputs - > Outputs
-                    if (startport.PortType == this.PortType)
+                    if (startport.PortType == Model.PortType)
                     {
                         newState = new GuiState(false, false, current_state.MousePos, new List<GameObject>(), false);
                         GuiTest.statelist.Add(newState);
@@ -68,9 +68,9 @@ using System.ComponentModel;
                     //TODO we must also look if we're about to create a cyclic dependencey, we should return a blank state
 
                     // if port is already connected then disconnect old port before creating new connector
-                    if (this.IsConnected)
+                    if (Model.IsConnected)
                     {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
-                        this.Disconnect(connectors[0]);
+                        Model.Disconnect(Model.connectors[0]);
                         //TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
                         //probably take care of sending this event chains
 
@@ -79,8 +79,8 @@ using System.ComponentModel;
 
                     var realConnector = new GameObject();
                     realConnector.AddComponent<ConnectorModel>();
-                    realConnector.GetComponent<ConnectorModel>().init(current_state.Selection[0].GetComponent<PortModel>(), this);
-                    this.Connect(realConnector.GetComponent<ConnectorModel>());
+                    realConnector.GetComponent<ConnectorModel>().init(current_state.Selection[0].GetComponent<PortModel>(), Model);
+                    Model.Connect(realConnector.GetComponent<ConnectorModel>());
 
                     //TODO the other port also needs a connect signal
                     current_state.Selection[0].GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());

@@ -51,7 +51,7 @@ public class NodeManager : MonoBehaviour
 				var closestNode = nodes.Aggregate ((min, next) => Vector3.Distance (min.transform.position, mousePos) < Vector3.Distance (next.transform.position, mousePos) ? min : next);
 				// get distance to closest node
 				var distToClosest = Vector3.Distance (Camera.main.transform.position, closestNode.transform.position);							
-				var creationPoint = BaseView.ProjectCurrentDrag (distToClosest);
+				var creationPoint = BaseView<NodeModel>.ProjectCurrentDrag (distToClosest);
 
                 //todo creation of a new node or element needs to be redesigned - 
                 // process will be in general - 
