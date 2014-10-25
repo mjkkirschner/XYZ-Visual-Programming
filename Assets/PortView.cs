@@ -33,7 +33,7 @@ using System.ComponentModel;
             //destruction of temp connector
             if (tempconnector != null)
             {
-                DestroyImmediate(tempconnector);
+                Destroy(tempconnector);
             }
 
             //if we mouseUp over a port we need to check if we were connecting/dragging,
@@ -78,7 +78,7 @@ using System.ComponentModel;
                     //instantiate new connector etc
                     //TODO move this method to portmodel?
                     // or possibly all instantiation to a manager or WorldModel/Controller
-                    var realConnector = new GameObject();
+                    var realConnector = new GameObject("Connector");
                     realConnector.AddComponent<ConnectorModel>();
                     realConnector.GetComponent<ConnectorModel>().init(current_state.Selection[0].GetComponent<PortModel>(), Model);
                     Model.Connect(realConnector.GetComponent<ConnectorModel>());
@@ -122,7 +122,7 @@ using System.ComponentModel;
 
                 if (tempconnector != null)
                 {
-                    DestroyImmediate(tempconnector);
+                    Destroy(tempconnector);
                 }
                 // since this is a port, we need to instantiate a new 
                 //ConnectorView ( this is a temporary connector that we drag around in the UI)

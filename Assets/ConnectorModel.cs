@@ -17,7 +17,7 @@ public class ConnectorModel : BaseModel
 		void OnEnable ()
 		{
 				//create a connector view
-				View = new ConnectorView ();
+            View = this.gameObject.AddComponent<ConnectorView>();
 				View.Model = this;
 				
 
@@ -29,7 +29,7 @@ public class ConnectorModel : BaseModel
 			
 		}
 	
-		void Update ()
+		protected override void Update ()
 		{
 		
 		}

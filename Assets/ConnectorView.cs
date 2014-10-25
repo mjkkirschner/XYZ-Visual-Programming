@@ -19,7 +19,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 
 		public PortModel StartPort{ get; set; }
 		public PortModel EndPort{ get; set; }
-		public ConnectorModel Model{ get; set; }	
+        
 		
 
 		public List<GameObject> TemporaryGeometry;
@@ -32,14 +32,19 @@ public class ConnectorView:BaseView<ConnectorModel>
 		}
 
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             if (TemporaryGeometry != null)
             {
                 TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
             }
-            Model.PStart.PropertyChanged -= HandlePortChanges;
-            Model.PEnd.PropertyChanged -= HandlePortChanges;
+            if (Model != null)
+            {
+                Model.PStart.PropertyChanged -= HandlePortChanges;
+                Model.PEnd.PropertyChanged -= HandlePortChanges;
+            }
         }
 
 		/*public void Destroy(){
@@ -75,6 +80,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 						GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
 						y.transform.localScale = new Vector3 (.2f, .2f, .2f);
+                        //GameObject.DestroyImmediate(y.collider);
 						return y;}).ToList ();
 		
 				TemporaryGeometry = spheres;

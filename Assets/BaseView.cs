@@ -47,6 +47,15 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
     }
 
+    protected virtual void OnDestroy()
+    {
+        GuiManager.onMouseDown -= (this.MyOnMouseDown);
+        GuiManager.onMouseUp -= (this.MyOnMouseUp);
+        GuiManager.onMouseDrag -= (this.MyOnMouseDrag);
+        GuiManager.onGuiRepaint -= (this.onGuiRepaint);
+        Debug.Log("just turned off BaseView and disconnected gui handlers");
+    }
+
     public static Vector3 ProjectCurrentDrag(float distance)
     {
 
@@ -117,8 +126,8 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     public virtual GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
-        Debug.Log("drag even handler");
-
+        Debug.Log("drag event handler");
+        
         if (current_state.Selection.Contains(this.gameObject))
         {				// If doing a mouse drag with this component selected...
             // since we are in 3d space now, we need to conver this to a vector3...
