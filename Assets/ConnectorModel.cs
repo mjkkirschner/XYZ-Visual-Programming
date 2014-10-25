@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// object representing an input port.
 /// </summary>
-public class ConnectorModel : MonoBehaviour
+public class ConnectorModel : BaseModel
 {
 		public PortModel PStart { get; set; }
 		public PortModel PEnd { get; set; }
@@ -35,7 +35,7 @@ public class ConnectorModel : MonoBehaviour
 		}
 		
 		void OnDestroy(){
-		View.Destroy();
+		//View.Destroy();
 	// cleanup the view... TODO MOVE THIS LOGIC INTO A HANDELR THAT GETS CALLED ON DISCONNECT....s
 	}
 

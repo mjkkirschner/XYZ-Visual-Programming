@@ -16,7 +16,7 @@ using System.ComponentModel;
         /// <summary>
         /// a tempconnector that is drawn while dragging.
         /// </summary>
-        private ConnectorView tempconnector;
+        private GameObject tempconnector;
 
 
         //event handlers
@@ -33,7 +33,7 @@ using System.ComponentModel;
             //destruction of temp connector
             if (tempconnector != null)
             {
-                tempconnector.TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
+                DestroyImmediate(tempconnector);
             }
 
             //if we mouseUp over a port we need to check if we were connecting/dragging,
@@ -122,12 +122,14 @@ using System.ComponentModel;
 
                 if (tempconnector != null)
                 {
-                    tempconnector.TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
+                    DestroyImmediate(tempconnector);
                 }
                 // since this is a port, we need to instantiate a new 
                 //ConnectorView ( this is a temporary connector that we drag around in the UI)
 
-                tempconnector = new ConnectorView(this.gameObject.transform.position, to_point);
+                tempconnector = new GameObject();
+                tempconnector.AddComponent<ConnectorView>();
+                tempconnector.GetComponent<ConnectorView>().init(this.gameObject.transform.position, to_point);
 
                 // move object to new coordinate
                 newState = new GuiState(true, true, Input.mousePosition, current_state.Selection, false);

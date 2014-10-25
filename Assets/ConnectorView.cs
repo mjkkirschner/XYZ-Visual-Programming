@@ -13,7 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-public class ConnectorView
+public class ConnectorView:BaseView<ConnectorModel>
 {	
 
 
@@ -24,20 +24,25 @@ public class ConnectorView
 
 		public List<GameObject> TemporaryGeometry;
 		
-		public ConnectorView (Vector3 startpoint, Vector3 endpoint)
+		public void init (Vector3 startpoint, Vector3 endpoint)
 		{
 				redraw (startpoint, endpoint);
+                //TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
 			
 		}
-		
-		public ConnectorView ()
-		{
-
-		
-		}
 
 
-		public void Destroy(){
+        void OnDestroy()
+        {
+            if (TemporaryGeometry != null)
+            {
+                TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
+            }
+            Model.PStart.PropertyChanged -= HandlePortChanges;
+            Model.PEnd.PropertyChanged -= HandlePortChanges;
+        }
+
+		/*public void Destroy(){
 		if (TemporaryGeometry != null) {
 			TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
 		}
@@ -45,9 +50,9 @@ public class ConnectorView
 		Model.PStart.PropertyChanged -= HandlePortChanges;
 		Model.PEnd.PropertyChanged -= HandlePortChanges;
 		//TODO All Events
-
+    
 	}
-
+    */
 		public List<GameObject> redraw ()
 		{
 				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
