@@ -10,7 +10,7 @@ using System;
 public class BaseModel : MonoBehaviour, INotifyPropertyChanged
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
-
+    
     private Vector3 location;
     public Vector3 Location
     {
@@ -43,7 +43,6 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
     protected virtual void Start()
     {
 
-       
 
     }
 

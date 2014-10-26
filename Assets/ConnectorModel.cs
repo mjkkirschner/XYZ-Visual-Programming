@@ -23,12 +23,7 @@ public class ConnectorModel : BaseModel
 
 		}
 
-		// Use this for initialization
-		void Start ()
-		{
-			
-		}
-	
+		
 		protected override void Update ()
 		{
 		
