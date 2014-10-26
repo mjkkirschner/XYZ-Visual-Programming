@@ -33,7 +33,8 @@ using System.ComponentModel;
             //destruction of temp connector
             if (tempconnector != null)
             {
-                Destroy(tempconnector);
+                DestroyImmediate(tempconnector);
+                tempconnector = null;
             }
 
             //if we mouseUp over a port we need to check if we were connecting/dragging,
@@ -110,7 +111,7 @@ using System.ComponentModel;
         public override GuiState MyOnMouseDrag(GuiState current_state)
         {
             GuiState newState = current_state;
-            Debug.Log("drag even handler, on a port");
+            Debug.Log("drag event handler, on a port");
 
             if (current_state.Selection.Contains(this.gameObject))
             {				// If doing a mouse drag with this component selected...
@@ -122,12 +123,13 @@ using System.ComponentModel;
 
                 if (tempconnector != null)
                 {
-                    Destroy(tempconnector);
+                    DestroyImmediate(tempconnector);
+                    tempconnector = null;
                 }
                 // since this is a port, we need to instantiate a new 
                 //ConnectorView ( this is a temporary connector that we drag around in the UI)
 
-                tempconnector = new GameObject();
+                tempconnector = new GameObject("ConnectorViewTemp");
                 tempconnector.AddComponent<ConnectorView>();
                 tempconnector.GetComponent<ConnectorView>().init(this.gameObject.transform.position, to_point);
 

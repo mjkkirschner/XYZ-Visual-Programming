@@ -8,6 +8,9 @@ using System.ComponentModel;
 using System;
 public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged where M:BaseModel
 {
+    //because views maybe created or destroyed multiple times per frame,
+    //they may be destroyed before start finishes running
+    protected Boolean started = false;
     public NodeManager NodeManager;
     public GuiTest GuiManager;
     public GuiState GeneratedDragState;
@@ -44,16 +47,22 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         GuiManager.onGuiRepaint += new GuiTest.GuiRepaint(this.onGuiRepaint);
 
         Debug.Log("just started BaseView");
-
+        started = true;
     }
 
     protected virtual void OnDestroy()
     {
+        if (!started)
+        {
+            Start();
+        }
+
         GuiManager.onMouseDown -= (this.MyOnMouseDown);
         GuiManager.onMouseUp -= (this.MyOnMouseUp);
         GuiManager.onMouseDrag -= (this.MyOnMouseDrag);
         GuiManager.onGuiRepaint -= (this.onGuiRepaint);
         Debug.Log("just turned off BaseView and disconnected gui handlers");
+
     }
 
     public static Vector3 ProjectCurrentDrag(float distance)

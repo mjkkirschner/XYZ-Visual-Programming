@@ -14,20 +14,17 @@ using System.Collections.Generic;
 
 
 public class ConnectorView:BaseView<ConnectorModel>
-{	
+{
 
-
+       
 		public PortModel StartPort{ get; set; }
 		public PortModel EndPort{ get; set; }
-        
-		
-
 		public List<GameObject> TemporaryGeometry;
 		
 		public void init (Vector3 startpoint, Vector3 endpoint)
 		{
 				redraw (startpoint, endpoint);
-                //TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
+                TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
 			
 		}
 
@@ -35,16 +32,16 @@ public class ConnectorView:BaseView<ConnectorModel>
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            if (TemporaryGeometry != null)
-            {
-                TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
-            }
-            if (Model != null)
-            {
-                Model.PStart.PropertyChanged -= HandlePortChanges;
-                Model.PEnd.PropertyChanged -= HandlePortChanges;
-            }
+                if (TemporaryGeometry != null)
+                {
+                    TemporaryGeometry.ForEach(x => UnityEngine.GameObject.DestroyImmediate(x));
+                }
+                if (Model != null)
+                {
+                    Model.PStart.PropertyChanged -= HandlePortChanges;
+                    Model.PEnd.PropertyChanged -= HandlePortChanges;
+                }
+            
         }
 
 		/*public void Destroy(){
@@ -63,7 +60,25 @@ public class ConnectorView:BaseView<ConnectorModel>
 				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
 				
 		}
+        public override GuiState MyOnMouseUp(GuiState current_state)
+        {
+            return null;
+        }
 
+        public override GuiState MyOnMouseDown(GuiState current_state)
+        {
+            return null;
+        }
+
+        public override void onGuiRepaint()
+        {
+             
+        }
+
+        public override GuiState MyOnMouseDrag(GuiState current_state)
+        {
+            return null;
+        }
 
 		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint)
 		{
@@ -80,7 +95,6 @@ public class ConnectorView:BaseView<ConnectorModel>
 						GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
 						y.transform.localScale = new Vector3 (.2f, .2f, .2f);
-                        //GameObject.DestroyImmediate(y.collider);
 						return y;}).ToList ();
 		
 				TemporaryGeometry = spheres;

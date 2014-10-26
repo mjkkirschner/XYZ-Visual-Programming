@@ -22,22 +22,9 @@ public class NodeView : BaseView<NodeModel>{
     
     protected override void Start()
     {
-        // nodemanager manages nodes - like a workspacemodel
-        NodeManager = GameObject.FindObjectOfType<NodeManager>();
-        // guimanager - like a GUIcontroller
-        var GuiManager = GameObject.FindObjectOfType<GuiTest>();
-
-
-        GuiManager.onMouseDown += new GuiTest.Mouse_Down(this.MyOnMouseDown);
-        GuiManager.onMouseUp += new GuiTest.Mouse_Up(this.MyOnMouseUp);
-        GuiManager.onMouseDrag += new GuiTest.Mouse_Drag(this.MyOnMouseDrag);
-        GuiManager.onGuiRepaint += new GuiTest.GuiRepaint(this.onGuiRepaint);
-
+        base.Start();
         Debug.Log("just started NodeView");
-
-        //Inputs = new List<PortModel>();
-       // Outputs = new List<PortModel>();
-
+      
     }
 
    
@@ -58,7 +45,7 @@ public class NodeView : BaseView<NodeModel>{
     public override GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
-        Debug.Log("drag even handler");
+        Debug.Log("drag even handler on node view");
 
         if (current_state.Selection.Contains(this.gameObject))
         {				// If doing a mouse drag with this component selected...
