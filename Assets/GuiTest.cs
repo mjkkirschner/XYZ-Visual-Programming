@@ -109,30 +109,41 @@ public class GuiTest:MonoBehaviour
 								currentSel = CurrentSelection ();
 								state = new GuiState (false, false, Event.current.mousePosition, currentSel, true);
 								statelist.Add (state);
-								
-
-								if (onMouseDown != null) {
-										var results = new List<GuiState> ();
-										// this code gets all the results from all the onMouseDownFunctions,
-										// if they all return null, instead of dragstates then we know we clicked nothing... 
-										// this is bad. :(
-										Debug.Log ("calling doubleclick function");
-										foreach (Mouse_Down d in onMouseDown.GetInvocationList()) {
-												results.Add (d (state));
-
-										}
-										if (results.All (element => element == null)) {
-												Debug.Log ("just double clicked to the canvas, all nodes returned null");
-												Debug.Log ("should create new node");
-												// Send a different event
-												// One that the nodemanager subscribes to
-												if (onCanvasDoubleClick != null) {
-														onCanvasDoubleClick (state);
-												}
-										}
-								}
 
 
+                                if (onMouseDown != null)
+                                {
+                                    var results = new List<GuiState>();
+                                    // this code gets all the results from all the onMouseDownFunctions,
+                                    // if they all return null, instead of dragstates then we know we clicked nothing... 
+                                    // this is bad. :(
+                                    Debug.Log("calling doubleclick function");
+                                    foreach (Mouse_Down d in onMouseDown.GetInvocationList())
+                                    {
+                                        results.Add(d(state));
+
+                                    }
+                                    if (results.All(element => element == null))
+                                    {
+                                        Debug.Log("just double clicked to the canvas, all nodes returned null");
+                                        Debug.Log("should create new node");
+                                        // Send a different event
+                                        // One that the nodemanager subscribes to
+                                        if (onCanvasDoubleClick != null)
+                                        {
+                                            onCanvasDoubleClick(state);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.Log("calling doubleclick function");
+                                    //there were no nodes, so onMouseDown was null, but we still want to create a node
+                                    if (onCanvasDoubleClick != null)
+                                    {
+                                        onCanvasDoubleClick(state);
+                                    }
+                                }
 						}
 
 						Event.current.Use ();
