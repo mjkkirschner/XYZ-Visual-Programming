@@ -26,37 +26,6 @@ public class NodeModel : BaseModel
 				Outputs = new List<PortModel> ();
 
 		}
-
-		// node should not know about targets or connecting etc, this is for ports to
-		// implement
-
-		/*
-		public ReadOnlyCollection<NodeSimple> Targets {
-				get {
-						return targets.AsReadOnly ();
-				}
-		}
-
-
-
-		public void removeTarget (NodeSimple target)
-		{
-				if (targets.Contains (target)) {
-						targets.Remove (target);
-				}
-
-				return;
-		}
-
-		public void ConnectTo (NodeSimple target)
-		{		
-				if (targets.Contains (target) || target == this) {
-						return;
-				}
-
-				targets.Add (target);
-		}
-*/
 		
 
 
@@ -122,7 +91,27 @@ public class NodeModel : BaseModel
 		Debug.Log("I just got a port disconnected event");
 	}
 
+    public override GameObject BuildSceneElements()
+    {
+        //unsure on this design, for now we just attached the loaded or new geometry as the child of the
+        // root gameobject
 
+        //TODO broken, this implementation does not work for two reasons
+        //1. the nodeview/nodemodel are looking for mouse events to be forwarded only to
+        //their gameobjects directly, not any children, so we wont get any events on the children nodes
+        //possibly something to fix, we may want to forward all events down the chain of children until they get used
+        //2. the prefab needs to be instantiated at the location of the root GO or moved to the creation point.
+        
+        // the base node implementation is to load the basenodeview prefab and set it as child of the root go
+        
+        GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
+        UI.transform.localPosition = this.gameObject.transform.position;
+        UI.transform.parent = this.gameObject.transform;
+        return UI;
+     
+
+
+    }
 		
 
 }

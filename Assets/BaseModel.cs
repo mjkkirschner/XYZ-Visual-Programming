@@ -42,8 +42,7 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
 
     protected virtual void Start()
     {
-
-
+        
     }
 
 
@@ -59,10 +58,10 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
     /// the viewmodel will execute this code, it is stored here to avoid needing custom views
     /// for each element type with similar interaction logic
     /// </summary>
-    protected virtual void BuildSceneElements()
+    public virtual GameObject BuildSceneElements()
     {
 
-
+        return null;
 
     }
 

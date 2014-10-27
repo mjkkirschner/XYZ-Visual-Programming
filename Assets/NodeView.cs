@@ -18,13 +18,14 @@ public class NodeView : BaseView<NodeModel>{
    
     //variable to help situate projection of mousecoords into worldspace
     private float dist_to_camera;
-
+    private GameObject UI;
     
     protected override void Start()
     {
         base.Start();
+        UI = Model.BuildSceneElements();
         Debug.Log("just started NodeView");
-      
+        
     }
 
    
@@ -46,8 +47,8 @@ public class NodeView : BaseView<NodeModel>{
     {
         GuiState newState = current_state;
         Debug.Log("drag even handler on node view");
-
-        if (current_state.Selection.Contains(this.gameObject))
+        //TODO change this selection handler to filter events from gameobjects that are children of this object or tagged UI
+        if (current_state.Selection.Contains(this.gameObject) || current_state.Selection.Contains(UI))
         {				// If doing a mouse drag with this component selected...
             // since we are in 3d space now, we need to conver this to a vector3...
             // for now just use the z coordinate of the first object
@@ -74,7 +75,7 @@ public class NodeView : BaseView<NodeModel>{
     {
         Debug.Log("mouse down event handler called");
         // check if this node was actually clicked on
-        if (HitTest(this.gameObject, current_state))
+        if (HitTest(this.gameObject, current_state) || HitTest(UI,current_state))
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);

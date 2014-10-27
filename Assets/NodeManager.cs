@@ -15,7 +15,7 @@ public class NodeManager : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
-		
+            
 	
 		}
 	
@@ -43,16 +43,20 @@ public class NodeManager : MonoBehaviour
 
 		public GuiState onCanvasDoubleClick (GuiState currentstate)
 		{
-
-				
-				var mousePos = currentstate.MousePos;
-				// this is basically reduce with a conditional either passing min or next, to find the min closest node
-				// could replace with for loop...
-				var closestNode = nodes.Aggregate ((min, next) => Vector3.Distance (min.transform.position, mousePos) < Vector3.Distance (next.transform.position, mousePos) ? min : next);
-				// get distance to closest node
-				var distToClosest = Vector3.Distance (Camera.main.transform.position, closestNode.transform.position);							
-				var creationPoint = BaseView<NodeModel>.ProjectCurrentDrag (distToClosest);
-
+            var creationPoint = Vector3.zero;
+            var mousePos = currentstate.MousePos;
+            if (nodes.Count > 0)
+            {
+                Debug.Log(nodes);
+                
+                // this is basically reduce with a conditional either passing min or next, to find the min closest node
+                // could replace with for loop...
+                var closestNode = nodes.Aggregate((min, next) => Vector3.Distance(min.transform.position, mousePos) < Vector3.Distance(next.transform.position, mousePos) ? min : next);
+                // get distance to closest node
+                var distToClosest = Vector3.Distance(Camera.main.transform.position, closestNode.transform.position);
+                 creationPoint = BaseView<NodeModel>.ProjectCurrentDrag(distToClosest);
+            }
+           
                 //todo creation of a new node or element needs to be redesigned - 
                 // process will be in general - 
                 // create an empty gameobject
@@ -61,13 +65,13 @@ public class NodeManager : MonoBehaviour
                 // the view will call a method on the model to construct UI elements
                 // which will be added to the scene and form some tree structure under the root
 
-				var newnode = GameObject.CreatePrimitive (PrimitiveType.Cube);
-				
-				
+                var newnode = new GameObject();
 				newnode.AddComponent<TestNodeType> ().name = "node" + Guid.NewGuid ().ToString ();
 				newnode.transform.position = creationPoint;
+                //add a nodeview and a box collider to the root go to intercept events
                 newnode.AddComponent<NodeView>();
-				
+                //newnode.AddComponent<BoxCollider>();
+
 				nodes.Add (newnode.GetComponent<NodeModel> ());
 				
 				Event.current.Use ();
