@@ -26,8 +26,55 @@ public class NodeModel : BaseModel
 				Outputs = new List<PortModel> ();
 
 		}
-		
+        //TODO this method should be on portview
+        public GameObject PositionNewPort(GameObject port)
+        {
+            //position the port at the center of the gameobject
+            port.transform.position = this.gameObject.transform.position;
+            //bb of go
+            var boundingBox = port.renderer.bounds;
+            port.transform.parent = this.gameObject.transform;
+            
+            // move the port from the center to back or front depending on port type
+            
+            float direction;
+            
+            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input){
+                direction = -1f;
+            }
+            else{
+                direction = 1f;
+            }
 
+            port.transform.Translate(0,0,boundingBox.size.z*-1f);
+            port.transform.localScale = new Vector3 (.33f,.33f,.33f);
+            
+            // now we need to move the port in relation up or down to all other ports,
+            // and possibly adjust other ports as well
+
+            List<PortModel> ports;
+
+            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
+            {
+                ports = Inputs;
+            }
+            else
+            {
+                ports = Outputs;
+            }
+
+            
+            foreach (var currentport in ports)
+            {   var index = ports.IndexOf(currentport);
+            Debug.Log(boundingBox.size.y);
+            Debug.Log(index);
+            Debug.Log(ports.Count);
+            currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
+                (boundingBox.size.y*1.5f) * ((float)index/(float)ports.Count),
+            currentport.gameObject.transform.localPosition.z);
+            }
+            return port;
+        }
 
 		public void AddInputPort ()
 		{
@@ -35,23 +82,27 @@ public class NodeModel : BaseModel
 				// add a portmodel component to that sphere
 				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 				//need a position method that arranges the port depending on how many exist in the outs
-				newport.transform.position = this.gameObject.transform.position;
-				newport.transform.parent = this.gameObject.transform;
-				newport.transform.Translate (0.0f, 0.0f, -1.2f);
-				newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
+			//	newport.transform.position = this.gameObject.transform.position;
+			//	newport.transform.parent = this.gameObject.transform;
+			//	newport.transform.Translate (0.0f, 0.0f, -1.2f);
+			//	newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
 				newport.AddComponent<PortModel> ();
-		        
-                //add the current port to the list of inputs on this node
-				var currentPort = newport.GetComponent<PortModel> ();
-				Inputs.Add (currentPort);
                 // initialze the port
-				currentPort.init (this, Outputs.Count, PortModel.porttype.input);
-                
-				//hookup the ports listener to the nodes propertychanged event, and hook
+                newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.input);
+
+                //hookup the ports listener to the nodes propertychanged event, and hook
                 // handlers on the node back from the ports connection events
-				this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;	
-				newport.GetComponent<PortModel>().PortConnected += PortConnected;
-				newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
+                this.PropertyChanged += newport.GetComponent<PortModel>().NodePropertyChangeEventHandler;
+                newport.GetComponent<PortModel>().PortConnected += PortConnected;
+                newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
+                Inputs.Add(newport.GetComponent<PortModel>());    
+
+                PositionNewPort(newport);   
+                //add the current port to the list of inputs on this node
+				
+				
+                
+				
 
 		}
 		/// <summary>

@@ -14,6 +14,7 @@ namespace Nodeplay.Nodes
 						base.Start ();
 						AddOutPutPort ();
 						AddInputPort ();
+                        AddInputPort();
 				
 				}
 	
