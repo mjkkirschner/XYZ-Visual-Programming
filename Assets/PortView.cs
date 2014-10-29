@@ -47,7 +47,7 @@ using System.ComponentModel;
             // this bug was fixed by not adding all new generated states to the state stream, only those coming from elements being interacted with
             if (HitTest(this.gameObject, current_state))
             {
-
+                //if we were connecting then we can create a connector model
                 if ((current_state.Connecting))
                 {
                     // TODO REFACTOR THIS AS A METHOD TO KEEP MOUSEUP CLEAN
@@ -108,13 +108,16 @@ using System.ComponentModel;
         }
 
         //handler for dragging node event//
+        //TODO there is a bug when dragging from an input to an output which destroys the other connectors from that output
+        //fixes might include restricting connecting creation only if the we drag on outputs, and mouseup on inputs
+        // or investingating why this is not working further, connector model is being destroyed but still refereneced
         public override GuiState MyOnMouseDrag(GuiState current_state)
         {
             GuiState newState = current_state;
             Debug.Log("drag event handler, on a port");
-
-            if (current_state.Selection.Contains(this.gameObject))
-            {				// If doing a mouse drag with this component selected...
+            //TODO need to enable dragging of old connections away and disconnection of connectors
+            if (current_state.Selection.Contains(this.gameObject) && this.GetComponent<PortModel>().PortType == PortModel.porttype.output)
+            {   // If doing a mouse drag with this component selected...
                 // since we are in 3d space now, we need to conver this to a vector3...
                 // for now just use the z coordinate of the first object
                 // project from camera through mouse currently and use same distance
