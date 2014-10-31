@@ -14,14 +14,14 @@ public class NodeModel : BaseModel
 		// from ports, will need to add events on ports
 		public List<PortModel> Inputs { get; set; }
 		public List<PortModel> Outputs { get; set; }
-		
+        public object StoredValue { get; set; }
 		
 
 		protected override void Start ()
 		{
 				
 				Debug.Log ("just started NodeModel");
-
+                StoredValue = null;
 				Inputs = new List<PortModel> ();
 				Outputs = new List<PortModel> ();
 
@@ -163,6 +163,13 @@ public class NodeModel : BaseModel
 
 
     }
-		
 
+
+    //this points to evaluation engine or some delegate
+    internal void Evaluate()
+    {
+        throw new NotImplementedException();
+    }
+
+    
 }
