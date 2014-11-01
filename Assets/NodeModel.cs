@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
+using Nodeplay.Engine;
+using System.Linq;
 public class NodeModel : BaseModel
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
@@ -14,81 +16,50 @@ public class NodeModel : BaseModel
 		// from ports, will need to add events on ports
 		public List<PortModel> Inputs { get; set; }
 		public List<PortModel> Outputs { get; set; }
-        public object StoredValue { get; set; }
-		
+        private System.Object storedvalue;
+        public System.Object StoredValue
+        {
+            get
+            {
+                return this.storedvalue;
+
+            }
+
+            set
+            {
+                if (value != storedvalue)
+                {
+                    this.storedvalue = value;
+                    NotifyPropertyChanged("StoredValue");
+                }
+            }
+        }
+    //TODO rename rethink
+        public string Code { get; set; }    
+    
+		public MonoBehaviour Evaluator;
 
 		protected override void Start ()
 		{
 				
 				Debug.Log ("just started NodeModel");
+                this.gameObject.AddComponent<NodeView>();
                 StoredValue = null;
 				Inputs = new List<PortModel> ();
 				Outputs = new List<PortModel> ();
-
+               
 		}
-        //TODO this method should be on portview
-        public GameObject PositionNewPort(GameObject port)
-        {
-            //position the port at the center of the gameobject
-            port.transform.position = this.gameObject.transform.position;
-            //bb of go
-            var boundingBox = port.renderer.bounds;
-            port.transform.parent = this.gameObject.transform;
-            
-            // move the port from the center to back or front depending on port type
-            
-            float direction;
-            
-            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input){
-                direction = -1f;
-            }
-            else{
-                direction = 1f;
-            }
+        
 
-            port.transform.Translate(0,0,boundingBox.size.z*-1f);
-            port.transform.localScale = new Vector3 (.33f,.33f,.33f);
-            
-            // now we need to move the port in relation up or down to all other ports,
-            // and possibly adjust other ports as well
-
-            List<PortModel> ports;
-
-            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
-            {
-                ports = Inputs;
-            }
-            else
-            {
-                ports = Outputs;
-            }
-
-            
-            foreach (var currentport in ports)
-            {   var index = ports.IndexOf(currentport);
-            Debug.Log(boundingBox.size.y);
-            Debug.Log(index);
-            Debug.Log(ports.Count);
-            currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
-                (boundingBox.size.y*1.5f) * ((float)index/(float)ports.Count),
-            currentport.gameObject.transform.localPosition.z);
-            }
-            return port;
-        }
-
-		public void AddInputPort ()
+		public void AddInputPort (string name = null)
 		{
 				// for now lets just add a child sphere - 
 				// add a portmodel component to that sphere
 				var newport = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-				//need a position method that arranges the port depending on how many exist in the outs
-			//	newport.transform.position = this.gameObject.transform.position;
-			//	newport.transform.parent = this.gameObject.transform;
-			//	newport.transform.Translate (0.0f, 0.0f, -1.2f);
-			//	newport.transform.localScale = new Vector3 (.33f, .33f, .33f);
+				
 				newport.AddComponent<PortModel> ();
                 // initialze the port
-                newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.input);
+                newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.input, name);
 
                 //hookup the ports listener to the nodes propertychanged event, and hook
                 // handlers on the node back from the ports connection events
@@ -97,7 +68,7 @@ public class NodeModel : BaseModel
                 newport.GetComponent<PortModel>().PortDisconnected += PortDisconnected;
                 Inputs.Add(newport.GetComponent<PortModel>());    
 
-                PositionNewPort(newport);   
+                //PositionNewPort(newport);   
                 //add the current port to the list of inputs on this node
 				
 				
@@ -163,12 +134,32 @@ public class NodeModel : BaseModel
 
 
     }
+    /// <summary>
+    /// method that gathers port names and evaluated values from connected nodes
+    /// </summary>
+    /// <returns></returns>
+    private List<Tuple<string, System.Object>> gatherInputPortData()
+    {
+        var output = new List<Tuple<string, System.Object>>();
+        foreach (var port in Inputs)
+        {   Debug.Log("gathering input port data on node" + name);
+            var portInputPackage =  Tuple.New(port.NickName, port.connectors[0].PStart.Owner.StoredValue);
+            Debug.Log("created a port package"+portInputPackage.First + ":" + portInputPackage.Second.ToString());
+            output.Add(portInputPackage);
+        }
+        return output;
 
+    }
 
     //this points to evaluation engine or some delegate
     internal void Evaluate()
     {
-        throw new NotImplementedException();
+      //build packages for all data
+        
+        var inputdata = gatherInputPortData();
+        var outvar = ((PythonEvaluator)Evaluator).Evaluate(Code,inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList());
+        this.StoredValue = outvar;
+
     }
 
     

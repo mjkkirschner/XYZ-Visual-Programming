@@ -129,7 +129,10 @@ public class PortModel :BaseModel
 						NickName = this.NickName + PortType.ToString () + Index.ToString ();
 
 				}
-
+                else
+                {
+                    NickName = nickname;
+                }
 		}
 
 

@@ -18,7 +18,7 @@ public class NodeView : BaseView<NodeModel>{
    
     //variable to help situate projection of mousecoords into worldspace
     private float dist_to_camera;
-    private GameObject UI;
+    public GameObject UI;
     
     protected override void Start()
     {

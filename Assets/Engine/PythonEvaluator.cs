@@ -26,9 +26,9 @@ namespace Nodeplay.Engine
 
         public void Start()
         {
-            names = new List<String>() { "name1", "name2" };
-            vals = new List<System.Object>() { 1, 2 };
-            Debug.Log(Evaluate(code, names, vals));
+            //names = new List<String>() { "name1", "name2" };
+            //vals = new List<System.Object>() { 1, 2 };
+            //Debug.Log(Evaluate(code, names, vals));
 
         }
 
