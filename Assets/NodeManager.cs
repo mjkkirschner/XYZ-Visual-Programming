@@ -13,12 +13,14 @@ public class NodeManager : MonoBehaviour
 		List<NodeModel> nodes = new List<NodeModel> ();
 
 		// Use this for initialization
-		void Start ()
-		{
-            
-	
-		}
-	
+        void Start()
+        {
+            //TODO REMOVE THIS TEST CODE
+            foreach (var i in Enumerable.Range(0, 2).ToList())
+            {
+                InstantiateNode<Number>();
+            }
+        }
 		void Update ()
 		{
 
@@ -35,9 +37,12 @@ public class NodeManager : MonoBehaviour
         /// <typeparam name="NT"></typeparam>
         /// <returns></returns>
        
-        public GameObject InstantiateNode<NT>(NT node) where NT: NodeModel
+        public GameObject InstantiateNode<NT>() where NT: NodeModel
         {
-            return null;
+            var newnode = new GameObject();
+            newnode.AddComponent<NT>().name = "node" + Guid.NewGuid().ToString();
+            nodes.Add(newnode.GetComponent<NodeModel>());
+            return newnode;
         }
 
 
@@ -65,15 +70,7 @@ public class NodeManager : MonoBehaviour
                 // the view will call a method on the model to construct UI elements
                 // which will be added to the scene and form some tree structure under the root
 
-                var newnode = new GameObject();
-				newnode.AddComponent<TestNodeType> ().name = "node" + Guid.NewGuid ().ToString ();
-				newnode.transform.position = creationPoint;
-                //add a nodeview and a box collider to the root go to intercept events
-                newnode.AddComponent<NodeView>();
-                //newnode.AddComponent<BoxCollider>();
-
-				nodes.Add (newnode.GetComponent<NodeModel> ());
-				
+                var newnode = InstantiateNode<TestNodeType>();
 				Event.current.Use ();
 				
 				return new GuiState (false, false, mousePos, new List<GameObject> (){newnode}, false);

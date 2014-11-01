@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Interfaces;
+using Nodeplay.Engine;
 
 namespace Nodeplay.Nodes
 {
@@ -13,9 +14,10 @@ namespace Nodeplay.Nodes
 				{
 						base.Start ();
 						AddOutPutPort ();
-						AddInputPort ();
-                        AddInputPort();
-				
+						AddInputPort ("input1");
+                        AddInputPort("input2");
+                        Code = "print input1+input2";
+                        Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 				}
 	
 				

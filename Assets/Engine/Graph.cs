@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Nodeplay.Engine
 {
-    class Graph
+    class Graph:MonoBehaviour
     {
         public List<NodeModel> FindNodesWithNoDependencies()
         {
@@ -37,13 +37,16 @@ namespace Nodeplay.Engine
                 //TODO this convience method might live on the nodeModel
                 if (ReadyForEval(topofstack))
                 {
+                    Debug.Log(topofstack + "is ready for eval");
                     // then evaluate that sucker
                     //value will be cached on the node for now
+                    //TODO what if this node is a data node and requires no evaluation and has no evaluator?
                     topofstack.Evaluate();
                     //pop the evaluated node
                     var popped = S.Pop();
                     //we can now add the nodes that are attached to this nodes outputs
                     var childnodes = popped.Outputs.SelectMany(x => x.connectors.Select(y => y.PEnd.Owner)).ToList();
+                    childnodes = childnodes.Except(S).ToList();
                     childnodes.ForEach(x => S.Push(x));
                 }
                 else
@@ -56,9 +59,18 @@ namespace Nodeplay.Engine
                     //get all upstream nodes that are not evaluated
                     var parentnodes = topofstack.Inputs.SelectMany(x => x.connectors.Select(y => y.PStart.Owner)).ToList();
                     parentnodes = parentnodes.Where(x => x.StoredValue != null).ToList();
+                    parentnodes = parentnodes.Except(S).ToList();
                     //push these parent nodes to the stack
                     // where they will be evaluated
                     parentnodes.ForEach(x => S.Push(x));
+
+                    if (parentnodes.Count != topofstack.Inputs.Count)
+                    {
+                        //TODO solve this issue, most likely just eval the node and pop it
+                        // or return null...?
+                        //we have a problem, going to get stuck in infite loop
+                        Debug.Break();
+                    }
                 }
 
 
@@ -66,15 +78,15 @@ namespace Nodeplay.Engine
 
         }
         /// <summary>
-        /// method that checks if 
+        /// method that checks if a node is ready for eval
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
         private bool ReadyForEval(NodeModel node)
         {
             foreach (var inputP in node.Inputs)
-            {
-                if (inputP.Owner.StoredValue == null)
+            {   //TODO add null check for connector
+                if (inputP.connectors[0].PStart.Owner.StoredValue == null)
                 {
                     return false;
                 }

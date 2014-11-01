@@ -1,10 +1,17 @@
 Y:\nodeply\Temp\UnityVS_bin\Debug\Assembly-CSharp.dll
 Y:\nodeply\Temp\UnityVS_bin\Debug\Assembly-CSharp.pdb
+Y:\nodeply\Temp\UnityVS_bin\Debug\IronPython.SQLite.dll
+Y:\nodeply\Temp\UnityVS_bin\Debug\Microsoft.Scripting.AspNet.dll
+Y:\nodeply\Temp\UnityVS_bin\Debug\Microsoft.Scripting.Core.dll
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEditor.dll
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEngine.dll
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEngine.UI.dll
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEngine.xml
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEditor.xml
 Y:\nodeply\Temp\UnityVS_bin\Debug\UnityEngine.UI.xml
+Y:\nodeply\Temp\UnityVS_bin\Debug\IronPython.SQLite.xml
+Y:\nodeply\Temp\UnityVS_bin\Debug\Microsoft.Scripting.AspNet.xml
+Y:\nodeply\Temp\UnityVS_bin\Debug\Microsoft.Scripting.Core.xml
 Y:\nodeply\obj\Debug\Assembly-CSharp.dll
 Y:\nodeply\obj\Debug\Assembly-CSharp.pdb
+Y:\nodeply\obj\Debug\UnityVS.nodeply.CSharp.csprojResolveAssemblyReference.cache

@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
+
+//TODO probably should repleace this with a nongeneric abstract base class
 public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged where M:BaseModel
 {
     //because views maybe created or destroyed multiple times per frame,

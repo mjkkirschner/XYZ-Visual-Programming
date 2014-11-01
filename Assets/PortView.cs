@@ -10,15 +10,73 @@ using System.ComponentModel;
 
     class PortView:BaseView<PortModel>
     {
-       
 
+        protected override void Start()
+        {
+            base.Start();
+            PositionNewPort(this.gameObject);
+        }
 
         /// <summary>
         /// a tempconnector that is drawn while dragging.
         /// </summary>
         private GameObject tempconnector;
 
+        //TODO this method should be on portview
+        public GameObject PositionNewPort(GameObject port)
+        {
+            //position the port at the center of the gameobject
+            port.transform.position = this.gameObject.transform.position;
+            //bb of go
 
+            //might need to be owner model - this might work for now as NodeView and Model should be the common base classes
+            var view = this.Model.Owner.GetComponent<NodeView>();
+            var boundingBox = view.UI.renderer.bounds;
+            port.transform.parent = Model.Owner.transform;
+
+            // move the port from the center to back or front depending on port type
+
+            float direction;
+
+            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
+            {
+                direction = -1f;
+            }
+            else
+            {
+                direction = 1f;
+            }
+
+            port.transform.Translate(0, 0, boundingBox.size.z * -1f);
+            port.transform.localScale = new Vector3(.33f, .33f, .33f);
+
+            // now we need to move the port in relation up or down to all other ports,
+            // and possibly adjust other ports as well
+
+            List<PortModel> ports;
+
+            if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
+            {
+                ports = Model.Owner.Inputs;
+            }
+            else
+            {
+                ports = Model.Owner.Outputs;
+            }
+
+
+            foreach (var currentport in ports)
+            {
+                var index = ports.IndexOf(currentport);
+                Debug.Log(boundingBox.size.y);
+                Debug.Log(index);
+                Debug.Log(ports.Count);
+                currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
+                    ((boundingBox.size.y * 1.5f) * ((float)index / (float)ports.Count)) * 2 - boundingBox.size.y * 1.5f,
+                currentport.gameObject.transform.localPosition.z);
+            }
+            return port;
+        }
         //event handlers
         // TODO THESE ARE CURRENTLY THE SAME AS NODEMODEL - need to be changed
         // and in some cases they should fire new events, like connection and unconnection
