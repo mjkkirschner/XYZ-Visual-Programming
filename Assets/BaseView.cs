@@ -48,7 +48,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         GuiManager.onMouseUp += new GuiTest.Mouse_Up(this.MyOnMouseUp);
         GuiManager.onMouseDrag += new GuiTest.Mouse_Drag(this.MyOnMouseDrag);
         GuiManager.onGuiRepaint += new GuiTest.GuiRepaint(this.onGuiRepaint);
-
+        GuiManager.onMouseMove += new GuiTest.MouseMoved(this.onMouseMove);
         Debug.Log("just started BaseView");
         started = true;
     }
@@ -113,7 +113,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("Mouse Down Hit  " + hit.collider.gameObject);
+            Debug.Log("a ray just hit  " + hit.collider.gameObject);
             //Debug.DrawRay(ray.origin, ray.direction * 1000000);
             if (hit.collider.gameObject == go_to_test.gameObject)
             {
@@ -220,5 +220,17 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         
     }
 
+    public virtual GuiState onMouseMove(GuiState current_state)
+    {
+        if (HitTest(this.gameObject, current_state))
+        {//TODO this is broken because this gameobject is empty and the UI is a lvel down, like in nodeview implementation
+            // this solution is also terrible, the raycast hit object should be the only one to get the event...
+            Debug.Log("I " + this.name + " was just hovered on");
+            dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
+
+            return current_state;
+        }
+        return null;
+    }
 
 }
