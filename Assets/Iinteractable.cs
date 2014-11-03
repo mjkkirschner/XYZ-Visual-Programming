@@ -18,6 +18,7 @@ namespace Nodeplay.Interfaces
 				GuiState MyOnMouseUp (GuiState state) ;
 				GuiState  MyOnMouseDrag (GuiState state);
 				void  onGuiRepaint () ;
+                GuiState onMouseMove(GuiState state);
 		}
 
 }

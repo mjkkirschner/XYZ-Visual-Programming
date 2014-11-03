@@ -22,6 +22,8 @@ public class GuiTest:MonoBehaviour
 		public delegate GuiState Mouse_Drag (GuiState currentstate);
 
 		public delegate GuiState Canvas_Double_Click (GuiState currentstate);
+
+        public delegate GuiState MouseMoved(GuiState currentstate);
 		
 		public delegate void GuiRepaint ();
 
@@ -32,7 +34,7 @@ public class GuiTest:MonoBehaviour
 		public event Mouse_Drag onMouseDrag;
 		public event Canvas_Double_Click onCanvasDoubleClick;
 		public event GuiRepaint onGuiRepaint;
-
+        public event MouseMoved onMouseMove;
 		
 		
 		/// <summary>
@@ -239,6 +241,20 @@ public class GuiTest:MonoBehaviour
 				case EventType.repaint:
 						if (onGuiRepaint != null) {
 								onGuiRepaint ();
+                            // if the mouse has moved some distance then fire mousemove
+                            //TODO should implement raycasting here that tests for hover, then raise hover event which can be
+                            // checked by objects
+                            if (Vector3.Distance(statelist.Last().MousePos,Event.current.mousePosition)>1){
+                                if (onMouseMove != null)
+                                {
+                                    var mousemovestate  = new GuiState(statelist.Last().Connecting,
+                                        statelist.Last().Dragging,
+                                        Event.current.mousePosition,
+                                        statelist.Last().Selection,
+                                        statelist.Last().DoubleClicked);
+                                    onMouseMove(mousemovestate);
+                                }
+                            }
 						}
 								
 						break;
