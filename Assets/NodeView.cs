@@ -4,7 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
-
+using System.Collections;
+using UnityEngine.UI;
+using Nodeplay.UI.Utils;
 
 /// <summary>
 /// class that is responsible for defining how a node looks
@@ -19,16 +21,48 @@ public class NodeView : BaseView<NodeModel>{
     //variable to help situate projection of mousecoords into worldspace
     private float dist_to_camera;
     public GameObject UI;
-    
+    private Color originalcolor;
+
     protected override void Start()
     {
         base.Start();
         UI = Model.BuildSceneElements();
+        originalcolor = UI.renderer.material.color;
         Debug.Log("just started NodeView");
         
     }
 
-   
+    public void OnEvaluated(object sender, EventArgs e)
+    {
+
+        StartCoroutine("Blunk");
+        //subclass this component so we can just look for the output box
+        //need to marshal or implement to_string per output type somehow
+        UI.GetComponentInChildren<Text>().text = Model.StoredValue.ToJSONstring();
+    }
+
+     IEnumerator Blink()
+    {
+        for (float f = 0; f < 1; f = f + .05f)
+        {
+            UI.renderer.material.color = Color.Lerp(originalcolor, Color.red, f);
+            yield return null;
+        }
+    }
+
+     IEnumerator Blunk()
+     {
+         for (float f = 0; f < 1; f = f + .05f)
+         {
+             UI.renderer.material.color = Color.Lerp(Color.red, originalcolor, f);
+             yield return null;
+         }
+     }
+
+    public void OnEvaluation(object sender, EventArgs e)
+    {
+        StartCoroutine("Blink");
+    }
 
     public override GuiState MyOnMouseUp(GuiState current_state)
     {

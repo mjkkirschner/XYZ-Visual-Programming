@@ -25,15 +25,14 @@ using System.ComponentModel;
         //TODO this method should be on portview
         public GameObject PositionNewPort(GameObject port)
         {
-            //position the port at the center of the gameobject
-            port.transform.position = this.gameObject.transform.position;
+           
             //bb of go
 
             //might need to be owner model - this might work for now as NodeView and Model should be the common base classes
             var view = this.Model.Owner.GetComponent<NodeView>();
             var boundingBox = view.UI.renderer.bounds;
             port.transform.parent = Model.Owner.transform;
-
+            port.transform.position = Model.Owner.transform.position;
             // move the port from the center to back or front depending on port type
 
             float direction;
@@ -47,7 +46,7 @@ using System.ComponentModel;
                 direction = 1f;
             }
 
-            port.transform.Translate(0, 0, boundingBox.size.z * -1f);
+            port.transform.Translate(0, 0, boundingBox.size.z * direction);
             port.transform.localScale = new Vector3(.33f, .33f, .33f);
 
             // now we need to move the port in relation up or down to all other ports,

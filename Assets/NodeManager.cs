@@ -18,7 +18,7 @@ public class NodeManager : MonoBehaviour
             //TODO REMOVE THIS TEST CODE
             foreach (var i in Enumerable.Range(0, 2).ToList())
             {
-                InstantiateNode<Number>();
+                InstantiateNode<Number>(Vector3.zero);
             }
         }
 		void Update ()
@@ -37,9 +37,10 @@ public class NodeManager : MonoBehaviour
         /// <typeparam name="NT"></typeparam>
         /// <returns></returns>
        
-        public GameObject InstantiateNode<NT>() where NT: NodeModel
+        public GameObject InstantiateNode<NT>(Vector3 point) where NT: NodeModel
         {
             var newnode = new GameObject();
+            newnode.transform.position = point;
             newnode.AddComponent<NT>().name = "node" + Guid.NewGuid().ToString();
             nodes.Add(newnode.GetComponent<NodeModel>());
             return newnode;
@@ -70,7 +71,7 @@ public class NodeManager : MonoBehaviour
                 // the view will call a method on the model to construct UI elements
                 // which will be added to the scene and form some tree structure under the root
 
-                var newnode = InstantiateNode<TestNodeType>();
+                var newnode = InstantiateNode<TestNodeType>(creationPoint);
 				Event.current.Use ();
 				
 				return new GuiState (false, false, mousePos, new List<GameObject> (){newnode}, false);
