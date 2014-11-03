@@ -20,6 +20,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     protected float dist_to_camera;
     public M Model;
 
+
     protected virtual void NotifyPropertyChanged(String info)
     {
         Debug.Log("sending some property change notification");
@@ -215,8 +216,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     }
 
     public virtual void onGuiRepaint()
-    {	// if we need to repaint the UI then update the property location based on the gameobjects underly transform
-        //todo not sure if this should go here, it seems location should actually be bound to the BaseModel and this logic flows into the view...
+    {
         
     }
 

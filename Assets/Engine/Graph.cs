@@ -6,7 +6,6 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
-
 namespace Nodeplay.Engine
 {
     class Graph:MonoBehaviour
@@ -27,9 +26,40 @@ namespace Nodeplay.Engine
         /// </summary>
         public void EvaluateNodes()
         {
+            StartCoroutine("ObservableEval");
+        }
+        /// <summary>
+        /// method that checks if a node is ready for eval
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private bool ReadyForEval(NodeModel node)
+        {
+            foreach (var inputP in node.Inputs)
+            {   //TODO add null check for connector
+                if (inputP.connectors[0].PStart.Owner.StoredValue == null)
+                {
+                    return false;
+                }
+                
 
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// generator that evals a new node each frame
+        /// issue here is that we are actually slowing evaluation 
+        /// instead of just slowing the updates to the nodes based on their position
+        /// in the eval graph
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator ObservableEval()
+        {
             var entrypoints = FindNodesWithNoDependencies();
             var S = new Stack<NodeModel>(entrypoints);
+
 
             while (S.Count > 0)
             {
@@ -73,30 +103,15 @@ namespace Nodeplay.Engine
                     }
                 }
 
-
+                yield return null;
             }
 
         }
-        /// <summary>
-        /// method that checks if a node is ready for eval
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        private bool ReadyForEval(NodeModel node)
-        {
-            foreach (var inputP in node.Inputs)
-            {   //TODO add null check for connector
-                if (inputP.connectors[0].PStart.Owner.StoredValue == null)
-                {
-                    return false;
-                }
 
-
-            }
-            return true;
-        }
 
     }
+
+
 
 }
 

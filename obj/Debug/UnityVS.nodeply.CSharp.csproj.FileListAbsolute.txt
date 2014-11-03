@@ -15,3 +15,5 @@ Y:\nodeply\Temp\UnityVS_bin\Debug\Microsoft.Scripting.Core.xml
 Y:\nodeply\obj\Debug\Assembly-CSharp.dll
 Y:\nodeply\obj\Debug\Assembly-CSharp.pdb
 Y:\nodeply\obj\Debug\UnityVS.nodeply.CSharp.csprojResolveAssemblyReference.cache
+Y:\nodeply\Temp\UnityVS_bin\Debug\JsonFx.dll
+Y:\nodeply\Temp\UnityVS_bin\Debug\JsonFx.xml
