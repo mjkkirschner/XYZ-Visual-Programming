@@ -14,7 +14,9 @@ using System.ComponentModel;
         protected override void Start()
         {
             base.Start();
+            UI = Model.BuildSceneElements();
             PositionNewPort(this.gameObject);
+
         }
 
         /// <summary>
@@ -102,7 +104,7 @@ using System.ComponentModel;
 
             //appears current_state is does not have correct MOUSEPOS... what else is incorrect...
             // this bug was fixed by not adding all new generated states to the state stream, only those coming from elements being interacted with
-            if (HitTest(this.gameObject, current_state))
+            if (HitTest(this.gameObject, current_state) || HitTest(UI, current_state))
             {
                 //if we were connecting then we can create a connector model
                 if ((current_state.Connecting))
@@ -173,7 +175,8 @@ using System.ComponentModel;
             GuiState newState = current_state;
             //Debug.Log("drag event handler, on a port");
             //TODO need to enable dragging of old connections away and disconnection of connectors
-            if (current_state.Selection.Contains(this.gameObject) && this.GetComponent<PortModel>().PortType == PortModel.porttype.output)
+            if ((current_state.Selection.Contains(this.gameObject) || current_state.Selection.Contains(UI))
+                && this.GetComponent<PortModel>().PortType == PortModel.porttype.output)
             {   // If doing a mouse drag with this component selected...
                 // since we are in 3d space now, we need to conver this to a vector3...
                 // for now just use the z coordinate of the first object
@@ -208,7 +211,7 @@ using System.ComponentModel;
         {
             //Debug.Log("mouse down event handler called");
             // check if this node was actually clicked on
-            if (HitTest(this.gameObject, current_state))
+            if (HitTest(this.gameObject, current_state) || HitTest(UI, current_state))
             {
                 Debug.Log("I" + this.name + " was just clicked");
                 dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);

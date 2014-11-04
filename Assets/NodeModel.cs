@@ -62,8 +62,8 @@ public class NodeModel : BaseModel
 
     public void AddInputPort(string name = null)
     {
-       
-        var newport = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+       //TODO this should create an empty gameobject and port view should create its own UIelements
+        var newport = new GameObject();
         newport.AddComponent<PortModel>();
         // initialze the port
         newport.GetComponent<PortModel>().init(this, Inputs.Count, PortModel.porttype.input, name);
@@ -83,8 +83,8 @@ public class NodeModel : BaseModel
     /// </summary>
     public void AddOutPutPort()
     {
-       
-        var newport = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        var newport = new GameObject();
         newport.AddComponent<PortModel>();
         // initialze the port
         newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.output, name);
@@ -112,13 +112,6 @@ public class NodeModel : BaseModel
     {
         //unsure on this design, for now we just attached the loaded or new geometry as the child of the
         // root gameobject
-
-        //TODO broken, this implementation does not work for two reasons
-        //1. the nodeview/nodemodel are looking for mouse events to be forwarded only to
-        //their gameobjects directly, not any children, so we wont get any events on the children nodes
-        //possibly something to fix, we may want to forward all events down the chain of children until they get used
-        //2. the prefab needs to be instantiated at the location of the root GO or moved to the creation point.
-
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 
         GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;

@@ -20,7 +20,8 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
-
+    //some gameobject root that represents the geometry this view represents/controls
+    public GameObject UI;
 
     protected virtual void NotifyPropertyChanged(String info)
     {
@@ -221,11 +222,20 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     {
         
     }
-
+    //TODO possibily eliminate this handler and event pair
     public virtual GuiState onMouseMove(GuiState current_state)
     {
        
         return null;
+    }
+
+    public virtual void onHover()
+    {
+        this.UI.renderer.material.color = Color.green;
+    }
+    public virtual void onHoverExit()
+    {
+        this.UI.renderer.material.color = Color.yellow;
     }
 
 }
