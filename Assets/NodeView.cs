@@ -80,7 +80,7 @@ public class NodeView : BaseView<NodeModel>{
     public override GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
-        Debug.Log("drag even handler on node view");
+        //Debug.Log("drag even handler on node view");
         //TODO change this selection handler to filter events from gameobjects that are children of this object or tagged UI
         if (current_state.Selection.Contains(this.gameObject) || current_state.Selection.Contains(UI))
         {				// If doing a mouse drag with this component selected...
@@ -94,6 +94,8 @@ public class NodeView : BaseView<NodeModel>{
             Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
 
             // move object to new coordinate
+            //TODO might want to do this by applying a force
+            // or starting a coroutine that moves the node smoothly
             this.gameObject.transform.position = to_point;
             newState = new GuiState(false, true, Event.current.mousePosition, current_state.Selection, false);
             GuiTest.statelist.Add(newState);
@@ -107,7 +109,7 @@ public class NodeView : BaseView<NodeModel>{
     //handler for clicks
     public override GuiState MyOnMouseDown(GuiState current_state)
     {
-        Debug.Log("mouse down event handler called");
+        //Debug.Log("mouse down event handler called");
         // check if this node was actually clicked on
         if (HitTest(this.gameObject, current_state) || HitTest(UI,current_state))
         {
