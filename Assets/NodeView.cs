@@ -95,7 +95,7 @@ public class NodeView : BaseView<NodeModel>{
 
             // move object to new coordinate
             this.gameObject.transform.position = to_point;
-            newState = new GuiState(false, true, Input.mousePosition, current_state.Selection, false);
+            newState = new GuiState(false, true, Event.current.mousePosition, current_state.Selection, false);
             GuiTest.statelist.Add(newState);
             Event.current.Use();
 

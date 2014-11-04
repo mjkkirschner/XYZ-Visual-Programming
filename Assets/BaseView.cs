@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
+using System.Linq;
 
 //TODO probably should repleace this with a nongeneric abstract base class
 public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged where M:BaseModel
@@ -64,6 +65,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         GuiManager.onMouseUp -= (this.MyOnMouseUp);
         GuiManager.onMouseDrag -= (this.MyOnMouseDrag);
         GuiManager.onGuiRepaint -= (this.onGuiRepaint);
+        GuiManager.onMouseMove -= (this.onMouseMove);
         Debug.Log("just turned off BaseView and disconnected gui handlers");
 
     }
@@ -114,7 +116,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         if (Physics.Raycast(ray, out hit))
         {
             Debug.Log("a ray just hit  " + hit.collider.gameObject);
-            //Debug.DrawRay(ray.origin, ray.direction * 1000000);
+            Debug.DrawRay(ray.origin, ray.direction * 1000000);
             if (hit.collider.gameObject == go_to_test.gameObject)
             {
                 return true;
@@ -153,7 +155,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
             // move object to new coordinate
             this.gameObject.transform.position = to_point;
-            newState = new GuiState(false, true, Input.mousePosition, current_state.Selection, false);
+            newState = new GuiState(false, true, Event.current.mousePosition, current_state.Selection, false);
             GuiTest.statelist.Add(newState);
             Event.current.Use();
 
@@ -222,14 +224,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
     public virtual GuiState onMouseMove(GuiState current_state)
     {
-        if (HitTest(this.gameObject, current_state))
-        {//TODO this is broken because this gameobject is empty and the UI is a lvel down, like in nodeview implementation
-            // this solution is also terrible, the raycast hit object should be the only one to get the event...
-            Debug.Log("I " + this.name + " was just hovered on");
-            dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
-
-            return current_state;
-        }
+       
         return null;
     }
 
