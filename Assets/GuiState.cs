@@ -41,7 +41,7 @@ public class GuiState
 		public Vector2 MousePos{ get; set; }
 		private List<GameObject> _selection;
 		public List<GameObject> Selection { 
-
+        
 				get{ return _selection;} 
 				// make sure we don't add duplicates to the selection
 				set {
@@ -50,6 +50,27 @@ public class GuiState
 						_selection = value.Distinct ().ToList ();
 				}
 		}
+        private List<GameObject> _hoverlist;
+        public List<GameObject> HoverList
+        {
+            get { return _hoverlist; }
+            // make sure we don't add duplicates to the hover
+            set
+            {
+
+
+                _hoverlist = value.Distinct().ToList();
+            }
+        }
+        public GuiState(Boolean connecting, Boolean dragging, Vector2 mousepos, List<GameObject> selection, Boolean doubleclicked, List<GameObject> hoverlist)
+        {
+            Dragging = dragging;
+            MousePos = convert_eventcoords_to_Screenspace(mousepos);
+            Connecting = connecting;
+            Selection = selection;
+            DoubleClicked = doubleclicked;
+            HoverList = hoverlist;
+        }	
 
 		public GuiState (Boolean connecting, Boolean dragging, Vector2 mousepos, List<GameObject> selection, Boolean doubleclicked)
 		{	
@@ -58,6 +79,7 @@ public class GuiState
 				Connecting = connecting;
 				Selection = selection;
 				DoubleClicked = doubleclicked;
+                
 		}	
     //Beware, we store all mouse positions in screenspace because the GUI is 3d...
 		public Vector2 convert_eventcoords_to_Screenspace (Vector2 orgcoords)
