@@ -226,9 +226,21 @@ public class GuiTest:MonoBehaviour
 						var laststate = statelist.Last ();
 						state = new GuiState (laststate.Connecting, true, Event.current.mousePosition, CurrentSelection (), true);
 						statelist.Add (state);
-						if (onMouseDrag != null) {
-								onMouseDrag (state);
-						}
+
+                        //need to rate limit this event being sent, 
+                        //since we send to all nodes during the 
+                        //course of drag many times per frame...
+                        // may need to replace with unity send message
+                        // to particular node
+                        var distance = Vector2.Distance(statelist.Last().MousePos, Input.mousePosition);
+                        if (distance > .1)
+                        {
+
+                            if (onMouseDrag != null)
+                            {
+                                onMouseDrag(state);
+                            }
+                        }
 						Event.current.Use ();
 						break;
 
@@ -248,8 +260,8 @@ public class GuiTest:MonoBehaviour
                             if (statelist.Count > 0)
                             {   var dist = Vector2.Distance(statelist.Last().MousePos, Input.mousePosition);
                            
-                                if (dist > 25)
-                                { Debug.Log(dist);
+                                if (dist > 50)
+                                { 
                                    
                                     //Debug.Break();
                                     if (onMouseMove != null)

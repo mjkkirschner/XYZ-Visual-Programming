@@ -87,7 +87,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         var hit = new RaycastHit();
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("Mouse Down Hit " + hit.collider.gameObject);
+            //Debug.Log("Mouse Down Hit " + hit.collider.gameObject);
             //Debug.DrawRay(ray.origin, ray.direction * 1000000, Color.red, 2.0f);
             if (hit.collider.gameObject == go_to_test.gameObject)
             {
@@ -115,8 +115,8 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("a ray just hit  " + hit.collider.gameObject);
-            Debug.DrawRay(ray.origin, ray.direction * 1000000);
+            //Debug.Log("a ray just hit  " + hit.collider.gameObject);
+            //Debug.DrawRay(ray.origin, ray.direction * 1000000);
             if (hit.collider.gameObject == go_to_test.gameObject)
             {
                 return true;
@@ -140,7 +140,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     public virtual GuiState MyOnMouseDrag(GuiState current_state)
     {
         GuiState newState = current_state;
-        Debug.Log("drag event handler");
+        //Debug.Log("drag event handler");
         
         if (current_state.Selection.Contains(this.gameObject))
         {				// If doing a mouse drag with this component selected...
@@ -167,7 +167,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
     //handler for clicks
     public virtual GuiState MyOnMouseDown(GuiState current_state)
     {
-        Debug.Log("mouse down event handler called");
+        //Debug.Log("mouse down event handler called");
         // check if this node was actually clicked on
         if (HitTest(this.gameObject, current_state))
         {

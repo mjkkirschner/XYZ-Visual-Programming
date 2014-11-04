@@ -171,7 +171,7 @@ using System.ComponentModel;
         public override GuiState MyOnMouseDrag(GuiState current_state)
         {
             GuiState newState = current_state;
-            Debug.Log("drag event handler, on a port");
+            //Debug.Log("drag event handler, on a port");
             //TODO need to enable dragging of old connections away and disconnection of connectors
             if (current_state.Selection.Contains(this.gameObject) && this.GetComponent<PortModel>().PortType == PortModel.porttype.output)
             {   // If doing a mouse drag with this component selected...
@@ -206,7 +206,7 @@ using System.ComponentModel;
         //handler for clicks
         public override GuiState MyOnMouseDown(GuiState current_state)
         {
-            Debug.Log("mouse down event handler called");
+            //Debug.Log("mouse down event handler called");
             // check if this node was actually clicked on
             if (HitTest(this.gameObject, current_state))
             {
