@@ -194,7 +194,7 @@ using System.ComponentModel;
                 tempconnector.GetComponent<ConnectorView>().init(this.gameObject.transform.position, to_point);
 
                 // move object to new coordinate
-                newState = new GuiState(true, true, Input.mousePosition, current_state.Selection, false);
+                newState = new GuiState(true, true, Event.current.mousePosition, current_state.Selection, false);
                 GuiTest.statelist.Add(newState);
                 Event.current.Use();
 

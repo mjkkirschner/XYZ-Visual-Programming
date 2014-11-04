@@ -59,7 +59,7 @@ public class GuiState
 				Selection = selection;
 				DoubleClicked = doubleclicked;
 		}	
-
+    //Beware, we store all mouse positions in screenspace because the GUI is 3d...
 		public Vector2 convert_eventcoords_to_Screenspace (Vector2 orgcoords)
 		{
 
