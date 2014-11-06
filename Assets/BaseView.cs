@@ -7,21 +7,25 @@ using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
 using System.Linq;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 //TODO probably should repleace this with a nongeneric abstract base class
-public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged where M:BaseModel
+public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged where M : BaseModel
 {
     //because views maybe created or destroyed multiple times per frame,
     //they may be destroyed before start finishes running
     protected Boolean started = false;
     public NodeManager NodeManager;
-    public GuiTest GuiManager;
-    public GuiState GeneratedDragState;
+    
+    
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
     //some gameobject root that represents the geometry this view represents/controls
     public GameObject UI;
+
 
     protected virtual void NotifyPropertyChanged(String info)
     {
@@ -41,16 +45,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
-        // guimanager - like a GUIcontroller
-        GuiManager = GameObject.FindObjectOfType<GuiTest>();
-
-        //setup callbacks for all objects inheriting from base view
-        //todo can probably get rid of the interactable interface
-        GuiManager.onMouseDown += new GuiTest.Mouse_Down(this.MyOnMouseDown);
-        GuiManager.onMouseUp += new GuiTest.Mouse_Up(this.MyOnMouseUp);
-        GuiManager.onMouseDrag += new GuiTest.Mouse_Drag(this.MyOnMouseDrag);
-        GuiManager.onGuiRepaint += new GuiTest.GuiRepaint(this.onGuiRepaint);
-        GuiManager.onMouseMove += new GuiTest.MouseMoved(this.onMouseMove);
+       
         Debug.Log("just started BaseView");
         started = true;
     }
@@ -62,12 +57,7 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
             Start();
         }
 
-        GuiManager.onMouseDown -= (this.MyOnMouseDown);
-        GuiManager.onMouseUp -= (this.MyOnMouseUp);
-        GuiManager.onMouseDrag -= (this.MyOnMouseDrag);
-        GuiManager.onGuiRepaint -= (this.onGuiRepaint);
-        GuiManager.onMouseMove -= (this.onMouseMove);
-        Debug.Log("just turned off BaseView and disconnected gui handlers");
+        Debug.Log("just turned off BaseView");
 
     }
 
@@ -86,31 +76,28 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         var hit = new RaycastHit();
+        Debug.DrawRay(ray.origin,ray.direction*dist_to_camera);
         if (Physics.Raycast(ray, out hit))
         {
-            //Debug.Log("Mouse Down Hit " + hit.collider.gameObject);
-            //Debug.DrawRay(ray.origin, ray.direction * 1000000, Color.red, 2.0f);
-            if (hit.collider.gameObject == go_to_test.gameObject)
-            {
+            
                 return hit.point;
-                // I was previoulsy returning hit.barycenter ... triangle?
-            }
-
+            
         }
         return go_to_test.transform.position;
     }
+
     /// <summary>
     /// check if we hit the current node to test, use the state to extract mouseposition
     /// </summary>
     /// <returns><c>true</c>, if test was hit, <c>false</c> otherwise.</returns>
     /// <param name="go_to_test">Node_to_test.</param>
     /// <param name="state">State.</param>
-    public bool HitTest(GameObject go_to_test, GuiState state)
+    public bool HitTest(GameObject go_to_test, PointerEventData pointerdata)
     {
         // raycast from the camera through the mouse and check if we hit this current
         // node, if we do return true
 
-        Ray ray = Camera.main.ScreenPointToRay(state.MousePos);
+        Ray ray = Camera.main.ScreenPointToRay(pointerdata.position);
         var hit = new RaycastHit();
 
 
@@ -127,27 +114,16 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
         return false;
     }
 
-    public virtual GuiState MyOnMouseUp(GuiState current_state)
+    public override void OnPointerUp(PointerEventData pointerdata)
     {
         Debug.Log("Mouse up event handler called");
-        var newState = new GuiState(false, false, current_state.MousePos, new List<GameObject>(), false);
-        //todo figure out how to deal with this situation - adding multiple upstates from all base views...
-        //GuiTest.statelist.Add (newState);
-        return newState;
-
-
+        
     }
     //handler for dragging node event//
-    public virtual GuiState MyOnMouseDrag(GuiState current_state)
+    public override void OnDrag(PointerEventData pointerdata)
     {
-        GuiState newState = current_state;
-        //Debug.Log("drag event handler");
         
-        if (current_state.Selection.Contains(this.gameObject))
-        {				// If doing a mouse drag with this component selected...
-            // since we are in 3d space now, we need to conver this to a vector3...
-            // for now just use the z coordinate of the first object
-
+       
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
 
@@ -156,43 +132,22 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
             // move object to new coordinate
             this.gameObject.transform.position = to_point;
-            newState = new GuiState(false, true, Event.current.mousePosition, current_state.Selection, false);
-            GuiTest.statelist.Add(newState);
-            Event.current.Use();
-
-        }
-        return newState;
+       
+      
 
 
     }
     //handler for clicks
-    public virtual GuiState MyOnMouseDown(GuiState current_state)
+    public override void OnPointerClick(PointerEventData pointerdata)
     {
-        //Debug.Log("mouse down event handler called");
-        // check if this node was actually clicked on
-        if (HitTest(this.gameObject, current_state))
-        {
+        
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
 
-            Debug.Log(current_state);
-
-            // check the dragstate from the GUI, either this is a double click
-            // or a selection click
-            // or possibly a click on nothing
-            if (current_state.DoubleClicked == false)
+          
+          
+            if (pointerdata.clickCount !=2)
             {
-
-                // add this node to the current selection
-                // update the drag state
-                // store this drag state in the list of all dragstates
-
-                List<GameObject> new_sel = (new List<GameObject>(current_state.Selection));
-                new_sel.Add(this.gameObject);
-                var newState = new GuiState(current_state.Connecting, current_state.Dragging, current_state.MousePos, new_sel, false);
-                GuiTest.statelist.Add(newState);
-                GeneratedDragState = newState;
-
 
             }
             else
@@ -202,38 +157,17 @@ public class BaseView<M> : MonoBehaviour, Iinteractable, INotifyPropertyChanged 
 
             }
 
-            // finally return the new dragstate(not what this function should return)
-            // since we actually have the dragstate stored
-            // it might make more sense not to allow the Node to 
-            // store the state on the GUI...
-            return GeneratedDragState;
-
-            //TODO OVERHAUL STATE STREAM	
-            // this logic is important and ugly, we need to enforce that the callbacks return null if the event was not intended for that object so we don't
-            // store superflous states... this needs to be redesigned asap
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    public virtual void onGuiRepaint()
-    {
+        
         
     }
-    //TODO possibily eliminate this handler and event pair
-    public virtual GuiState onMouseMove(GuiState current_state)
-    {
-       
-        return null;
-    }
 
-    public virtual void onHover()
+  
+
+    public override void OnPointerEnter(PointerEventData eventData)
     {
         this.UI.renderer.material.color = Color.green;
     }
-    public virtual void onHoverExit()
+    public override void OnPointerExit(PointerEventData eventData)
     {
         this.UI.renderer.material.color = Color.yellow;
     }

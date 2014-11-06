@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Nodes;
 using System;
-/// <summary>
-/// Node manager.
-/// </summary>
-public class NodeManager : MonoBehaviour
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
+
+public class NodeManager : MonoBehaviour, IPointerClickHandler
 {
 
 		
@@ -47,13 +47,16 @@ public class NodeManager : MonoBehaviour
         }
 
 
-		public GuiState onCanvasDoubleClick (GuiState currentstate)
+		public void OnPointerClick(PointerEventData eventData)
 		{
+            if (eventData.clickCount != 2)
+            {
+                return;
+            }
             var creationPoint = Vector3.zero;
-            var mousePos = currentstate.MousePos;
+            var mousePos = eventData.pressPosition;
             if (nodes.Count > 0)
             {
-                Debug.Log(nodes);
                 
                 // this is basically reduce with a conditional either passing min or next, to find the min closest node
                 // could replace with for loop...
@@ -72,17 +75,10 @@ public class NodeManager : MonoBehaviour
                 // which will be added to the scene and form some tree structure under the root
 
                 var newnode = InstantiateNode<TestNodeType>(creationPoint);
-				Event.current.Use ();
 				
-				return new GuiState (false, false, mousePos, new List<GameObject> (){newnode}, false);
 		}
 
-		public void onGuiRepaint ()
-		{
-				
-
-		}
-
+	
 
 		
 }
