@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* remove Guistate while attempting to pullout prototype event system for unity's eventsystem
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,49 @@ public class GuiState
 				
 						
 		}
+
+        public static bool hover_changed(List<GuiState> states)
+        {
+            if (states.Count > 1)
+            {
+                var selection1 = states[states.Count - 1].HoverList;
+                var selection2 = states[states.Count - 2].HoverList;
+               
+                if (selection1.Count == 0 && selection2.Count == 0)
+                {
+                    return false;
+                }
+                if (selection1.Count == 1 && selection2.Count == 0)
+                {
+                    return true;
+                }
+                if (selection1.Count == 0 && selection2.Count == 1)
+                {
+                    return true;
+                }
+                if (selection1[0].transform.root.name != selection2[0].transform.root.name)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+
+
+        }
+
+        public static GameObject lastHovered(List<GuiState> states)
+        {
+            foreach (var state in (states).AsEnumerable<GuiState>().Reverse().ToList())
+            {
+                if (state.HoverList.Count > 0)
+                {
+                    return state.HoverList[0];
+                }
+            }
+            return null;
+        }
+
 
 		public override string ToString ()
 		{
@@ -79,7 +123,7 @@ public class GuiState
 				Connecting = connecting;
 				Selection = selection;
 				DoubleClicked = doubleclicked;
-                
+                HoverList = new List<GameObject>();
 		}	
     //Beware, we store all mouse positions in screenspace because the GUI is 3d...
 		public Vector2 convert_eventcoords_to_Screenspace (Vector2 orgcoords)
@@ -90,4 +134,4 @@ public class GuiState
 		}
 
 }
-
+*/

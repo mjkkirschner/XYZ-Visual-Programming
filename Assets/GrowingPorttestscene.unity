@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f092f155454540d2a9886504023eb97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSensitivity: 90
+  cameraSensitivity: 215.199997
   climbSpeed: 4
   normalMoveSpeed: 10
   slowMoveFactor: .25

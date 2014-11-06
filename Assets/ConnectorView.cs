@@ -11,7 +11,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-
+using UnityEngine.EventSystems;
 
 public class ConnectorView:BaseView<ConnectorModel>
 {
@@ -60,24 +60,20 @@ public class ConnectorView:BaseView<ConnectorModel>
 				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
 				
 		}
-        public override GuiState MyOnMouseUp(GuiState current_state)
+        public override void OnPointerUp(PointerEventData pointerdata)
         {
-            return null;
+            
         }
 
-        public override GuiState MyOnMouseDown(GuiState current_state)
+        public override void OnPointerClick(PointerEventData pointerdata)
         {
-            return null;
+          
         }
 
-        public override void onGuiRepaint()
-        {
-             
-        }
 
-        public override GuiState MyOnMouseDrag(GuiState current_state)
+        public override void OnDrag(PointerEventData pointerdata)
         {
-            return null;
+            
         }
 
 		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint)

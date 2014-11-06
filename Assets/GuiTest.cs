@@ -1,15 +1,18 @@
-﻿using UnityEngine;
+﻿//attempting to remove guitest controller and implement all ui events using unity's eventsystem
+
+/*using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class GuiTest : MonoBehaviour
 {
     public NodeManager NManager;
     public static List<GuiState> statelist = new List<GuiState>();
-
+    public EventSystem UnityEventSystem;
     // GuiController generates new ui states based on previous state
     // and current event
 
@@ -36,13 +39,13 @@ public class GuiTest : MonoBehaviour
     public event GuiRepaint onGuiRepaint;
     public event MouseMoved onMouseMove;
 
-
+    
     /// <summary>
     /// returns the most recent state's connecting bool
     /// </summary>
     public bool connecting()
     {
-
+        
         return statelist.Last().Connecting;
     }
 
@@ -69,7 +72,7 @@ public class GuiTest : MonoBehaviour
     {
         // collect all nodes to 
         NManager = GameObject.FindObjectOfType<NodeManager>();
-
+        UnityEventSystem = GameObject.FindObjectOfType<EventSystem>();
         this.onCanvasDoubleClick += new Canvas_Double_Click(NManager.onCanvasDoubleClick);
         this.onGuiRepaint += new GuiRepaint(NManager.onGuiRepaint);
     }
@@ -106,16 +109,16 @@ public class GuiTest : MonoBehaviour
     /// Raises the GUI events and creates states that reflect the state of the UI.
     /// </summary>
     public void OnGUI()
-    {
+    {  
+    
 
         if (GuiState.selection_changed(statelist))
         {
             Debug.Log("selection has changed");
-            Debug.Log(CurrentSelection().TocommaString());
-            Debug.Log(CurrentSelection().TocommaString());
-
+          
         }
-
+       
+        
         switch (Event.current.type)
         {
             case EventType.mouseDown:
@@ -197,8 +200,7 @@ public class GuiTest : MonoBehaviour
                     Debug.Log("calling mouseup function, this was an ignored event, there was a single click on nothing");
                     if (onMouseUp != null)
                     {
-                        // not sure about this dragstate
-
+                       
                         onMouseUp(state);
 
                     }
@@ -212,7 +214,7 @@ public class GuiTest : MonoBehaviour
 
 
                     if (!connecting())
-                    {					// ... and we were not in connect mode, clear the selection
+                    {	// ... and we were not in connect mode, clear the selection
 
                         Debug.Log("not connecting mouse up");
                         // clear the selection, and create a new state
@@ -233,10 +235,6 @@ public class GuiTest : MonoBehaviour
                         // we are connecting
                         // send a similar state but with connecting true
 
-                        // how do we know this selection is empty.... it actually cant be.. sooo?
-                        // we'll need to rely on the last instead of genning a new one,
-
-
                         Event.current.Use();
                         if (onMouseUp != null)
                         {
@@ -252,7 +250,7 @@ public class GuiTest : MonoBehaviour
                 }
 
                 break;
-
+                
             case EventType.mouseDrag:
                 var laststate = statelist.Last();
                 state = new GuiState(laststate.Connecting, true, Event.current.mousePosition, CurrentSelection(), true);
@@ -279,45 +277,9 @@ public class GuiTest : MonoBehaviour
                 if (onGuiRepaint != null)
                 {
                     onGuiRepaint();
-                    // if the mouse has moved some distance then fire mousemove
-                    //TODO should implement raycasting here that tests for hover, then raise hover event which can be
-                    // checked by objects
-                    if (statelist.Count > 0)
-                    {
-                        var dist = Vector2.Distance(statelist.Last().MousePos, Input.mousePosition);
-
-                        if (dist > .5 && HoveringOnGameObject() != null)
-                        {
-                            var hoverobject = HoveringOnGameObject();
-                            var hoverstate = new GuiState(statelist.Last().Connecting,
-                                     statelist.Last().Dragging,
-                                     Event.current.mousePosition,
-                                     statelist.Last().Selection,
-                                     statelist.Last().DoubleClicked, new List<GameObject>() { hoverobject });
-                            statelist.Add(hoverstate);
-                            hoverobject.transform.SendMessageUpwards("onHover");
-                        }
-                        else if(dist > .5 && HoveringOnGameObject()  == null)
-                        {
-                           //now we have left hover state
-                           //send hoverexit to the hoverobject from previous state
-                            statelist.Last().HoverList[0].SendMessageUpwards("onHoverExit");
-                        }
-                            /* if (onMouseMove != null)
-                             {
-                                 var mousemovestate = new GuiState(statelist.Last().Connecting,
-                                     statelist.Last().Dragging,
-                                     Event.current.mousePosition,
-                                     statelist.Last().Selection,
-                                     statelist.Last().DoubleClicked);
-                                 onMouseMove(mousemovestate);
-                                 //add to statelist
-                                 statelist.Add(mousemovestate);
-                                    
-                             }*/
-                        
+                   
                     }
-                }
+                
                 break;
 
 
@@ -326,4 +288,4 @@ public class GuiTest : MonoBehaviour
 
     }
 
-}
+}*/
