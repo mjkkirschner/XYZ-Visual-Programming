@@ -92,6 +92,7 @@ public class NodeView : BaseView<NodeModel>{
 
 
     }
+
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
