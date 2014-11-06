@@ -135,6 +135,12 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
 
 
     }
+
+	public override void OnPointerDown(PointerEventData pointerdata)
+	{
+		dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
+	}
+
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
@@ -153,14 +159,13 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
 
             }
 
-        
-        
     }
 
   
 
     public override void OnPointerEnter(PointerEventData eventData)
-    {
+    {	
+		Debug.Log("pointer just entered" + this.name);
         this.UI.renderer.material.color = Color.green;
     }
     public override void OnPointerExit(PointerEventData eventData)
