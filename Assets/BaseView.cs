@@ -122,8 +122,6 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
     //handler for dragging node event//
     public override void OnDrag(PointerEventData pointerdata)
     {
-        
-       
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
 
@@ -144,8 +142,6 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
 
-          
-          
             if (pointerdata.clickCount !=2)
             {
 

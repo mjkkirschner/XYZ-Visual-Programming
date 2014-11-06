@@ -17,8 +17,6 @@ public class PortModel :BaseModel
 
 		public int Index { get; set; }
 
-		private float dist_to_camera;
-
 		public Boolean IsConnected { get; set; }
 
 		public List<ConnectorModel> connectors = new List<ConnectorModel> ();
@@ -30,7 +28,7 @@ public class PortModel :BaseModel
 		public event PortConnectedHandler PortConnected;
 		public event PortConnectedHandler PortDisconnected;
 
-		void Start ()
+       protected override void Start()
 		{
 				// create the view here
 				this.gameObject.AddComponent<PortView> ();

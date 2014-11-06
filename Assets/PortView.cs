@@ -85,7 +85,7 @@ class PortView : BaseView<PortModel>
     // ports will be responsible for creating connectors
 
 
-
+    // I think event is firing on the wrong portview...
     public override void OnDrop(PointerEventData pointerdata)
     {
         Debug.Log("I" + Model.NickName + " was just dropped on");
@@ -112,11 +112,11 @@ class PortView : BaseView<PortModel>
         // or possibly all instantiation to a manager or WorldModel/Controller
         var realConnector = new GameObject("Connector");
         realConnector.AddComponent<ConnectorModel>();
-        realConnector.GetComponent<ConnectorModel>().init(pointerdata.selectedObject.GetComponent<PortModel>(), Model);
+        realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
         Model.Connect(realConnector.GetComponent<ConnectorModel>());
 
         //TODO the other port also needs a connect signal
-        pointerdata.selectedObject.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+        pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
 
 
     }
