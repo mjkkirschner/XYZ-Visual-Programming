@@ -74,48 +74,9 @@ public class NodeView : BaseView<NodeModel>{
 
 
     }
-    //handler for dragging node event//
-    //TODO, this will not work  - this object will never get this event...
-    public override void OnDrag(PointerEventData pointerdata)
-    {
-            // get the hit world coord
-            var pos = HitPosition(this.gameObject);
+  
 
-            // project from camera through mouse currently and use same distance
-            Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
-
-            // move object to new coordinate
-            //TODO might want to do this by applying a force
-            // or starting a coroutine that moves the node smoothly
-            this.transform.position = to_point;
-     
-
-
-    }
-
-    //handler for clicks
-    public override void OnPointerClick(PointerEventData pointerdata)
-    {
-      
-            Debug.Log("I" + this.name + " was just clicked");
-            dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
-
-            // check the dragstate from the GUI, either this is a double click
-            // or a selection click
-            // or possibly a click on nothing
-            if (pointerdata.clickCount != 2)
-            {
-
-                
-            }
-            else
-            {
-                //a double click occured on a node
-                Debug.Log("I" + this.name + " was just DOUBLE clicked");
-
-            }
-        
-    }
+    
 
 
 }
