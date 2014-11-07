@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System;
 using Nodeplay.Engine;
 using System.Linq;
+using UnityEngine.UI;
 public class NodeModel : BaseModel
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
@@ -117,7 +118,10 @@ public class NodeModel : BaseModel
         GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
         UI.transform.localPosition = this.gameObject.transform.position;
         UI.transform.parent = this.gameObject.transform;
-        return UI;
+        //iterate all graphics casters and turn blocking on for 3d objects
+		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
+		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
+		return UI;
 
 
 

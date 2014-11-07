@@ -121,7 +121,9 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
     }
     //handler for dragging node event//
     public override void OnDrag(PointerEventData pointerdata)
-    {
+	{
+
+		if (pointerdata.rawPointerPress == this.UI){
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
 
@@ -130,9 +132,8 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
 
             // move object to new coordinate
             this.gameObject.transform.position = to_point;
-       
-      
 
+		}
 
     }
 
@@ -144,7 +145,7 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
-        
+		if (pointerdata.pointerCurrentRaycast.go == this.UI){
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
 
@@ -158,15 +159,17 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
                 Debug.Log("I" + this.name + " was just DOUBLE clicked");
 
             }
-
+		}
     }
 
   
 
     public override void OnPointerEnter(PointerEventData eventData)
     {	
+		if (eventData.pointerCurrentRaycast.go == this.UI){
 		Debug.Log("pointer just entered" + this.name);
         this.UI.renderer.material.color = Color.green;
+		}
     }
     public override void OnPointerExit(PointerEventData eventData)
     {

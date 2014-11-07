@@ -89,34 +89,19 @@ class PortView : BaseView<PortModel>
     public override void OnDrop(PointerEventData pointerdata)
     {
         
-
-
-    }
-
-    public override void OnPointerUp(PointerEventData pointerdata)
-    {
-
-
-        //handle this here for now:
-        //destruction of temp connector
-        if (tempconnector != null)
-        {
-            DestroyImmediate(tempconnector);
-            tempconnector = null;
-        }
-
-        //if we mouseUp over a port we need to check if we were connecting/dragging,
-        // and then we'll instantiate a new connectorModel, the model will create it's own view
-        // and the view will listen to its ports for property changes
-
-        Debug.Log("Mouse up event handler called");
-
+		//if we mouseUp over a port we need to check if we were connecting/dragging,
+		// and then we'll instantiate a new connectorModel, the model will create it's own view
+		// and the view will listen to its ports for property changes
+		
+		Debug.Log("Mouse up event handler called");
+		
 		Debug.Log("I" + Model.NickName + " was just dropped on");
 		
-		var startport = pointerdata.selectedObject.GetComponent<PortModel>();
+		var startport = pointerdata.pointerPress.GetComponent<PortModel>();
 		
 		if (startport.PortType == Model.PortType)
 		{
+			Debug.Log("breaking out, you cant attached two same direction connectors");
 			return;
 		}
 		
@@ -140,6 +125,22 @@ class PortView : BaseView<PortModel>
 		
 		//TODO the other port also needs a connect signal
 		pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+
+    }
+
+    public override void OnPointerUp(PointerEventData pointerdata)
+    {
+
+
+        //handle this here for now:
+        //destruction of temp connector
+        if (tempconnector != null)
+        {
+            DestroyImmediate(tempconnector);
+            tempconnector = null;
+        }
+
+        
 
     }
 
