@@ -23,11 +23,17 @@ public class UIWindowBase : MonoBehaviour, IDragHandler, IPointerDownHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+       
+
+        //need to construct a 3d vector that we actually move the window along
+        // can do this from the point on the object we dragged to, and the 
 
         if (this.gameObject == eventData.pointerDrag)
         {
-
-            m_transform.position = BaseView<BaseModel>.ProjectCurrentDrag(dist);
+            Ray ray = Camera.main.ScreenPointToRay(eventData.position - eventData.delta);
+            var orginalPoint = ray.GetPoint(dist);
+            Vector3 threeddelta =  BaseView<BaseModel>.ProjectCurrentDrag(dist) - orginalPoint;
+            m_transform.position += threeddelta;
         }
         // magic : add zone clamping if's here.
     }

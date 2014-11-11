@@ -14,7 +14,6 @@ class PortView : BaseView<PortModel>
     protected override void Start()
     {
         base.Start();
-        UI = Model.BuildSceneElements();
         PositionNewPort(this.gameObject);
 
     }
