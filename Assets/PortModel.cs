@@ -140,6 +140,7 @@ public class PortModel :BaseModel
             GameObject UI = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
+
             return UI;
 
 

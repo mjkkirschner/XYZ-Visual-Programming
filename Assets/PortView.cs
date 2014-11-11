@@ -6,7 +6,7 @@ using UnityEngine;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using UnityEngine.EventSystems;
-
+using Nodeplay.UI;
 
 class PortView : BaseView<PortModel>
 {
@@ -123,7 +123,7 @@ class PortView : BaseView<PortModel>
 		realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
 		Model.Connect(realConnector.GetComponent<ConnectorModel>());
 		
-		//TODO the other port also needs a connect signal
+		//TODO the other port also needs a connect signal, MAKE SURE THE CORRECT PORT IS GETTING THIS EVENT
 		pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
 
     }
@@ -164,9 +164,9 @@ class PortView : BaseView<PortModel>
             // since this is a port, we need to instantiate a new 
             //ConnectorView ( this is a temporary connector that we drag around in the UI)
 
-            tempconnector = new GameObject("ConnectorViewTemp");
-            tempconnector.AddComponent<ConnectorView>();
-            tempconnector.GetComponent<ConnectorView>().init(this.gameObject.transform.position, to_point);
+            tempconnector = new GameObject("TempConnectorView");
+            tempconnector.AddComponent<TempConnectorView>();
+            tempconnector.GetComponent<TempConnectorView>().init(this.gameObject.transform.position, to_point);
 
         }
 
