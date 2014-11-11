@@ -21,13 +21,11 @@ public class NodeView : BaseView<NodeModel>{
    
     //variable to help situate projection of mousecoords into worldspace
     
-    private Color originalcolor;
+    
 
     protected override void Start()
     {
         base.Start();
-        UI = Model.BuildSceneElements();
-        originalcolor = UI.renderer.material.color;
         Debug.Log("just started NodeView");
         
     }
@@ -35,33 +33,15 @@ public class NodeView : BaseView<NodeModel>{
     public void OnEvaluated(object sender, EventArgs e)
     {
 
-        StartCoroutine("Blunk");
+        StartCoroutine(Blunk(Color.red));
         //subclass this component so we can just look for the output box
         //need to marshal or implement to_string per output type somehow
         UI.GetComponentInChildren<Text>().text = Model.StoredValue.ToJSONstring();
     }
 
-     IEnumerator Blink()
-    {
-        for (float f = 0; f < 1; f = f + .05f)
-        {
-            UI.renderer.material.color = Color.Lerp(originalcolor, Color.red, f);
-            yield return null;
-        }
-    }
-
-     IEnumerator Blunk()
-     {
-         for (float f = 0; f < 1; f = f + .05f)
-         {
-             UI.renderer.material.color = Color.Lerp(Color.red, originalcolor, f);
-             yield return null;
-         }
-     }
-
     public void OnEvaluation(object sender, EventArgs e)
     {
-        StartCoroutine("Blink");
+        StartCoroutine(Blink(Color.red));
     }
 
     public override void OnPointerUp(PointerEventData pointerdata)

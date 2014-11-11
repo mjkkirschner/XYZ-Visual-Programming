@@ -12,14 +12,15 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
 //TODO probably should repleace this with a nongeneric abstract base class
-public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged where M : BaseModel
+public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged where M : BaseModel
 {
     //because views maybe created or destroyed multiple times per frame,
     //they may be destroyed before start finishes running
     protected Boolean started = false;
     public NodeManager NodeManager;
-    
-    
+    private Color originalcolor;
+    public Color HoverColor;
+
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
@@ -45,7 +46,9 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
-       
+        // load the UI and save the initial UI color
+        UI = Model.BuildSceneElements();
+        originalcolor = UI.renderer.material.color;
         Debug.Log("just started BaseView");
         started = true;
     }
@@ -69,19 +72,19 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
         return output;
     }
 
-    public Vector3 HitPosition(GameObject go_to_test)
+    public static Vector3 HitPosition(GameObject go_to_test)
     {
 
         // return the coordinate in world space where hit occured
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         var hit = new RaycastHit();
-        Debug.DrawRay(ray.origin,ray.direction*dist_to_camera);
+        //Debug.DrawRay(ray.origin,ray.direction*dist_to_camera);
         if (Physics.Raycast(ray, out hit))
         {
-            
-                return hit.point;
-            
+
+            return hit.point;
+
         }
         return go_to_test.transform.position;
     }
@@ -92,7 +95,7 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
     /// <returns><c>true</c>, if test was hit, <c>false</c> otherwise.</returns>
     /// <param name="go_to_test">Node_to_test.</param>
     /// <param name="state">State.</param>
-    public bool HitTest(GameObject go_to_test, PointerEventData pointerdata)
+    public static bool HitTest(GameObject go_to_test, PointerEventData pointerdata)
     {
         // raycast from the camera through the mouse and check if we hit this current
         // node, if we do return true
@@ -117,13 +120,14 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
     public override void OnPointerUp(PointerEventData pointerdata)
     {
         Debug.Log("Mouse up event handler called");
-        
+
     }
     //handler for dragging node event//
     public override void OnDrag(PointerEventData pointerdata)
-	{
+    {
 
-		if (pointerdata.rawPointerPress == this.UI){
+        if (pointerdata.rawPointerPress == this.UI)
+        {
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
 
@@ -133,23 +137,24 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
             // move object to new coordinate
             this.gameObject.transform.position = to_point;
 
-		}
+        }
 
     }
 
-	public override void OnPointerDown(PointerEventData pointerdata)
-	{
-		dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
-	}
+    public override void OnPointerDown(PointerEventData pointerdata)
+    {
+        dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
+    }
 
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
-		if (pointerdata.pointerCurrentRaycast.go == this.UI){
+        if (pointerdata.pointerCurrentRaycast.gameObject == this.UI)
+        {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
 
-            if (pointerdata.clickCount !=2)
+            if (pointerdata.clickCount != 2)
             {
 
             }
@@ -159,21 +164,46 @@ public class BaseView<M> : EventTrigger, Iinteractable,  INotifyPropertyChanged 
                 Debug.Log("I" + this.name + " was just DOUBLE clicked");
 
             }
-		}
+        }
     }
 
-  
+    protected virtual IEnumerator Blink(Color ToColor)
+    {
+        for (float f = 0; f < 1; f = f + .05f)
+        {
+            UI.renderer.material.color = Color.Lerp(originalcolor, ToColor, f);
+            yield return null;
+        }
+    }
+
+    protected virtual IEnumerator Blunk(Color FromColor)
+    {
+        for (float f = 0; f < 1; f = f + .05f)
+        {
+           
+            UI.renderer.material.color = Color.Lerp(FromColor, originalcolor, f);
+            yield return null;
+        }
+    }
 
     public override void OnPointerEnter(PointerEventData eventData)
-    {	
-		if (eventData.pointerCurrentRaycast.go == this.UI){
-		Debug.Log("pointer just entered" + this.name);
-        this.UI.renderer.material.color = Color.green;
-		}
+    {
+        if (eventData.pointerCurrentRaycast.gameObject == this.UI)
+        {
+            if (!eventData.dragging)
+            {
+                StartCoroutine(Blink(Color.green));
+            }
+        }
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-        this.UI.renderer.material.color = Color.yellow;
+
+        if (!eventData.dragging)
+        {
+            StartCoroutine(Blunk(UI.renderer.material.color));
+        }
+
     }
 
 }

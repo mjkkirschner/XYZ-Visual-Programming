@@ -52,6 +52,17 @@ public class ConnectorModel : BaseModel
 				View.redraw ();
 		}
 		//TODO add method to verify the ports that this connector connects
+        
+    public override GameObject BuildSceneElements()
+        {
 
+            GameObject UI = new GameObject();
+            UI.transform.localPosition = this.gameObject.transform.position;
+            UI.transform.parent = this.gameObject.transform;
+            var geo = View.redraw();
+            geo.ForEach(x => x.transform.parent = UI.transform);
+            return UI;
+
+        }
 
 }

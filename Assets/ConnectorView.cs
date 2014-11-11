@@ -44,17 +44,7 @@ public class ConnectorView:BaseView<ConnectorModel>
             
         }
 
-		/*public void Destroy(){
-		if (TemporaryGeometry != null) {
-			TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
-		}
-		//TODO better placement for unsubcribing from events
-		Model.PStart.PropertyChanged -= HandlePortChanges;
-		Model.PEnd.PropertyChanged -= HandlePortChanges;
-		//TODO All Events
-    
-	}
-    */
+		
 		public List<GameObject> redraw ()
 		{
 				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
