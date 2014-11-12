@@ -30,7 +30,7 @@ namespace Nodeplay.UI
 				{
 						for (float f = 0; f <= duration; f = f + Time.deltaTime) {
 
-								obUI.material.color = Color.Lerp (renderer.material.color, ToColor, f);
+								obUI.material.color = Color.Lerp (obUI.material.color, ToColor, f);
 								yield return null;
 
 						}

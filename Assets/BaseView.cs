@@ -64,7 +64,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         //add our selectable mesh render component here to nodes since these are selectable and 3d objects
         this.gameObject.AddComponent<SelectableMeshRender>();
         var sel = this.GetComponent<SelectableMeshRender>();
-        selectable.colors = setupColorBlock(originalcolor, Color.green);
+        sel.colors = setupColorBlock(originalcolor, Color.green);
 
         Debug.Log("just started BaseView");
         started = true;
