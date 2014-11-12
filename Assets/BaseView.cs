@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using Nodeplay.UI;
 
 //TODO probably should repleace this with a nongeneric abstract base class
 public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged where M : BaseModel
@@ -19,14 +20,13 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     protected Boolean started = false;
     public NodeManager NodeManager;
     private Color originalcolor;
-    public Color HoverColor;
-
+    protected ColorBlock eventColors = new ColorBlock(); 
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
     //some gameobject root that represents the geometry this view represents/controls
     public GameObject UI;
-
+    public Selectable selectable;
 
     protected virtual void NotifyPropertyChanged(String info)
     {
@@ -35,6 +35,17 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         {
             PropertyChanged(this, new PropertyChangedEventArgs(info));
         }
+    }
+    protected ColorBlock setupColorBlock(Color normal,Color highlight)
+    {
+        var output = new ColorBlock();
+        output.colorMultiplier = 1;
+        output.disabledColor = Color.grey;
+        output.normalColor = normal;
+        output.highlightedColor = highlight;
+        output.pressedColor = new Color(highlight.r, highlight.g - 50, highlight.b + 50);
+        output.fadeDuration = .1f;
+        return output;
     }
 
     protected virtual void Start()
@@ -46,11 +57,18 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
-        // load the UI and save the initial UI color
+
         UI = Model.BuildSceneElements();
         originalcolor = UI.renderer.material.color;
+        
+        //add our selectable mesh render component here to nodes since these are selectable and 3d objects
+        this.gameObject.AddComponent<SelectableMeshRender>();
+        var sel = this.GetComponent<SelectableMeshRender>();
+        selectable.colors = setupColorBlock(originalcolor, Color.green);
+
         Debug.Log("just started BaseView");
         started = true;
+        
     }
 
     protected virtual void OnDestroy()
@@ -125,7 +143,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //handler for dragging node event//
     public override void OnDrag(PointerEventData pointerdata)
     {
-
+        Debug.Log("drag called");
         if (pointerdata.rawPointerPress == this.UI)
         {
             // get the hit world coord
@@ -143,6 +161,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 
     public override void OnPointerDown(PointerEventData pointerdata)
     {
+        Debug.Log("mouse down called");
         dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
     }
 
@@ -167,43 +186,52 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         }
     }
 
-    protected virtual IEnumerator Blink(Color ToColor)
+    protected virtual IEnumerator Blink(Color ToColor, float duration)
     {
-        for (float f = 0; f < 1; f = f + .05f)
+        for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
+          
             UI.renderer.material.color = Color.Lerp(originalcolor, ToColor, f);
             yield return null;
+
         }
+        UI.renderer.material.color = ToColor;
     }
 
-    protected virtual IEnumerator Blunk(Color FromColor)
+    protected virtual IEnumerator Blunk(Color FromColor, float duration)
     {
-        for (float f = 0; f < 1; f = f + .05f)
+        for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
            
             UI.renderer.material.color = Color.Lerp(FromColor, originalcolor, f);
             yield return null;
+          
         }
+        UI.renderer.material.color = originalcolor;
     }
 
+    //TODO remove these methods into a component for hover reactions that can be set in the GUI
+/*
     public override void OnPointerEnter(PointerEventData eventData)
     {
         if (eventData.pointerCurrentRaycast.gameObject == this.UI)
         {
             if (!eventData.dragging)
             {
-                StartCoroutine(Blink(Color.green));
+                
+                StartCoroutine(Blink(HoverColor,.1f));
             }
         }
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-
+        
         if (!eventData.dragging)
         {
-            StartCoroutine(Blunk(UI.renderer.material.color));
+           
+            StartCoroutine(Blunk(UI.renderer.material.color,.1f));
         }
 
     }
-
+    */
 }
