@@ -20,3 +20,6 @@ Temp
 *.unityproj
 *.sln
 *.userprefs
+UnityVS.nodeply.v12.suo
+obj/Debug/DesignTimeResolveAssemblyReferences.cache
+obj/Debug/UnityVS.nodeply.CSharp.csprojResolveAssemblyReference.cache
