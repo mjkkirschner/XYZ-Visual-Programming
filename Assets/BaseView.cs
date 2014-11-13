@@ -43,7 +43,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         output.disabledColor = Color.grey;
         output.normalColor = normal;
         output.highlightedColor = highlight;
-        output.pressedColor = new Color(highlight.r, highlight.g - 50, highlight.b + 50);
+        output.pressedColor = new Color(highlight.r, highlight.g - .2f, highlight.b + .2f);
         output.fadeDuration = .1f;
         return output;
     }
@@ -59,7 +59,8 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         NodeManager = GameObject.FindObjectOfType<NodeManager>();
 
         UI = Model.BuildSceneElements();
-        originalcolor = UI.renderer.material.color;
+        var firstRenderer = UI.GetComponentInChildren<Renderer>();
+        originalcolor = firstRenderer.material.color;
         
         //add our selectable mesh render component here to nodes since these are selectable and 3d objects
         this.gameObject.AddComponent<SelectableMeshRender>();

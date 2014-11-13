@@ -14,12 +14,12 @@ namespace Nodeplay.UI
 		class SelectableMeshRender:Selectable
 		{
 
-				public Renderer obUI;
+				public List<Renderer> obUI;
         
        
 				protected override void OnEnable ()
 				{
-						obUI = this.GetComponentInChildren<Renderer> ();
+						obUI = this.GetComponentsInChildren<Renderer> ().ToList();
 						base.OnEnable ();
         
         
@@ -30,17 +30,17 @@ namespace Nodeplay.UI
 				{
 						for (float f = 0; f <= duration; f = f + Time.deltaTime) {
 
-								obUI.material.color = Color.Lerp (obUI.material.color, ToColor, f);
+								obUI.ForEach(x=>x.material.color = Color.Lerp (x.material.color, ToColor, f));
 								yield return null;
 
 						}
-						obUI.material.color = ToColor;
+						obUI.ForEach(x=>x.material.color = ToColor);
 				}
 
 
 				protected override void DoStateTransition (Selectable.SelectionState state, bool instant)
 				{
-           
+                    obUI = this.GetComponentsInChildren<Renderer>().ToList();
 						Debug.Log ("inside state transition");
 
 						if (state == SelectionState.Pressed) {
