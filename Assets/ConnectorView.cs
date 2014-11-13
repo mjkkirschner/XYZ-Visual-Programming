@@ -45,11 +45,7 @@ public class ConnectorView:BaseView<ConnectorModel>
         }
 
 		
-		public List<GameObject> redraw ()
-		{
-				return redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
-				
-		}
+		
         public override void OnPointerUp(PointerEventData pointerdata)
         {
             
@@ -65,6 +61,15 @@ public class ConnectorView:BaseView<ConnectorModel>
         {
             
         }
+        public List<GameObject> redraw()
+        {
+            var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
+            if (UI != null)
+            {
+                geo.ForEach(x => x.transform.parent = UI.transform);
+            }
+            return geo;
+        }
 
 		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint)
 		{
@@ -78,7 +83,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 		
 				var spheres = points.Select (x => {
 						var y = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-						GameObject.DestroyImmediate (y.collider);
+						//GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
 						y.transform.localScale = new Vector3 (.2f, .2f, .2f);
 						return y;}).ToList ();
@@ -91,7 +96,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 		public void HandlePortChanges (object sender, EventArgs args)
 		{
 				Debug.Log (sender + " just sent event that port was modified and we should update the connector view");
-				redraw (StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
+				redraw ();
 		}
 
 

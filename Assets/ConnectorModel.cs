@@ -49,7 +49,7 @@ public class ConnectorModel : BaseModel
 				View.StartPort = PStart;
 				start.PropertyChanged += View.HandlePortChanges;
 				end.PropertyChanged += View.HandlePortChanges;
-				View.redraw ();
+				
 		}
 		//TODO add method to verify the ports that this connector connects
         
@@ -60,6 +60,8 @@ public class ConnectorModel : BaseModel
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
             var geo = View.redraw();
+        //need to set these parents explicity since on first run redraw wont be able to 
+        // nest these inside UI as UI is not created yet
             geo.ForEach(x => x.transform.parent = UI.transform);
             return UI;
 
