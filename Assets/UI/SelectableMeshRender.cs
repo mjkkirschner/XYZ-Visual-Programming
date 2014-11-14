@@ -62,6 +62,15 @@ namespace Nodeplay.UI
             obUI.ForEach(x => x.material.color = ToColor);
         }
 
+		public override void OnPointerEnter (PointerEventData eventData)
+		{	if (!eventData.used){
+			base.OnPointerEnter(eventData);
+			eventData.Use();
+				
+			}
+		}
+
+
 
         protected override void DoStateTransition(Selectable.SelectionState state, bool instant)
         {

@@ -16,7 +16,7 @@ namespace Nodeplay.Nodes
 						AddOutPutPort ();
 						AddInputPort ("input1");
                         AddInputPort("input2");
-                        Code = "OUTPUT = range(input1,input2);print OUTPUT";
+                        Code = "OUTPUT = range(input1,input2*2);print OUTPUT";
                         Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 				}
 	
