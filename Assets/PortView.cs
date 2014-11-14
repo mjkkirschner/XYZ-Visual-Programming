@@ -97,34 +97,35 @@ class PortView : BaseView<PortModel>
 		Debug.Log("I" + Model.NickName + " was just dropped on");
 		
 		var startport = pointerdata.pointerPress.GetComponent<PortModel>();
-		
-		if (startport.PortType == Model.PortType)
-		{
-			Debug.Log("breaking out, you cant attached two same direction connectors");
-			return;
-		}
-		
-		//TODO we must also look if we're about to create a cyclic dependencey, we should return a blank state
-		
-		// if port is already connected then disconnect old port before creating new connector
-		if (Model.IsConnected)
-		{	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
-			Model.Disconnect(Model.connectors[0]);
-			//TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
-			//probably take care of sending this event chains
-			
-		}
-		//instantiate new connector etc
-		//TODO move this method to portmodel?
-		// or possibly all instantiation to a manager or WorldModel/Controller
-		var realConnector = new GameObject("Connector");
-		realConnector.AddComponent<ConnectorModel>();
-		realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
-		Model.Connect(realConnector.GetComponent<ConnectorModel>());
-		
-		//TODO the other port also needs a connect signal, MAKE SURE THE CORRECT PORT IS GETTING THIS EVENT
-		pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+        if (startport != null)
+        {
+            if (startport.PortType == Model.PortType)
+            {
+                Debug.Log("breaking out, you cant attached two same direction connectors");
+                return;
+            }
 
+            //TODO we must also look if we're about to create a cyclic dependencey, we should return a blank state
+
+            // if port is already connected then disconnect old port before creating new connector
+            if (Model.IsConnected)
+            {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
+                Model.Disconnect(Model.connectors[0]);
+                //TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
+                //probably take care of sending this event chains
+
+            }
+            //instantiate new connector etc
+            //TODO move this method to portmodel?
+            // or possibly all instantiation to a manager or WorldModel/Controller
+            var realConnector = new GameObject("Connector");
+            realConnector.AddComponent<ConnectorModel>();
+            realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
+            Model.Connect(realConnector.GetComponent<ConnectorModel>());
+
+            //TODO the other port also needs a connect signal, MAKE SURE THE CORRECT PORT IS GETTING THIS EVENT
+            pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+        }
     }
 
     public override void OnPointerUp(PointerEventData pointerdata)
