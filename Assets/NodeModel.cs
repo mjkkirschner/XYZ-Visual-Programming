@@ -121,7 +121,10 @@ public class NodeModel : BaseModel
         UI.transform.localPosition = this.gameObject.transform.position;
         UI.transform.parent = this.gameObject.transform;
 
-        
+        // now load the outputview
+        var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
+        output.transform.localPosition = this.gameObject.transform.position;
+        output.transform.parent = UI.transform.parent;
         //iterate all graphics casters and turn blocking on for 3d objects
 		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);

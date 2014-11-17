@@ -36,4 +36,11 @@ public class UIWindowBase : MonoBehaviour, IDragHandler, IPointerDownHandler
 				}
 				// magic : add zone clamping if's here.
 		}
+
+        public void Update()
+        {
+            m_transform.rotation = Camera.main.transform.rotation;
+        }
+
+
 }

@@ -20,7 +20,6 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     protected Boolean started = false;
     public NodeManager NodeManager;
     private Color originalcolor;
-    protected ColorBlock eventColors = new ColorBlock(); 
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
@@ -36,6 +35,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
             PropertyChanged(this, new PropertyChangedEventArgs(info));
         }
     }
+    //overide this method to setup the transition colors for this view
     protected ColorBlock setupColorBlock(Color normal,Color highlight)
     {
         var output = new ColorBlock();

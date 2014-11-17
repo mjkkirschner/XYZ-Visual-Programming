@@ -12,7 +12,9 @@ namespace Nodeplay.UI.Utils
     class ToggleContentSizeFit : MonoBehaviour
     {
         public void onValueChanged()
+            
         {   //switch the current state of the contentfitter based on previous state
+           
             if (this.GetComponent<ContentSizeFitter>().verticalFit
                 == ContentSizeFitter.FitMode.PreferredSize)
             {
