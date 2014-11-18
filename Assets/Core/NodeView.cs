@@ -36,7 +36,7 @@ public class NodeView : BaseView<NodeModel>{
         StartCoroutine(Blunk(Color.red,1f));
         //subclass this component so we can just look for the output box
         //need to marshal or implement to_string per output type somehow
-        UI.GetComponentInChildren<Text>().text = Model.StoredValueDict.ToJSONstring();
+       // UI.GetComponentInChildren<Text>().text = Model.StoredValueDict.ToJSONstring();
     }
 
     public void OnEvaluation(object sender, EventArgs e)

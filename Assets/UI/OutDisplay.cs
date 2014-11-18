@@ -48,8 +48,12 @@ namespace Nodeplay.UI
         public void UpdateOutputs()
         {
             //destroy all currentoutputs
-            currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x));
+            currentOutputdisplaydata = GetComponentsInChildren<OutputDisplayPair>().ToList();
 
+            if (currentOutputdisplaydata != null)
+            {
+                currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x));
+            }
             //create new ones
             foreach (var entry in outputDict)
             {
@@ -57,8 +61,8 @@ namespace Nodeplay.UI
                 //output dict we have been extracted from the model on its property change
 
                 var newdisplay = Resources.Load("OutputPair") as GameObject;
-                newdisplay.AddComponent<OutputDisplayPair>();
-                newdisplay.transform.parent = mainPanel.transform;
+                newdisplay = GameObject.Instantiate(newdisplay) as GameObject;
+                newdisplay.GetComponent<RectTransform>().SetParent(mainPanel.GetComponent<RectTransform>(),false);
                 //update the labels with the current output dictionary data
                 newdisplay.GetComponent<OutputDisplayPair>().UpdateLabels(entry.Key, entry.Value);
             }

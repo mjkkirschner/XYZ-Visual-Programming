@@ -18,18 +18,22 @@ namespace Nodeplay.UI
         private String outputstring;
         private Text nameControl;
         private Text valueControl;
+        bool started = false;
 
         protected override void Start()
         {
             //find the text controls by name
             nameControl = transform.FindChild("output name").GetComponent<Text>();
             valueControl = transform.FindChild("output value").GetComponent<Text>();
+            started = true;
         }
 
        
         public void UpdateLabels(string name, object value)
         {
-
+            if (!started){
+                Start();
+            }
             nameControl.text = name;
             outputstring = value.ToJSONstring();
             valueControl.text = outputstring;

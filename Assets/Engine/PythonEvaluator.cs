@@ -28,11 +28,12 @@ namespace Nodeplay.Engine
         {
             //names = new List<String>() { "name1", "name2" };
             //vals = new List<System.Object>() { 1, 2 };
+            //outnames = {range}
             //Debug.Log(Evaluate(code, names, vals));
 
         }
 
-        public System.Object Evaluate(string script, List<string> variableNames, List<System.Object> variableValues)
+        public Dictionary<string,object> Evaluate(string script, List<string> variableNames, List<System.Object> variableValues, List<string> OutputNames)
         {
 
             var engine = IronPython.Hosting.Python.CreateEngine();
@@ -78,16 +79,24 @@ namespace Nodeplay.Engine
                 //probably for some node we'll also need to supply 
                 //a list of output names to search for, which we'll scope,
                 // add to a dictionary and return the dictionary using the names or index of the port
-                if (scope.ContainsVariable("OUTPUT"))
-                {
-                    output = scope.GetVariable("OUTPUT");
-                }
-                else
-                {
-                    output = "No OUTPUT variable was defined in the python code";
-                }
 
-                return output;
+                var outdict = new Dictionary<string, object>();
+
+                foreach (var outname in OutputNames)
+                {
+                    if (scope.ContainsVariable(outname))
+                    {
+                        outdict[outname] = scope.GetVariable(outname);
+                    }
+                    else
+                    {
+                        outdict[outname] = "No variable named" + outname + "was defined in the python code";
+                    }
+                }
+                
+               
+
+                return outdict;
             }
 
 

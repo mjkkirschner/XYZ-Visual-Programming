@@ -125,7 +125,8 @@ public class NodeModel : BaseModel
         var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
         output.transform.localPosition = this.gameObject.transform.position;
         output.transform.parent = UI.transform.parent;
-        output.AddComponent<OutDisplay>();
+        this.PropertyChanged+= output.AddComponent<OutDisplay>().HandleModelChanges;
+        
         //iterate all graphics casters and turn blocking on for 3d objects
 		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
@@ -188,7 +189,7 @@ public class NodeModel : BaseModel
         var inputdata = gatherInputPortData();
         //TODO this does not currently let us supply more than one output per node...
         // since the entire stored value is extracted from the node and transfered
-        var outvar = ((PythonEvaluator)Evaluator).Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList());
+        var outvar = ((PythonEvaluator)Evaluator).Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList(), Outputs.Select(x=>x.NickName).ToList());
         this.StoredValueDict = outvar;
         OnEvaluated();
     }

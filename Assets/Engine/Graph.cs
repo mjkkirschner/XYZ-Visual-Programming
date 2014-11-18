@@ -75,7 +75,9 @@ namespace Nodeplay.Engine
                     //pop the evaluated node
                     var popped = S.Pop();
                     //we can now add the nodes that are attached to this nodes outputs
-                    var childnodes = popped.Outputs.SelectMany(x => x.connectors.Select(y => y.PEnd.Owner)).ToList();
+                    //add Distinct to eliminate adding a node twice , for instance [] = [] (thats 2 connectors, not equals)
+                    
+                    var childnodes = popped.Outputs.SelectMany(x => x.connectors.Select(y => y.PEnd.Owner)).Distinct().ToList();
                     childnodes = childnodes.Except(S).ToList();
                     childnodes.ForEach(x => S.Push(x));
                 }
@@ -87,8 +89,8 @@ namespace Nodeplay.Engine
                     //We do this by pushing those inputs and possibly their dependencies to the stack here
 
                     //get all upstream nodes that are not evaluated
-                    var parentnodes = topofstack.Inputs.SelectMany(x => x.connectors.Select(y => y.PStart.Owner)).ToList();
-                    parentnodes = parentnodes.Where(x => x.StoredValueDict != null).ToList();
+                    var parentnodes = topofstack.Inputs.SelectMany(x => x.connectors.Select(y => y.PStart.Owner)).Distinct().ToList();
+                    parentnodes = parentnodes.Where(x => x.StoredValueDict == null).ToList();
                     parentnodes = parentnodes.Except(S).ToList();
                     //push these parent nodes to the stack
                     // where they will be evaluated
