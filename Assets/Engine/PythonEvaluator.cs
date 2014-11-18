@@ -74,6 +74,10 @@ namespace Nodeplay.Engine
 
 
                 }
+                //TODO design how this will work for multiple outputs
+                //probably for some node we'll also need to supply 
+                //a list of output names to search for, which we'll scope,
+                // add to a dictionary and return the dictionary using the names or index of the port
                 if (scope.ContainsVariable("OUTPUT"))
                 {
                     output = scope.GetVariable("OUTPUT");

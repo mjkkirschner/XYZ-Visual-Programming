@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Interfaces;
 using Nodeplay.Engine;
+
 namespace Nodeplay.Nodes
 {
     public class Number : NodeModel
@@ -14,8 +15,7 @@ namespace Nodeplay.Nodes
             base.Start();
             AddOutPutPort();
             Code = "OUTPUT = 5";
-            StoredValue = 5;
-           Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+            Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
         }
 
 

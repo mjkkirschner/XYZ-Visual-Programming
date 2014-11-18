@@ -37,7 +37,7 @@ namespace Nodeplay.Engine
         {
             foreach (var inputP in node.Inputs)
             {   //TODO add null check for connector
-                if (inputP.connectors[0].PStart.Owner.StoredValue == null)
+                if (inputP.connectors[0].PStart.Owner.StoredValueDict == null)
                 {
                     return false;
                 }
@@ -88,7 +88,7 @@ namespace Nodeplay.Engine
 
                     //get all upstream nodes that are not evaluated
                     var parentnodes = topofstack.Inputs.SelectMany(x => x.connectors.Select(y => y.PStart.Owner)).ToList();
-                    parentnodes = parentnodes.Where(x => x.StoredValue != null).ToList();
+                    parentnodes = parentnodes.Where(x => x.StoredValueDict != null).ToList();
                     parentnodes = parentnodes.Except(S).ToList();
                     //push these parent nodes to the stack
                     // where they will be evaluated

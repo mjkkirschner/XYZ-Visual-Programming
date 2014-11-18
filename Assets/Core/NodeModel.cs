@@ -19,20 +19,20 @@ public class NodeModel : BaseModel
     // from ports, will need to add events on ports
     public List<PortModel> Inputs { get; set; }
     public List<PortModel> Outputs { get; set; }
-    private System.Object storedvalue;
-    public System.Object StoredValue
+    private Dictionary<string,System.Object> storedvaluedict;
+    public Dictionary<string,System.Object> StoredValueDict
     {
         get
         {
-            return this.storedvalue;
+            return this.storedvaluedict;
 
         }
 
         set
         {
-            if (value != storedvalue)
+            if (value != storedvaluedict)
             {
-                this.storedvalue = value;
+                this.storedvaluedict = value;
                 NotifyPropertyChanged("StoredValue");
             }
         }
@@ -56,7 +56,7 @@ public class NodeModel : BaseModel
         var view = this.gameObject.AddComponent<NodeView>();
         Evaluated += view.OnEvaluated;
         Evaluation += view.OnEvaluation;
-        StoredValue = null;
+        StoredValueDict = null;
         Inputs = new List<PortModel>();
         Outputs = new List<PortModel>();
 
@@ -125,6 +125,7 @@ public class NodeModel : BaseModel
         var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
         output.transform.localPosition = this.gameObject.transform.position;
         output.transform.parent = UI.transform.parent;
+        output.AddComponent<OutDisplay>();
         //iterate all graphics casters and turn blocking on for 3d objects
 		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
@@ -143,7 +144,15 @@ public class NodeModel : BaseModel
         foreach (var port in Inputs)
         {
             Debug.Log("gathering input port data on node" + name);
-            var portInputPackage = Tuple.New(port.NickName, port.connectors[0].PStart.Owner.StoredValue);
+            //TODO instead of looking for the owners stored value we either need to look at the stored value of
+            // at the port, or storedValue will be a dictionray of output port values where we can index in using 
+            // some index, not sure what index we'll have... we need to support multiple outs from one port
+            // going to multiple inputs on another port, so it needs to be the index of the output port
+            // on the parent node
+            
+            //TODO add a check for the storedvaluedict returning key exception 
+            var outputConnectedToThisInput = port.connectors[0].PStart;
+            var portInputPackage = Tuple.New(port.NickName, outputConnectedToThisInput.Owner.StoredValueDict[outputConnectedToThisInput.NickName]);
             Debug.Log("created a port package" + portInputPackage.First + ":" + portInputPackage.Second.ToString());
             output.Add(portInputPackage);
         }
@@ -175,10 +184,12 @@ public class NodeModel : BaseModel
     {
         OnEvaluation();
         //build packages for all data
-        //TODO fire event signaling view to update value preview and to change color of eval node
+        
         var inputdata = gatherInputPortData();
+        //TODO this does not currently let us supply more than one output per node...
+        // since the entire stored value is extracted from the node and transfered
         var outvar = ((PythonEvaluator)Evaluator).Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList());
-        this.StoredValue = outvar;
+        this.StoredValueDict = outvar;
         OnEvaluated();
     }
 
