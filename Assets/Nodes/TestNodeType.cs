@@ -13,7 +13,7 @@ namespace Nodeplay.Nodes
         protected override void Start()
         {
             base.Start();
-            AddOutPutPort();
+            AddOutPutPort("OUTPUT");
             AddInputPort("input1");
             AddInputPort("input2");
             Code = "OUTPUT = range(input1,input2*2);print OUTPUT";

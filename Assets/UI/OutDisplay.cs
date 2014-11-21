@@ -52,7 +52,7 @@ namespace Nodeplay.UI
 
             if (currentOutputdisplaydata != null)
             {
-                currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x));
+                currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x.gameObject));
             }
             //create new ones
             foreach (var entry in outputDict)

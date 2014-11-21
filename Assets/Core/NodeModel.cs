@@ -84,13 +84,13 @@ public class NodeModel : BaseModel
     /// Adds an output portmodel and geometry to the node.
     /// also updates the outputs array
     /// </summary>
-    public void AddOutPutPort()
+    public void AddOutPutPort(string portName)
     {
 
         var newport = new GameObject();
         newport.AddComponent<PortModel>();
         // initialze the port
-        newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.output, name);
+        newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.output, portName);
         var currentPort = newport.GetComponent<PortModel>();
         // registers a listener on the port so it gets updates about the nodes property changes
         // we use this to let the port notify it's attached connectors that they need to update
