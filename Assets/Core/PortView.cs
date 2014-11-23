@@ -84,7 +84,7 @@ class PortView : BaseView<PortModel>
     // ports will be responsible for creating connectors
 
 
-    // I think event is firing on the wrong portview...
+    
     public override void OnDrop(PointerEventData pointerdata)
     {
         

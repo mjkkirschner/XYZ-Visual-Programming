@@ -19,6 +19,7 @@ public class NodeModel : BaseModel
     // from ports, will need to add events on ports
     public List<PortModel> Inputs { get; set; }
     public List<PortModel> Outputs { get; set; }
+    
     private Dictionary<string,System.Object> storedvaluedict;
     public Dictionary<string,System.Object> StoredValueDict
     {

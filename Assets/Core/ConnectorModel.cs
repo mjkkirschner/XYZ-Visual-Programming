@@ -8,13 +8,13 @@ using System.Linq;
 /// </summary>
 public class ConnectorModel : BaseModel
 {
-		public PortModel PStart { get; set; }
-		public PortModel PEnd { get; set; }
-		public ConnectorView View { get; set; }
+		public  PortModel PStart { get; set; }
+		public  PortModel PEnd { get; set; }
+		public  ConnectorView View { get; set; }
 		
 
 
-		void OnEnable ()
+		protected virtual void OnEnable ()
 		{
 				//create a connector view
             View = this.gameObject.AddComponent<ConnectorView>();
@@ -30,6 +30,7 @@ public class ConnectorModel : BaseModel
 		}
 		
 		void OnDestroy(){
+            //TODO we do not even deal with disconnect events yet
 		//View.Destroy();
 	// cleanup the view... TODO MOVE THIS LOGIC INTO A HANDELR THAT GETS CALLED ON DISCONNECT....s
 	}
@@ -37,7 +38,7 @@ public class ConnectorModel : BaseModel
 
 		
 
-		public void init (PortModel start, PortModel end)
+		public virtual void init (PortModel start, PortModel end)
 		{
 		
 				PStart = start;

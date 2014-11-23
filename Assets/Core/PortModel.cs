@@ -59,7 +59,7 @@ public class PortModel :BaseModel
 		//				}
 		//		}
 
-		public void Connect (ConnectorModel connector)
+		public virtual void Connect (ConnectorModel connector)
 		{
 				connectors.Add (connector);
 
@@ -72,7 +72,7 @@ public class PortModel :BaseModel
 		/// Disconnect the specified connector from this port.
 		/// </summary>
 		/// <param name="connector">Connector.</param>
-		public void Disconnect (ConnectorModel connector)
+		public virtual void Disconnect (ConnectorModel connector)
 		{
 				if (!connectors.Contains (connector))
 						return;
@@ -116,7 +116,7 @@ public class PortModel :BaseModel
 
 		}
 
-		public void init (NodeModel owner, int index, porttype type, string nickname = null)
+		public virtual void init (NodeModel owner, int index, porttype type, string nickname = null)
 		{
 
 
