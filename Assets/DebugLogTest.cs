@@ -17,10 +17,11 @@ namespace Nodeplay.Nodes
 			//AddOutPutPort("OUTPUT");
 			//AddInputPort("input1");
 			AddExecutionInputPort("start");
+			AddOutPutPort("OUTPUT");
 			//AddExecutionOutPutPort("done");
 
 			
-			Code = "print('blahblahblah')";
+			Code = "OUTPUT = 'we were iterated';print('blahblahblah')";
 			
 			
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();

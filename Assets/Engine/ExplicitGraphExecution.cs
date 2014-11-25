@@ -74,7 +74,7 @@ namespace Nodeplay.Engine
 					//value will be cached on the node for now
 					//TODO what if this node is a data node and requires no evaluation and has no evaluator?
 					topofstack.Evaluate();
-					//pop the evaluated node
+					//pop the evaluated nodee
 					var popped = S.Pop();
 					//we can now add the nodes that are attached to this nodes outputs
 					//add Distinct to eliminate adding a node twice , for instance [] = [] (thats 2 connectors, not equals)

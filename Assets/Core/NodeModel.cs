@@ -208,7 +208,7 @@ public class NodeModel : BaseModel
 		
 
 			int indexCopy = trigger.Index;
-			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,() => this.CallOutPut(indexCopy));
+			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,() => this.StartCoroutine(CallOutPut(indexCopy)));
 			outputTriggers.Add(outputPackage);
 			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
 
@@ -217,7 +217,7 @@ public class NodeModel : BaseModel
 	}
 
 
-	public void CallOutPut(int index)
+	public IEnumerator CallOutPut(int index)
 	{
 
 		Debug.Log("trying to get the output on " + this + "at index " + index);
@@ -227,8 +227,10 @@ public class NodeModel : BaseModel
 		Debug.Log("this trigger was connected");
 		var nextNode = trigger.connectors[0].PEnd.Owner;
 		Debug.Log("about to evaluate " + nextNode);
+			yield return;
 
 			nextNode.Evaluate();
+
 		}
 	}
 
