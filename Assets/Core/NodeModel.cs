@@ -19,7 +19,8 @@ public class NodeModel : BaseModel
     // from ports, will need to add events on ports
     public List<PortModel> Inputs { get; set; }
     public List<PortModel> Outputs { get; set; }
-    
+	public List<ExecutionPortModel> ExecutionInputs {get;set;}
+	public List<ExecutionPortModel> ExecutionOutputs {get;set;}
     private Dictionary<string,System.Object> storedvaluedict;
     public Dictionary<string,System.Object> StoredValueDict
     {
@@ -48,7 +49,7 @@ public class NodeModel : BaseModel
     //TODO rename rethink
     public string Code { get; set; }
 
-    public MonoBehaviour Evaluator;
+    public Evaluator Evaluator;
 
     protected override void Start()
     {
@@ -60,9 +61,43 @@ public class NodeModel : BaseModel
         StoredValueDict = null;
         Inputs = new List<PortModel>();
         Outputs = new List<PortModel>();
-
+		ExecutionInputs = new List<ExecutionPortModel>();
+		ExecutionOutputs = new List<ExecutionPortModel>();
     }
 
+	public void AddExecutionInputPort(string name = null)
+	{
+		//TODO this should create an empty gameobject and port view should create its own UIelements
+		var newport = new GameObject();
+		newport.AddComponent<ExecutionPortModel>();
+		// initialze the port
+		newport.GetComponent<ExecutionPortModel>().init(this, ExecutionInputs.Count, PortModel.porttype.input, name);
+		
+		//hookup the ports listener to the nodes propertychanged event, and hook
+		// handlers on the node back from the ports connection events
+		this.PropertyChanged += newport.GetComponent<ExecutionPortModel>().NodePropertyChangeEventHandler;
+		newport.GetComponent<ExecutionPortModel>().PortConnected += PortConnected;
+		newport.GetComponent<ExecutionPortModel>().PortDisconnected += PortDisconnected;
+		ExecutionInputs.Add(newport.GetComponent<ExecutionPortModel>());
+		
+		
+	}
+
+	public void AddExecutionOutPutPort(string portName)
+	{
+		
+		var newport = new GameObject();
+		newport.AddComponent<ExecutionPortModel>();
+		// initialze the port
+		newport.GetComponent<ExecutionPortModel>().init(this, ExecutionOutputs.Count, PortModel.porttype.output, portName);
+		var currentPort = newport.GetComponent<ExecutionPortModel>();
+		// registers a listener on the port so it gets updates about the nodes property changes
+		// we use this to let the port notify it's attached connectors that they need to update
+		this.PropertyChanged += currentPort.NodePropertyChangeEventHandler;
+		newport.GetComponent<ExecutionPortModel>().PortConnected += PortConnected;
+		newport.GetComponent<ExecutionPortModel>().PortDisconnected += PortDisconnected;
+		ExecutionOutputs.Add(currentPort);
+	}
 
     public void AddInputPort(string name = null)
     {
@@ -103,13 +138,13 @@ public class NodeModel : BaseModel
 
     public void PortConnected(object sender, EventArgs e)
     {
-        Debug.Log("I just got a port connected event");
+        Debug.Log("I " + this.GetType().Name+  " just got a port connected event on " + (sender as PortModel).NickName );
 
     }
 
     public void PortDisconnected(object sender, EventArgs e)
     {
-        Debug.Log("I just got a port disconnected event");
+		Debug.Log("I " + this.GetType().Name+  " just got a port DISconnected event on " + (sender as PortModel).NickName);
     }
 
     public override GameObject BuildSceneElements()
@@ -155,13 +190,57 @@ public class NodeModel : BaseModel
             //TODO add a check for the storedvaluedict returning key exception 
             var outputConnectedToThisInput = port.connectors[0].PStart;
             var portInputPackage = Tuple.New(port.NickName, outputConnectedToThisInput.Owner.StoredValueDict[outputConnectedToThisInput.NickName]);
-            Debug.Log("created a port package" + portInputPackage.First + ":" + portInputPackage.Second.ToString());
+            Debug.Log("created a port package " + portInputPackage.First + " : " + portInputPackage.Second.ToString());
             output.Add(portInputPackage);
         }
         return output;
 
     }
+	/// <summary>
+	///method gathers delegates from the executionoutput ports, these can be called
+	/// by any evaluator to trigger these outputs at the correct time during eval.
+	/// </summary>
+	/// <returns>The execution data.</returns>
+	private List<Tuple<string,Action>> gatherExecutionData ()
+	{
+		var outputTriggers = new List<Tuple<string,System.Action>>();
+		foreach (var trigger in ExecutionOutputs){
+		
 
+			int indexCopy = trigger.Index;
+			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,() => this.CallOutPut(indexCopy));
+			outputTriggers.Add(outputPackage);
+			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
+
+		}
+		return outputTriggers;
+	}
+
+
+	public void CallOutPut(int index)
+	{
+
+		Debug.Log("trying to get the output on " + this + "at index " + index);
+		var trigger = this.ExecutionOutputs[index];
+		Debug.Log(ExecutionOutputs[index].NickName +  " is the output we found at that index");
+		if (trigger.IsConnected){
+		Debug.Log("this trigger was connected");
+		var nextNode = trigger.connectors[0].PEnd.Owner;
+		Debug.Log("about to evaluate " + nextNode);
+
+			nextNode.Evaluate();
+		}
+	}
+
+	/*public void CallOutPut(string outputName){
+	foreach(var outtrigger in ExecutionOutputs){
+		if (outtrigger.NickName == outputName){
+				outtrigger.connectors.First().PEnd.Owner.Evaluate();
+				break;
+			}
+		}
+	}
+*/
     protected virtual void OnEvaluation()
     {
         Debug.Log("sending a evaluation state change");
@@ -181,16 +260,26 @@ public class NodeModel : BaseModel
     }
 
 
+
     //this points to evaluation engine or some delegate
     internal void Evaluate()
     {
         OnEvaluation();
-        //build packages for all data
-        
+        //build packages for all data 
         var inputdata = gatherInputPortData();
-        //TODO this does not currently let us supply more than one output per node...
-        // since the entire stored value is extracted from the node and transfered
-        var outvar = ((PythonEvaluator)Evaluator).Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList(), Outputs.Select(x=>x.NickName).ToList());
+       //build packages for output execution triggers, these
+		// are tuples that connect an execution output string to a delegate
+		// which calls the eval method on the next node
+		// the idea is to call these outputs appropriately when needed from the code
+		// or script defind by the node
+
+		//i.e. For i in range(10):
+					//triggers["iteration"]()
+				//triggers["donewithiteration"]()
+
+		var executiondata = gatherExecutionData();
+
+        var outvar = Evaluator.Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList(), Outputs.Select(x=>x.NickName).ToList(),executiondata);
         this.StoredValueDict = outvar;
         OnEvaluated();
     }

@@ -7,6 +7,7 @@ using Nodeplay.Interfaces;
 using System.ComponentModel;
 using UnityEngine.EventSystems;
 using Nodeplay.UI;
+using System.Collections;
 
 class PortView : BaseView<PortModel>
 {
@@ -47,6 +48,10 @@ class PortView : BaseView<PortModel>
             direction = 1f;
         }
 
+		if (port.GetComponent<ExecutionPortModel>() != null){
+			direction = direction *1.5f;
+		}
+
         port.transform.Translate(0, 0, boundingBox.size.z * direction);
         port.transform.localScale = new Vector3(.33f, .33f, .33f);
 
@@ -57,11 +62,11 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            ports = Model.Owner.Inputs;
+            ports = Model.Owner.Inputs.Concat(Model.Owner.ExecutionInputs.Cast<PortModel>()).ToList();
         }
         else
         {
-            ports = Model.Owner.Outputs;
+			ports = Model.Owner.Outputs.Concat(Model.Owner.ExecutionOutputs.Cast<PortModel>()).ToList();
         }
 
 
@@ -77,13 +82,6 @@ class PortView : BaseView<PortModel>
         }
         return port;
     }
-    //event handlers
-    // TODO THESE ARE CURRENTLY THE SAME AS NODEMODEL - need to be changed
-    // and in some cases they should fire new events, like connection and unconnection
-    // these events/handlers logic need to be worked through.
-    // ports will be responsible for creating connectors
-
-
     
     public override void OnDrop(PointerEventData pointerdata)
     {
@@ -111,6 +109,8 @@ class PortView : BaseView<PortModel>
             if (Model.IsConnected)
             {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
                 Model.Disconnect(Model.connectors[0]);
+				//TODO for now explicitly disconnect the start port, but this will HAVE to be redesigned later
+				//startport.Disconnect(startport.connectors[0]);
                 //TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
                 //probably take care of sending this event chains
 
@@ -120,11 +120,14 @@ class PortView : BaseView<PortModel>
             // or possibly all instantiation to a manager or WorldModel/Controller
             var realConnector = new GameObject("Connector");
             realConnector.AddComponent<ConnectorModel>();
+			//TODO fix logic so that we reoder the inputs correctly... outputs should go first, then inputs are the end, can just check types
             realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
             Model.Connect(realConnector.GetComponent<ConnectorModel>());
 
             //TODO the other port also needs a connect signal, MAKE SURE THE CORRECT PORT IS GETTING THIS EVENT
-            pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+            //pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
+
+			//register this port to listen for events on the connector
         }
     }
 

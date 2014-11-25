@@ -4,7 +4,7 @@ using System.Linq;
 
 
 
-    class ExecutionConnectorModel:ConnectorModel
+    public class ExecutionConnectorModel:ConnectorModel
     {
 
         public new ExecutionPortModel PStart { get; set; }

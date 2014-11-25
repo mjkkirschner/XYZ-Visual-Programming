@@ -62,35 +62,31 @@ public class PortModel :BaseModel
 		public virtual void Connect (ConnectorModel connector)
 		{
 				connectors.Add (connector);
-
+				IsConnected = true;
 				//throw the event for a connection
 				OnPortConnected (EventArgs.Empty);
 
-				IsConnected = true;
+				
 		}
 		/// <summary>
 		/// Disconnect the specified connector from this port.
 		/// </summary>
 		/// <param name="connector">Connector.</param>
 		public virtual void Disconnect (ConnectorModel connector)
-		{
-				if (!connectors.Contains (connector))
-						return;
+		{		
+				
+				if (connectors.Remove (connector) == false)
+				{
+					Debug.Log("could not disconnect connect, could not find it in connector list");
+				}
+				if (connectors.Count == 0) {
+					IsConnected = false;
+					}
 				//throw the event for a connection
 				OnPortDisconnected (EventArgs.Empty);
-				connectors.Remove (connector);
-				//TODO Right now portmodel has way too much responsibility... all of this needs to be moved out of here - 
-				// possibly a manager that recieves events and  constructs or destroys objets... eventually might need to
-				// recycle these objects anyway
-				//TODO portview should either be responsible for this or should forward a 
-				// message to connector to disconnect and destroy itself, but the portmodel should not destroy a go
-				GameObject.Destroy (connector.gameObject);
-				//don't set back to white if
-				//there are still connectors on this port
-				if (connectors.Count == 0) {
-						IsConnected = false;
-				}
-
+				
+				
+				
 				//Owner.ValidateConnections ();
 		}
 
@@ -106,7 +102,25 @@ public class PortModel :BaseModel
     }
 		;
 
-    
+		public void ConnectorDisconnectEventHandler(object sender, EventArgs e){
+		//a connector is about to be destroyed and needs to be removed and diconnected so if it's still connected remove it
+		if (connectors.Contains(sender as ConnectorModel)){
+			//if not, then connect
+			this.Disconnect(sender as ConnectorModel);
+		}
+		}
+
+		public void ConnectorConnectEventHandler(object sender, EventArgs e){
+		//a connector just sent an event that it was connected, this port has been subscribed to this event through the creation of the connector
+		// in it's initializer
+
+		//check if this port is already connected to this connector
+		if (connectors.Contains(sender as ConnectorModel)==false){
+			//if not, then connect
+			this.Connect(sender as ConnectorModel);
+		}
+
+		}
 
 		/// this handler is used to respond to changes on the node owner of this port
 		// right now it just forwards the notification
