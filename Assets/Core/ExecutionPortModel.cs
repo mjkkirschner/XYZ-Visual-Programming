@@ -9,7 +9,7 @@ using System.ComponentModel;
     public class ExecutionPortModel:PortModel
     {
 
-        public List<ExecutionConnectorModel> ExecutionConnectors = new List<ExecutionConnectorModel>();
+        
 
         protected override void Start()
         {

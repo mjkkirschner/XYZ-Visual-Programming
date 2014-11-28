@@ -22,8 +22,10 @@ public class NodeManager : MonoBehaviour, IPointerClickHandler
             }
 
 		InstantiateNode<ForLoopTest>(new Vector3(1,1,1));
+		//InstantiateNode<ForLoopTest>(new Vector3(2,2,1));
 		InstantiateNode<DebugLogTest>(new Vector3(2,2,2));
 		InstantiateNode<DebugLogTest>(new Vector3(3,3,3));
+		InstantiateNode<StartExecution>(new Vector3(0,0,0));
 
         }
 		void Update ()

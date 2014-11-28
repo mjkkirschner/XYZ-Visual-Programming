@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.UI;
 using Nodeplay.UI;
 
+
 public class NodeModel : BaseModel
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
@@ -208,7 +209,9 @@ public class NodeModel : BaseModel
 		
 
 			int indexCopy = trigger.Index;
-			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,() => this.StartCoroutine(CallOutPut(indexCopy)));
+			Action storeMethodOnStack = () => GameObject.FindObjectOfType<ExplicitGraphExecution>().Q.Enqueue(
+				new Task(this,new Action(() => CallOutPut(indexCopy)),new WaitForSeconds(1)));
+			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);
 			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
 
@@ -217,7 +220,8 @@ public class NodeModel : BaseModel
 	}
 
 
-	public IEnumerator CallOutPut(int index)
+
+	public void CallOutPut(int index)
 	{
 
 		Debug.Log("trying to get the output on " + this + "at index " + index);
@@ -227,7 +231,6 @@ public class NodeModel : BaseModel
 		Debug.Log("this trigger was connected");
 		var nextNode = trigger.connectors[0].PEnd.Owner;
 		Debug.Log("about to evaluate " + nextNode);
-			yield return;
 
 			nextNode.Evaluate();
 
@@ -264,9 +267,9 @@ public class NodeModel : BaseModel
 
 
     //this points to evaluation engine or some delegate
-    internal void Evaluate()
-    {
-        OnEvaluation();
+	internal void Evaluate()
+	{
+		OnEvaluation();
         //build packages for all data 
         var inputdata = gatherInputPortData();
        //build packages for output execution triggers, these
@@ -280,10 +283,10 @@ public class NodeModel : BaseModel
 				//triggers["donewithiteration"]()
 
 		var executiondata = gatherExecutionData();
-
         var outvar = Evaluator.Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList(), Outputs.Select(x=>x.NickName).ToList(),executiondata);
-        this.StoredValueDict = outvar;
+		this.StoredValueDict = outvar;
         OnEvaluated();
+
     }
 
 

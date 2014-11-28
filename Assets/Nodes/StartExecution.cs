@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Interfaces;
 using Nodeplay.Engine;
-using System;
 
 namespace Nodeplay.Nodes
 {
-	public class DebugLogTest : NodeModel
+	public class StartExecution : NodeModel
 	{
 		
 		
 		protected override void Start()
 		{
 			base.Start();
-			//AddOutPutPort("OUTPUT");
-			//AddInputPort("input1");
-			AddExecutionInputPort("start");
-			AddOutPutPort("OUTPUT");
-			AddExecutionOutPutPort("done");
 
+			AddExecutionInputPort("start");
+			AddExecutionOutPutPort("VariableCreated");
 			
-			Code = "OUTPUT = 'we were iterated';print('blahblahblah'); done();";
-			
-			
+			Code = "VariableCreated()";
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+
 		}
 		
 		
@@ -33,3 +28,4 @@ namespace Nodeplay.Nodes
 		
 	}
 }
+

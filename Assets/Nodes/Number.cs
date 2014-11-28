@@ -13,7 +13,12 @@ namespace Nodeplay.Nodes
         protected override void Start()
         {
             base.Start();
+
             AddOutPutPort("OUTPUT");
+
+			AddExecutionInputPort("start");
+			AddExecutionOutPutPort("VariableCreated");
+
             Code = "OUTPUT = 5";
             Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
         }
