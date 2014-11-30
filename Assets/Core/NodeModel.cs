@@ -16,12 +16,40 @@ public class NodeModel : BaseModel
 {
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
 
+	//add a indexer to nodemodels, this allows getting property by name, so we can lookup
+	//propertie from the input dict if its modififed, and then change properties on the model
+	// might be more useful to look into creating bindings with proper c# classes
+	public object this[string propertyName]
+	{
+		get { return this.GetType().GetProperty(propertyName).GetValue(this, null); }
+		set { this.GetType().GetProperty(propertyName).SetValue(this, value, null); }
+	}
     //possibly we store a list of connectors that we keep updated
     // from ports, will need to add events on ports
     public List<PortModel> Inputs { get; set; }
     public List<PortModel> Outputs { get; set; }
 	public List<ExecutionPortModel> ExecutionInputs {get;set;}
 	public List<ExecutionPortModel> ExecutionOutputs {get;set;}
+	private Dictionary<string,System.Object> inputvaluedict;
+	public Dictionary<string,System.Object> InputValueDict
+	{
+		get
+		{
+			return this.inputvaluedict;
+			
+		}
+		
+		set
+		{
+			if (value != inputvaluedict)
+			{
+				this.inputvaluedict = value;
+				//update all properties in dict
+				UpdateModelProperties(inputvaluedict);
+				NotifyPropertyChanged("InputValues");
+			}
+		}
+	}
     private Dictionary<string,System.Object> storedvaluedict;
     public Dictionary<string,System.Object> StoredValueDict
     {
@@ -51,6 +79,13 @@ public class NodeModel : BaseModel
     public string Code { get; set; }
 
     public Evaluator Evaluator;
+
+	protected void UpdateModelProperties(Dictionary<string,object> inputdict){
+
+		foreach(var entry in inputdict){
+			this[entry.Key] = entry.Value;
+		}
+	}
 
     protected override void Start()
     {
@@ -164,6 +199,12 @@ public class NodeModel : BaseModel
         output.transform.parent = UI.transform.parent;
         this.PropertyChanged+= output.AddComponent<OutDisplay>().HandleModelChanges;
         
+		//add input window for this node...may not add one... this maybe should be per node override
+		var input = Instantiate(Resources.Load("InputWindow")) as GameObject;
+		input.transform.localPosition = this.gameObject.transform.position;
+		input.transform.SetParent(UI.transform.parent,false);
+		this.PropertyChanged+= input.AddComponent<InputDisplay>().HandleModelChanges;                
+
         //iterate all graphics casters and turn blocking on for 3d objects
 		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
@@ -178,7 +219,7 @@ public class NodeModel : BaseModel
     /// <returns></returns>
     private List<Tuple<string, System.Object>> gatherInputPortData()
     {
-        var output = new List<Tuple<string, System.Object>>();
+        var inputdata = new List<Tuple<string, System.Object>>();
         foreach (var port in Inputs)
         {
             Debug.Log("gathering input port data on node" + name);
@@ -192,9 +233,9 @@ public class NodeModel : BaseModel
             var outputConnectedToThisInput = port.connectors[0].PStart;
             var portInputPackage = Tuple.New(port.NickName, outputConnectedToThisInput.Owner.StoredValueDict[outputConnectedToThisInput.NickName]);
             Debug.Log("created a port package " + portInputPackage.First + " : " + portInputPackage.Second.ToString());
-            output.Add(portInputPackage);
+            inputdata.Add(portInputPackage);
         }
-        return output;
+        return inputdata;
 
     }
 	/// <summary>
@@ -272,6 +313,8 @@ public class NodeModel : BaseModel
 		OnEvaluation();
         //build packages for all data 
         var inputdata = gatherInputPortData();
+
+
        //build packages for output execution triggers, these
 		// are tuples that connect an execution output string to a delegate
 		// which calls the eval method on the next node
