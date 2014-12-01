@@ -10,8 +10,7 @@ namespace Nodeplay.Nodes
 {
     public class Number : NodeModel
     {
-
-
+		
         protected override void Start()
         {
             base.Start();

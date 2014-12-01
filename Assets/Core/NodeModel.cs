@@ -248,7 +248,8 @@ public class NodeModel : BaseModel
 		var outputTriggers = new List<Tuple<string,System.Action>>();
 		foreach (var trigger in ExecutionOutputs){
 		
-
+			//TODO somehow when creating this execution package we'll look at the connector at the index,
+			// this connector type will contain the type of yeildinstruction to use for the task
 			int indexCopy = trigger.Index;
 			Action storeMethodOnStack = () => GameObject.FindObjectOfType<ExplicitGraphExecution>().Q.Enqueue(
 				new Task(this,new Action(() => CallOutPut(indexCopy)),new WaitForSeconds(1)));

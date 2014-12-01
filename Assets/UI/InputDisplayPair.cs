@@ -54,7 +54,7 @@ namespace Nodeplay.UI
 			Debug.Log(name);
 			Debug.Log(value);
 			nameControl.text = name;
-			inputString = value.ToJSONstring();
+			inputString = (value is string) ? (string)value: value.ToJSONstring();
 			valueControl.text = inputString;
 		}
 		
