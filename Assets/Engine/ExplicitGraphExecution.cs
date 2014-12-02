@@ -13,8 +13,8 @@ namespace Nodeplay.Engine
 {
 	class ExplicitGraphExecution:MonoBehaviour
 	{
-		public Queue<Task> Q;
-
+		public List<Task> TaskSchedule;
+        public Task CurrentTask;
 		public List<NodeModel> FindNodesWithNoDependencies()
 		{
 			//list of everything that inherits from nodemodel in the scene
@@ -68,8 +68,9 @@ namespace Nodeplay.Engine
 			}
 			return true;
 		}
-		
-		
+
+       
+     
 		/// <summary>
 		/// generator that evals a new node each frame
 		/// issue here is that we are actually slowing evaluation 
@@ -79,17 +80,17 @@ namespace Nodeplay.Engine
 		/// <returns></returns>
 		IEnumerator ObservableEval()
 		{
-			var entrypoints = FindNodesWithNoDependencies();
-			List<Task> actions = entrypoints.Select(x=> new Task(x,new System.Action (() => x.Evaluate()), new WaitForSeconds(1))).ToList();
-			Q = new Queue<Task>(actions);
+			var entrypoints = FindEntryPoints();
+			List<Task> actions = entrypoints.Select(x=> new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForSeconds(1))).ToList();
+			TaskSchedule = new List<Task>(actions);
 			
 			
-			while (Q.Count > 0)
+			while (TaskSchedule.Count > 0)
 			{
 				//Debug.Log(S.ToJSONstring());
-				Debug.Log("stack count is "+ Q.Count);
-				Q.ToList().ForEach(x=>Debug.Log(x.Node.GetType().Name));
-				var headOfQueue = Q.Peek();
+				Debug.Log("stack count is "+ TaskSchedule.Count);
+				TaskSchedule.ToList().ForEach(x=>Debug.Log(x.NodeRunningOn.GetType().Name));
+                var headOfQueue = TaskSchedule.First();
 				//TODO this convience method might live on the nodeModel
 				//if (ReadyForEval(topofstack))
 				//{
@@ -100,9 +101,11 @@ namespace Nodeplay.Engine
 					
 					//pop the node we are about to evaluate, otherwise we'll never be able to 
 					//
-					var popped = Q.Dequeue();
+                    
+                   
+                    CurrentTask = headOfQueue;
 					headOfQueue.MethodCall.Invoke();
-					
+                    TaskSchedule.RemoveAt(0);
 					//we can now add the nodes that are attached to this nodes outputs
 					//add Distinct to eliminate adding a node twice , for instance [] = [] (thats 2 connectors, not equals)
 					

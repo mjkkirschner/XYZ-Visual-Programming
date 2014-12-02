@@ -251,8 +251,9 @@ public class NodeModel : BaseModel
 			//TODO somehow when creating this execution package we'll look at the connector at the index,
 			// this connector type will contain the type of yeildinstruction to use for the task
 			int indexCopy = trigger.Index;
-			Action storeMethodOnStack = () => GameObject.FindObjectOfType<ExplicitGraphExecution>().Q.Enqueue(
-				new Task(this,new Action(() => CallOutPut(indexCopy)),new WaitForSeconds(1)));
+            var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
+			Action storeMethodOnStack = () => GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
+				new Task(currentTask,this,indexCopy,new Action(() => CallOutPut(indexCopy)),new WaitForSeconds(1)));
 			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);
 			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
