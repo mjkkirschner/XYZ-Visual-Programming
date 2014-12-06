@@ -15,7 +15,8 @@ public abstract class Evaluator : MonoBehaviour
 
 		public abstract Dictionary<string,object> Evaluate(string script, List<string> variableNames, List<System.Object> variableValues, List<string> OutputNames, List<Tuple<string,Action>> ExecutionPointers);
 
-		
+        public abstract Dictionary<string, object> PollScopeForOutputs(List<string> OutputNames);
+        
 }
 
 }

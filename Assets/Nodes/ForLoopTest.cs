@@ -22,7 +22,8 @@ namespace Nodeplay.Nodes
 			AddExecutionOutPutPort("onIteration");
 			AddExecutionOutPutPort("onIterated");
 
-			Code = @"for i in range(input1):
+            Code = @"for i in range(input1):
+	OUTPUT = i
 	onIteration()
 	print('iterated',i)
 onIterated()

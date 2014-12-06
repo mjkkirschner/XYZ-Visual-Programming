@@ -23,6 +23,7 @@ namespace Nodeplay.Engine
         public List<String> names;
         public List<System.Object> vals;
         public String StdOut;
+        private ScriptScope scope;
 
         public void Start()
         {
@@ -42,7 +43,7 @@ namespace Nodeplay.Engine
 
             var engine = IronPython.Hosting.Python.CreateEngine();
 
-            var scope = engine.CreateScope();
+             scope = engine.CreateScope();
            
 
             foreach (var variable in variableNames)
@@ -95,21 +96,9 @@ namespace Nodeplay.Engine
 				//can just inject some logic into the callOutput method, that gathers all output
 				//variables, if they are not set or cannot be found, just continue execution
 				// but don't fail, they just might not be set yet
-				 
 
-                var outdict = new Dictionary<string, object>();
 
-                foreach (var outname in OutputNames)
-                {
-                    if (scope.ContainsVariable(outname))
-                    {
-                        outdict[outname] = scope.GetVariable(outname);
-                    }
-                    else
-                    {
-                        outdict[outname] = "No variable named" + outname + "was defined in the python code";
-                    }
-                }
+                var outdict = PollScopeForOutputs(OutputNames);
                 
                
 
@@ -117,6 +106,26 @@ namespace Nodeplay.Engine
             }
 
 
+        }
+
+       
+
+        public override  Dictionary<string, object> PollScopeForOutputs(List<string> OutputNames)
+        {
+            var outdict = new Dictionary<string, object>();
+
+            foreach (var outname in OutputNames)
+            {
+                if (scope.ContainsVariable(outname))
+                {
+                    outdict[outname] = scope.GetVariable(outname);
+                }
+                else
+                {
+                    outdict[outname] = "No variable named" + outname + "was defined in the python code";
+                }
+            }
+            return outdict;
         }
 
     }

@@ -252,8 +252,11 @@ public class NodeModel : BaseModel
 			// this connector type will contain the type of yeildinstruction to use for the task
 			int indexCopy = trigger.Index;
             var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
-			Action storeMethodOnStack = () => GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
-				new Task(currentTask,this,indexCopy,new Action(() => CallOutPut(indexCopy)),new WaitForSeconds(1)));
+			Action storeMethodOnStack = () => {
+                 var currentVariablesOnModel = Evaluator.PollScopeForOutputs(Outputs.Select(x => x.NickName).ToList());
+                 GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
+                 new Task(currentTask, this, indexCopy, new Action(() => CallOutPut(indexCopy, currentVariablesOnModel)), new WaitForSeconds(.1f)));
+            };
 			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);
 			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
@@ -264,7 +267,7 @@ public class NodeModel : BaseModel
 
 
 
-	public void CallOutPut(int index)
+	public void CallOutPut(int index, Dictionary<string,object> intermediateVariableModelValues)
 	{
 
 		Debug.Log("trying to get the output on " + this + "at index " + index);
@@ -272,6 +275,9 @@ public class NodeModel : BaseModel
 		Debug.Log(ExecutionOutputs[index].NickName +  " is the output we found at that index");
 		if (trigger.IsConnected){
 		Debug.Log("this trigger was connected");
+        Debug.Log("about to trigger execution on downstream node, gathering existing output variables from the saved scope");
+        this.StoredValueDict = intermediateVariableModelValues;
+
 		var nextNode = trigger.connectors[0].PEnd.Owner;
 		Debug.Log("about to evaluate " + nextNode);
 
