@@ -21,8 +21,8 @@ using System.ComponentModel;
 
         public override GameObject BuildSceneElements()
         {
-
-            GameObject UI = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+			GameObject model = Resources.Load("ExecutionPort") as GameObject;
+			GameObject UI = GameObject.Instantiate(model) as GameObject;
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
 

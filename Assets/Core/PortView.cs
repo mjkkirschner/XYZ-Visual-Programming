@@ -11,10 +11,11 @@ using System.Collections;
 
 class PortView : BaseView<PortModel>
 {
-
+	
     protected override void Start()
     {
         base.Start();
+		this.gameObject.AddComponent<EventConsumer>();
         PositionNewPort(this.gameObject);
 
     }

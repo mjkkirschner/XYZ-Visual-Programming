@@ -73,13 +73,11 @@ namespace Nodeplay.UI
 			}
 		}
 
-
-
         protected override void DoStateTransition(Selectable.SelectionState state, bool instant)
         {
 			
-            obUI = this.GetComponentsInChildren<Renderer>().ToList();
-            Debug.Log("inside state transition");
+            //obUI = this.GetComponentsInChildren<Renderer>().ToList();
+            //Debug.Log("inside state transition");
 
             if (state == SelectionState.Pressed)
             {
@@ -90,14 +88,14 @@ namespace Nodeplay.UI
 
             if (state == Selectable.SelectionState.Highlighted)
             {
-                Debug.Log("state was highlight");
+                //Debug.Log("state was highlight");
                 
                 StartCoroutine(TweenColorFromCurrent(this.colors.highlightedColor, this.colors.fadeDuration));
                 StartCoroutine(TweenScaleFromCurrent(HoverScale, this.colors.fadeDuration));
             }
             if (state == Selectable.SelectionState.Normal)
             {
-                Debug.Log("state was normal");
+               // Debug.Log("state was normal");
                 StopAllCoroutines();
                 StartCoroutine(TweenColorFromCurrent(this.colors.normalColor, this.colors.fadeDuration));
                 StartCoroutine(TweenScaleFromCurrent(NormalScale, this.colors.fadeDuration));
