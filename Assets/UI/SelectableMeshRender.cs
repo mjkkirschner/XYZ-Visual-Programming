@@ -15,7 +15,10 @@ namespace Nodeplay.UI
     {
 
         public List<Renderer> obUI;
+		public Vector3 NormalScale { get; set; }
+		public Vector3 HoverScale { get; set; }
 
+		
 
         protected override void OnEnable()
         {
@@ -74,6 +77,7 @@ namespace Nodeplay.UI
 
         protected override void DoStateTransition(Selectable.SelectionState state, bool instant)
         {
+			
             obUI = this.GetComponentsInChildren<Renderer>().ToList();
             Debug.Log("inside state transition");
 
@@ -89,16 +93,16 @@ namespace Nodeplay.UI
                 Debug.Log("state was highlight");
                 
                 StartCoroutine(TweenColorFromCurrent(this.colors.highlightedColor, this.colors.fadeDuration));
-                StartCoroutine(TweenScaleFromCurrent(new Vector3(1.5f,1.5f,1.5f), this.colors.fadeDuration));
+                StartCoroutine(TweenScaleFromCurrent(HoverScale, this.colors.fadeDuration));
             }
             if (state == Selectable.SelectionState.Normal)
             {
                 Debug.Log("state was normal");
                 StopAllCoroutines();
                 StartCoroutine(TweenColorFromCurrent(this.colors.normalColor, this.colors.fadeDuration));
-                StartCoroutine(TweenScaleFromCurrent(new Vector3(1.0f, 1.0f, 1.0f), this.colors.fadeDuration));
+                StartCoroutine(TweenScaleFromCurrent(NormalScale, this.colors.fadeDuration));
             }
 
         }
-    }
+	}
 }

@@ -21,13 +21,25 @@ public class ConnectorView:BaseView<ConnectorModel>
 		public PortModel EndPort{ get; set; }
 		public List<GameObject> TemporaryGeometry;
 		
+
 		public void init (Vector3 startpoint, Vector3 endpoint)
 		{
+			if (!started)
+			{
+				Start();
+			}
 				redraw (startpoint, endpoint);
                 TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
-			
+				
 		}
 
+		protected override void Start()
+		{
+			NormalScale = new Vector3(.2f, .2f, .2f);
+			HoverScale = new Vector3(.2f, .2f, .2f);
+			base.Start();
+			
+		}
 
         protected override void OnDestroy()
         {
@@ -85,7 +97,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 						var y = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 						//GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
-						y.transform.localScale = new Vector3 (.2f, .2f, .2f);
+						y.transform.localScale = NormalScale;
 						return y;}).ToList ();
 		
 				TemporaryGeometry = spheres;

@@ -23,6 +23,9 @@ namespace Nodeplay.UI
 
         protected override void Start()
         {
+			//set the correct settings for this canvas renderer
+			this.gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
+
             //find child window and text controls here
             mainPanel = this.gameObject.GetComponentInChildren<ContentSizeFitter>().gameObject;
 			//find input panel

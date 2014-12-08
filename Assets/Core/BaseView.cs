@@ -19,7 +19,12 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //they may be destroyed before start finishes running
     protected Boolean started = false;
     public NodeManager NodeManager;
-    private Color originalcolor;
+
+    protected Color originalcolor;
+	protected Color highlightcolor = Color.green;
+	protected Vector3 NormalScale = new Vector3(1,1,1);
+	protected Vector3 HoverScale = new Vector3(1.5f,1.5f,1.5f);
+
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;
     public M Model;
@@ -36,17 +41,21 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         }
     }
     //overide this method to setup the transition colors for this view
-    protected ColorBlock setupColorBlock(Color normal,Color highlight)
+    protected ColorBlock setupColorBlock(Color ogc, Color hlc)
     {
         var output = new ColorBlock();
         output.colorMultiplier = 1;
         output.disabledColor = Color.grey;
-        output.normalColor = normal;
-        output.highlightedColor = highlight;
-        output.pressedColor = new Color(highlight.r, highlight.g - .2f, highlight.b + .2f);
+		output.normalColor = ogc;
+		output.highlightedColor = hlc;
+		output.pressedColor = new Color(hlc.r, hlc.g - .2f, hlc.b + .2f);
         output.fadeDuration = .1f;
         return output;
     }
+	protected ColorBlock setupColorBlock()
+	{
+		return setupColorBlock(originalcolor, highlightcolor);
+	}
 
     protected virtual void Start()
     {   //TODO contract for hierarchy
@@ -65,12 +74,24 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         //add our selectable mesh render component here to nodes since these are selectable and 3d objects
         this.gameObject.AddComponent<SelectableMeshRender>();
         var sel = this.GetComponent<SelectableMeshRender>();
-        sel.colors = setupColorBlock(originalcolor, Color.green);
+		this.SetupSelectable(sel);
+		
 
         Debug.Log("just started BaseView");
         started = true;
         
     }
+
+	private void SetupSelectable(SelectableMeshRender selectable)
+	{
+		selectable.enabled = false;
+		//setup the selectable'scolors
+		selectable.colors = setupColorBlock();
+		//setup the values for hover scaling
+		selectable.NormalScale = NormalScale;
+		selectable.HoverScale = HoverScale;
+		selectable.enabled = true;
+	}
 
     protected virtual void OnDestroy()
     {
@@ -211,28 +232,5 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         UI.renderer.material.color = originalcolor;
     }
 
-    //TODO remove these methods into a component for hover reactions that can be set in the GUI
-/*
-    public override void OnPointerEnter(PointerEventData eventData)
-    {
-        if (eventData.pointerCurrentRaycast.gameObject == this.UI)
-        {
-            if (!eventData.dragging)
-            {
-                
-                StartCoroutine(Blink(HoverColor,.1f));
-            }
-        }
-    }
-    public override void OnPointerExit(PointerEventData eventData)
-    {
-        
-        if (!eventData.dragging)
-        {
-           
-            StartCoroutine(Blunk(UI.renderer.material.color,.1f));
-        }
-
-    }
-    */
+   
 }

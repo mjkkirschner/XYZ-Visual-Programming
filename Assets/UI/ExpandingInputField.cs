@@ -20,7 +20,7 @@ namespace Nodeplay.UI
 		InputField inf;
 		private Regex colorTags = new Regex("<[^>]*>");
 		private Regex keyWords = new Regex("and |assert |break |class |continue |def |del |elif |else |except |exec |finally |for |from |global |if |import |in |is |lambda |not |or |pass |print |raise |return |try |while |yield |None |True |False ");
-		private Regex operators = new Regex("<=|>=|!=|=|>|<");
+		private Regex operators = new Regex("<=|>=|!=");
 		public Regex definedTriggers { get; set; }
 
 		protected override void Start()
@@ -50,12 +50,11 @@ namespace Nodeplay.UI
 		{
 
 			inf.text = colorTags.Replace(inf.text, @"");
-			inf.MoveTextEnd(false);
+
 		}
 
 		void ResizeInput(string text)
 		{
-
 
 			Debug.Log("some kind of resizing horror");
 			var fullText = inf.text;
@@ -69,6 +68,15 @@ namespace Nodeplay.UI
 			{
 				Debug.Log("i grew because the inputfield was only this big" + inf.GetComponent<RectTransform>().rect.height + "and I needed" + prefheight + "space");
 				inputparent.GetComponent<LayoutElement>().preferredHeight = prefheight;
+			}
+			else
+			{
+				if (prefheight < inf.textComponent.rectTransform.rect.height + 10)
+				{
+					Debug.Log("i shrank because the inputfield was this big" + inf.GetComponent<RectTransform>().rect.height + "and I needed" + prefheight + "space");
+					inputparent.GetComponent<LayoutElement>().preferredHeight = prefheight;
+				}
+
 			}
 
 		}

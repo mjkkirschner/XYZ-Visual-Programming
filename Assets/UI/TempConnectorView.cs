@@ -10,11 +10,13 @@ namespace Nodeplay.UI
     {
         protected override void Start()
         {  
+			
             dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
-            // nodemanager manages nodes - like a workspacemodel
             NodeManager = GameObject.FindObjectOfType<NodeManager>();
-            // load the UI and save the initial UI color
-           
+
+			NormalScale = new Vector3(.2f, .2f, .2f);
+			HoverScale = new Vector3(.2f, .2f, .2f);
+
             Debug.Log("just started TempViewConnector");
             started = true;
         }
