@@ -29,16 +29,19 @@ public class ExtendedFlycam : MonoBehaviour
  
 	private float rotationX = 0.0f;
 	private float rotationY = 0.0f;
- 
+	private float panx = 0f;
+	private float pany = 0f;
+
 	void Start ()
 	{
-		
+		rotationX = transform.rotation.x;
+		rotationY = transform.rotation.y;
 	}
  
 	void Update ()
 	{
 		
-		
+		// if the right mouse is clicked then rotate the camera
 		if (Input.GetMouseButton(1))
 		{
 			rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
@@ -47,6 +50,18 @@ public class ExtendedFlycam : MonoBehaviour
 		transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);
 		transform.localRotation *= Quaternion.AngleAxis(rotationY, Vector3.left);
 		}
+		// if the middle mouse is clicked then pan the camera
+		if (Input.GetMouseButton(2))
+		{
+			var panx = cameraSensitivity/90 * -(Input.GetAxis("Mouse X"));
+			var pany = cameraSensitivity/90 * -(Input.GetAxis("Mouse Y"));
+			transform.Translate(panx, pany, 0);
+		}
+
+		var scrolldelta = Input.GetAxis("Mouse ScrollWheel");
+		var scrollmove = -1f* scrolldelta *cameraSensitivity/80 * transform.forward;
+		transform.Translate(scrollmove, Space.World);
+
 	 	if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift))
 	 	{
 			transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;

@@ -193,16 +193,31 @@ public class NodeModel : BaseModel
         UI.transform.localPosition = this.gameObject.transform.position;
         UI.transform.parent = this.gameObject.transform;
 
+		//add a new toggleDisplay that will contain both the output and input panel
+		// now load the outputview
+		var nodedisplay = new GameObject();
+		nodedisplay.transform.localPosition = this.gameObject.transform.position;
+		nodedisplay.transform.parent = UI.transform.parent;
+		nodedisplay.AddComponent<UIWindowBase>();
+		nodedisplay.AddComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
+		nodedisplay.AddComponent<HorizontalLayoutGroup>();
+		nodedisplay.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
+
+
         // now load the outputview
         var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
+		output.AddComponent<LayoutElement>().minWidth = 6;
+		output.GetComponent<UIWindowBase>().enabled = false;
         output.transform.localPosition = this.gameObject.transform.position;
-        output.transform.parent = UI.transform.parent;
+		output.transform.SetParent(nodedisplay.transform, false);
         this.PropertyChanged+= output.AddComponent<OutDisplay>().HandleModelChanges;
         
 		//add input window for this node...may not add one... this maybe should be per node override
 		var input = Instantiate(Resources.Load("InputWindow")) as GameObject;
+		input.AddComponent<LayoutElement>().minWidth = 6;
+		input.GetComponent<UIWindowBase>().enabled = false;
 		input.transform.localPosition = this.gameObject.transform.position;
-		input.transform.SetParent(UI.transform.parent,false);
+		input.transform.SetParent(nodedisplay.transform, false);
 		this.PropertyChanged+= input.AddComponent<InputDisplay>().HandleModelChanges;                
 
         //iterate all graphics casters and turn blocking on for 3d objects
