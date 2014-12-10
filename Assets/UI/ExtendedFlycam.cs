@@ -21,9 +21,9 @@ public class ExtendedFlycam : MonoBehaviour
                         End:    Toggle cursor locking to screen (you can also press Ctrl+P to toggle play mode on and off).
 	*/
  
-	public float cameraSensitivity = 90;
-	public float climbSpeed = 4;
-	public float normalMoveSpeed = 10;
+	public float cameraSensitivity = 200;
+	public float climbSpeed = 100;
+	public float normalMoveSpeed = 20;
 	public float slowMoveFactor = 0.25f;
 	public float fastMoveFactor = 3;
  
@@ -32,18 +32,21 @@ public class ExtendedFlycam : MonoBehaviour
  
 	void Start ()
 	{
-		//Screen.lockCursor = true;
+		
 	}
  
 	void Update ()
 	{
-		rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
-		rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
-		rotationY = Mathf.Clamp (rotationY, -90, 90);
- 
+		
+		
+		if (Input.GetMouseButton(1))
+		{
+			rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
+			rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
+			rotationY = Mathf.Clamp(rotationY, -90, 90);
 		transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);
 		transform.localRotation *= Quaternion.AngleAxis(rotationY, Vector3.left);
- 
+		}
 	 	if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift))
 	 	{
 			transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;
@@ -64,9 +67,6 @@ public class ExtendedFlycam : MonoBehaviour
 		if (Input.GetKey (KeyCode.Q)) {transform.position += transform.up * climbSpeed * Time.deltaTime;}
 		if (Input.GetKey (KeyCode.E)) {transform.position -= transform.up * climbSpeed * Time.deltaTime;}
  
-		if (Input.GetKeyDown (KeyCode.End))
-		{
-			Screen.lockCursor = (Screen.lockCursor == false) ? true : false;
-		}
+		
 	}
 }
