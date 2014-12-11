@@ -86,7 +86,7 @@ class PortView : BaseView<PortModel>
     
     public override void OnDrop(PointerEventData pointerdata)
     {
-        
+		if(pointerdata.button == PointerEventData.InputButton.Left){
 		//if we mouseUp over a port we need to check if we were connecting/dragging,
 		// and then we'll instantiate a new connectorModel, the model will create it's own view
 		// and the view will listen to its ports for property changes
@@ -130,8 +130,8 @@ class PortView : BaseView<PortModel>
 
 			//register this port to listen for events on the connector
         }
-    }
-
+   	 }
+	}
     public override void OnPointerUp(PointerEventData pointerdata)
     {
 
@@ -157,7 +157,7 @@ class PortView : BaseView<PortModel>
     // or investingating why this is not working further, connector model is being destroyed but still refereneced
     public override void OnDrag(PointerEventData pointerdata)
     {
-        
+		if (pointerdata.button == PointerEventData.InputButton.Left){
             Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
 
             if (tempconnector != null)
@@ -174,7 +174,7 @@ class PortView : BaseView<PortModel>
 
         }
 
-    
+	}
 
 }
 

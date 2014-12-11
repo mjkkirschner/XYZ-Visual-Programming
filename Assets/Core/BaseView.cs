@@ -166,7 +166,8 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     public override void OnDrag(PointerEventData pointerdata)
     {
         Debug.Log("drag called");
-        if (pointerdata.rawPointerPress == this.UI)
+
+        if (pointerdata.rawPointerPress == this.UI && pointerdata.button == PointerEventData.InputButton.Left )
         {
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
@@ -190,7 +191,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
-        if (pointerdata.pointerCurrentRaycast.gameObject == this.UI)
+		if (pointerdata.pointerCurrentRaycast.gameObject == this.UI && pointerdata.button == PointerEventData.InputButton.Left)
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
