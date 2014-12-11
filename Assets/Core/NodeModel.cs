@@ -221,8 +221,13 @@ public class NodeModel : BaseModel
 		this.PropertyChanged+= input.AddComponent<InputDisplay>().HandleModelChanges;                
 
         //iterate all graphics casters and turn blocking on for 3d objects
-		var allcasters = UI.GetComponentsInChildren<GraphicRaycaster>().ToList();
+		var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
+
+		UI.AddComponent<Light>().type = LightType.Point;
+		UI.GetComponent<Light>().range = 35;
+		UI.GetComponent<Light>().intensity = .35f;
+		UI.GetComponent<Light>().color = Color.white;
 		return UI;
 
 

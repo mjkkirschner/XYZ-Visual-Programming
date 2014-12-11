@@ -105,7 +105,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 		
 				var geos = points.Select (x => {
 					var y = GameObject.Instantiate(geoToRepeat) as GameObject;
-						//GameObject.DestroyImmediate (y.collider);
+						GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
 						y.transform.localScale = NormalScale;
 						return y;}).ToList ();
