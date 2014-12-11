@@ -20,7 +20,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 		public PortModel StartPort{ get; set; }
 		public PortModel EndPort{ get; set; }
 		public List<GameObject> TemporaryGeometry;
-		
+		protected GameObject geometryToRepeat;
 
 		public void init (Vector3 startpoint, Vector3 endpoint)
 		{
@@ -28,7 +28,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 			{
 				Start();
 			}
-				redraw (startpoint, endpoint);
+				redraw (startpoint, endpoint,geometryToRepeat);
                 TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
 				
 		}
@@ -38,6 +38,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 			NormalScale = new Vector3(.2f, .2f, .2f);
 			HoverScale = new Vector3(.2f, .2f, .2f);
 			base.Start();
+			geometryToRepeat = Model.UIsubgeo;
 			
 		}
 
@@ -75,15 +76,24 @@ public class ConnectorView:BaseView<ConnectorModel>
         }
         public List<GameObject> redraw()
         {
-            var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position);
+            var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position,geometryToRepeat);
             if (UI != null)
             {
                 geo.ForEach(x => x.transform.parent = UI.transform);
             }
             return geo;
         }
+		public List<GameObject> redraw(GameObject explicitgeoToRepeat)
+		{
+			var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position, explicitgeoToRepeat);
+			if (UI != null)
+			{
+				geo.ForEach(x => x.transform.parent = UI.transform);
+			}
+			return geo;
+		}
 
-		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint)
+		public List<GameObject> redraw (Vector3 startPoint, Vector3 endpoint,GameObject geoToRepeat)
 		{
 				if (TemporaryGeometry != null) {
 						TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
@@ -93,15 +103,15 @@ public class ConnectorView:BaseView<ConnectorModel>
 				var points = range.Select (x => Vector3.Slerp (startPoint, endpoint, x)).ToList ();
 		
 		
-				var spheres = points.Select (x => {
-						var y = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+				var geos = points.Select (x => {
+					var y = GameObject.Instantiate(geoToRepeat) as GameObject;
 						//GameObject.DestroyImmediate (y.collider);
 						y.transform.position = x;
 						y.transform.localScale = NormalScale;
 						return y;}).ToList ();
 		
-				TemporaryGeometry = spheres;
-				return spheres;
+				TemporaryGeometry = geos;
+				return geos;
 		}
 
 

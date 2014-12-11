@@ -11,7 +11,8 @@ public class ConnectorModel : BaseModel
 		public  PortModel PStart { get; set; }
 		public  PortModel PEnd { get; set; }
 		public  ConnectorView View { get; set; }
-		
+		public GameObject UIsubgeo;	
+
 		public delegate void ConnectorConnectionChangeHandler (object sender,EventArgs e);
 		public event ConnectorConnectionChangeHandler ConnectorDisconnected;
 		public event ConnectorConnectionChangeHandler ConnectorConnected;
@@ -126,7 +127,8 @@ public class ConnectorModel : BaseModel
             GameObject UI = new GameObject();
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
-            var geo = View.redraw();
+			UIsubgeo = Resources.Load("connector_sub") as GameObject;
+            var geo = View.redraw(UIsubgeo);
         //need to set these parents explicity since on first run redraw wont be able to 
         // nest these inside UI as UI is not created yet
             geo.ForEach(x => x.transform.parent = UI.transform);

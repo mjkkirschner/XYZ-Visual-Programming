@@ -120,7 +120,12 @@ class PortView : BaseView<PortModel>
             //TODO move this method to portmodel?
             // or possibly all instantiation to a manager or WorldModel/Controller
             var realConnector = new GameObject("Connector");
-            realConnector.AddComponent<ConnectorModel>();
+			if (this.GetType() == typeof(ExecutionPortView)){
+				realConnector.AddComponent<ExecutionConnectorModel>();
+			}
+			else{
+				realConnector.AddComponent<ConnectorModel>();
+			}
 			//TODO fix logic so that we reoder the inputs correctly... outputs should go first, then inputs are the end, can just check types
             realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
             Model.Connect(realConnector.GetComponent<ConnectorModel>());
