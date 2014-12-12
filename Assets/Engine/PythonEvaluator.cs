@@ -44,7 +44,24 @@ namespace Nodeplay.Engine
             var engine = IronPython.Hosting.Python.CreateEngine();
 
              scope = engine.CreateScope();
-           
+			//http://techartsurvival.blogspot.com/2013/12/techartists-doin-it-for-themselves.html#gpluscomments
+			engine.Runtime.LoadAssembly (typeof(PythonIOModule).Assembly);  
+			engine.Runtime.LoadAssembly (typeof(GameObject).Assembly);  
+			engine.Runtime.LoadAssembly (typeof(Editor).Assembly);  
+			string dllpath = System.IO.Path.GetDirectoryName (  
+			                                                  (typeof(ScriptEngine)).Assembly.Location).Replace (  
+			                                                   "\\", "/");  
+
+
+			// load needed modules and paths  
+			StringBuilder init = new StringBuilder ();  
+			init.AppendLine ("import sys");  
+			init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/Lib");  
+			init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/DLLs");  
+			init.AppendLine ("import UnityEngine as unity");  
+			init.AppendLine ("import UnityEditor as editor");  
+			init.AppendLine ("import StringIO");  
+			init.AppendLine ("unity.Debug.Log(\"Python console initialized\")");  
 
             foreach (var variable in variableNames)
             {
@@ -71,7 +88,7 @@ namespace Nodeplay.Engine
                 try
                 {
 
-                    engine.CreateScriptSourceFromString(script).Execute(scope);
+                    engine.CreateScriptSourceFromString(init.ToString()+script).Execute(scope);
                 }
                 catch (Exception e)
                 {

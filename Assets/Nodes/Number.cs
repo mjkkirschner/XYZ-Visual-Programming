@@ -30,7 +30,6 @@ namespace Nodeplay.Nodes
 			InputValueDict.Add("Code",Code);
 			return base.BuildSceneElements();
 
-
 			
 		}
 

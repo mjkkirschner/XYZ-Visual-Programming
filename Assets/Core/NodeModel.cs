@@ -226,7 +226,7 @@ public class NodeModel : BaseModel
 
 		UI.AddComponent<Light>().type = LightType.Point;
 		UI.GetComponent<Light>().range = 35;
-		UI.GetComponent<Light>().intensity = .35f;
+		UI.GetComponent<Light>().intensity = .15f;
 		UI.GetComponent<Light>().color = Color.white;
 		return UI;
 

@@ -27,7 +27,7 @@ namespace Nodeplay.Nodes
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 		}
 		
-		
+
 		
 		
 		

@@ -35,7 +35,13 @@ print('finished')";
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 		}
 		
-		
+		public override GameObject BuildSceneElements()
+		{
+			var tempUI = base.BuildSceneElements();
+			tempUI.renderer.material.color = Color.cyan;
+			return tempUI;
+			
+		}
 		
 		
 		
