@@ -39,6 +39,7 @@ print('finished')";
 		{
 			var tempUI = base.BuildSceneElements();
 			tempUI.renderer.material.color = Color.cyan;
+			tempUI.AddComponent<BoundingRenderer>();
 			return tempUI;
 			
 		}
