@@ -15,3 +15,7 @@ https://github.com/jsonfx/jsonfx
 
 https://github.com/jsonfx/jsonfx/blob/master/LICENSE.txt
 
+###Dynamo
+
+https://github.com/DynamoDS/Dynamo
+http://www.apache.org/licenses/LICENSE-2.0
