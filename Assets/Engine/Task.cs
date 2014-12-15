@@ -28,7 +28,7 @@ public class Task
         Yieldbehavior = yieldbehavior;
         NodeRunningOn = noderunningon;
         Caller = caller;
-        ID = new Guid();
+		ID = Guid.NewGuid();
 
         NodeCalled = findNodeCalled(triggerindex);
 

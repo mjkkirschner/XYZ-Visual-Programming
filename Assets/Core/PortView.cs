@@ -108,32 +108,10 @@ class PortView : BaseView<PortModel>
 
             // if port is already connected then disconnect old port before creating new connector
             if (Model.IsConnected)
-            {	//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... REDESIGN
-                Model.Disconnect(Model.connectors[0]);
-				//TODO for now explicitly disconnect the start port, but this will HAVE to be redesigned later
-				//startport.Disconnect(startport.connectors[0]);
-                //TODO //probably also need to discconnect the other port as well :( and the connector or another manager should
-                //probably take care of sending this event chains
+            {	
 
             }
-            //instantiate new connector etc
-            //TODO move this method to portmodel?
-            // or possibly all instantiation to a manager or WorldModel/Controller
-            var realConnector = new GameObject("Connector");
-			if (this.GetType() == typeof(ExecutionPortView)){
-				realConnector.AddComponent<ExecutionConnectorModel>();
-			}
-			else{
-				realConnector.AddComponent<ConnectorModel>();
-			}
-			//TODO fix logic so that we reoder the inputs correctly... outputs should go first, then inputs are the end, can just check types
-            realConnector.GetComponent<ConnectorModel>().init(pointerdata.pointerDrag.GetComponent<PortModel>(), Model);
-            Model.Connect(realConnector.GetComponent<ConnectorModel>());
-
-            //TODO the other port also needs a connect signal, MAKE SURE THE CORRECT PORT IS GETTING THIS EVENT
-            //pointerdata.pointerDrag.GetComponent<PortModel>().Connect(realConnector.GetComponent<ConnectorModel>());
-
-			//register this port to listen for events on the connector
+				Model.Owner.GraphOwner.AddConnection(pointerdata.pointerDrag.GetComponent<PortModel>(),this.Model);
         }
    	 }
 	}
@@ -152,9 +130,6 @@ class PortView : BaseView<PortModel>
         
 
     }
-
-
-
 
     //handler for dragging node event//
     //TODO there is a bug when dragging from an input to an output which destroys the other connectors from that output

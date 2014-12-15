@@ -68,6 +68,7 @@ public class BoundingRenderer : MonoBehaviour
 		xx.transform.localScale = new Vector3 (totalBounds.size.x,totalBounds.size.y,totalBounds.size.z);
 		xx.transform.localPosition = totalBounds.center;
 		xx.collider.enabled = false;
+		xx.renderer.material = Resources.Load("NestingZone") as Material;
 		return xx;
 }
 

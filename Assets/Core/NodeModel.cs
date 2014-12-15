@@ -10,7 +10,7 @@ using Nodeplay.Engine;
 using System.Linq;
 using UnityEngine.UI;
 using Nodeplay.UI;
-
+using System.Xml;
 
 public class NodeModel : BaseModel
 {
@@ -32,6 +32,7 @@ public class NodeModel : BaseModel
 	public List<ExecutionPortModel> ExecutionOutputs {get;set;}
 	private Dictionary<string,System.Object> inputvaluedict;
 	public Dictionary<string,System.Object> InputValueDict
+	
 	{
 		get
 		{
@@ -68,6 +69,7 @@ public class NodeModel : BaseModel
             }
         }
     }
+	public GraphModel GraphOwner {get;internal set;}
     //events for callbacks to view during and after nodemodel evaluation
     public delegate void EvaluationHandler(object sender, EventArgs e);
     public delegate void EvaluatedHandler(object sender, EventArgs e);
@@ -89,8 +91,8 @@ public class NodeModel : BaseModel
 
     protected override void Start()
     {
-
-        Debug.Log("just started NodeModel");
+		base.Start();
+        Debug.Log("just started starting! NodeModel");
         var view = this.gameObject.AddComponent<NodeView>();
         Evaluated += view.OnEvaluated;
         Evaluation += view.OnEvaluation;
@@ -99,6 +101,7 @@ public class NodeModel : BaseModel
         Outputs = new List<PortModel>();
 		ExecutionInputs = new List<ExecutionPortModel>();
 		ExecutionOutputs = new List<ExecutionPortModel>();
+		Debug.Log("just finished starting NodeModel");
     }
 
 	public void AddExecutionInputPort(string name = null)
@@ -360,5 +363,8 @@ public class NodeModel : BaseModel
 
     }
 
+	public virtual void Save(XmlDocument doc, XmlElement element){
+
+	}
 
 }

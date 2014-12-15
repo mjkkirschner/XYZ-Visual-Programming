@@ -12,6 +12,7 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
     //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
     private Vector3 location;
     public Vector3 Location
+	
     {
         get
         {
@@ -28,6 +29,7 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
             }
         }
     }
+	public Guid GUID{get;private set;}
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected virtual void NotifyPropertyChanged(String info)
@@ -39,9 +41,13 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
         }
     }
 
+	protected virtual void OnEnable(){
+		GUID = Guid.NewGuid();
+	}
+
     protected virtual void Start()
     {
-        
+
     }
 
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +12,7 @@ namespace Nodeplay.UI
         {
 			geometryToRepeat = Resources.Load<GameObject>("connector_sub");
             dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
-            NodeManager = GameObject.FindObjectOfType<NodeManager>();
-
+      
 			NormalScale = new Vector3(.2f, .2f, .2f);
 			HoverScale = new Vector3(.2f, .2f, .2f);
 

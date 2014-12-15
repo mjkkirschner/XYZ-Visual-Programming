@@ -18,7 +18,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //because views maybe created or destroyed multiple times per frame,
     //they may be destroyed before start finishes running
     protected Boolean started = false;
-    public NodeManager NodeManager;
+    
 
     protected Color originalcolor;
 	protected Color highlightcolor = Color.green;
@@ -65,12 +65,12 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 
         dist_to_camera = Vector3.Distance(this.gameObject.transform.position, Camera.main.transform.position);
         // nodemanager manages nodes - like a workspacemodel
-        NodeManager = GameObject.FindObjectOfType<NodeManager>();
 
         UI = Model.BuildSceneElements();
         var firstRenderer = UI.GetComponentInChildren<Renderer>();
+
         originalcolor = firstRenderer.material.color;
-        
+
         //add our selectable mesh render component here to nodes since these are selectable and 3d objects
         this.gameObject.AddComponent<SelectableMeshRender>();
         var sel = this.GetComponent<SelectableMeshRender>();
