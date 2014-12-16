@@ -5,7 +5,7 @@ using Nodeplay.Nodes;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
-
+using UnityEditor;
 
 public class ProgramEntry : MonoBehaviour
 {
@@ -17,10 +17,25 @@ public class ProgramEntry : MonoBehaviour
 	public void SaveGraph(){
 		// call save on the current graphmodel
 		var current = workmodels.Where(x=>x.Current == true).First();
-		current.SaveGraphModel("/Users/Mike/Desktop/"+current.Name);
+
+		var path = EditorUtility.SaveFilePanel(
+					"Save Graph As xml File",
+					"",
+					current.Name + ".xml",
+					"xml");
+
+		current.SaveGraphModel(path);
 	}
 
 	public void LoadGraph(){
+		var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","","xml");
+		//create a new blank graphmodel
+		//then call load on it with path, which will deserialze an xml file into that model
+		var temp = new GraphModel("tempload");
+		temp.LoadGraphModel(path);
+		workmodels.Add(temp);
+		var ls = GameObject.Find("LoadScreen");
+		ls.SetActive(false);
 	}
 
 	public void NewGraph(){

@@ -42,7 +42,15 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
     }
 
 	protected virtual void OnEnable(){
-		GUID = Guid.NewGuid();
+		if (GUID == Guid.Empty)
+		{
+			GUID = Guid.NewGuid();
+		}
+	}
+
+	public void SetGuidOnLoad(Guid id){
+		GUID = id;
+
 	}
 
     protected virtual void Start()

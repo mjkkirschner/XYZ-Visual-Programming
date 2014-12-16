@@ -367,4 +367,8 @@ public class NodeModel : BaseModel
 
 	}
 
+	public virtual void Load(XmlNode node)
+	{
+
+	}
 }
