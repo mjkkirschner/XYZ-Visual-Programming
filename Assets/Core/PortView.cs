@@ -109,7 +109,7 @@ class PortView : BaseView<PortModel>
             // if port is already connected then disconnect old port before creating new connector
             if (Model.IsConnected)
             {	
-
+					Model.Owner.GraphOwner.RemoveConnection(this.Model);
             }
 				Model.Owner.GraphOwner.AddConnection(pointerdata.pointerDrag.GetComponent<PortModel>(),this.Model);
         }

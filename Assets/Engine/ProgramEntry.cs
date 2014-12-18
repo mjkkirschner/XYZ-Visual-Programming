@@ -31,16 +31,18 @@ public class ProgramEntry : MonoBehaviour
 		var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","","xml");
 		//create a new blank graphmodel
 		//then call load on it with path, which will deserialze an xml file into that model
-		var temp = new GraphModel("tempload");
+		var temp = new GraphModel("tempload",this);
 		temp.LoadGraphModel(path);
 		workmodels.Add(temp);
 		var ls = GameObject.Find("LoadScreen");
 		ls.SetActive(false);
+		temp.Current = true;
+
 	}
 
 	public void NewGraph(){
 
-		var model = new GraphModel("untitled"+workmodels.Count.ToString());
+		var model = new GraphModel("untitled"+workmodels.Count.ToString(),this);
 		//TODO remove this next line just for testing, this bool might be set when this model
 		//is the assigned model of the canvas, or something like this, 
 		//the graphmodel needs to set current when its loaded and displaying its nodes,

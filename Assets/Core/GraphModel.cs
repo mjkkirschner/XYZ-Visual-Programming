@@ -7,6 +7,7 @@ using System.Linq;
 using Nodeplay.Nodes;
 using System.Xml;
 using System.Reflection;
+using System.Collections;
 
 /// <summary>
 /// initially modified from Dynamo's source version .74
@@ -16,7 +17,7 @@ using System.Reflection;
 
 public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 {
-
+	private ProgramEntry _appmodel;
 	public List<NodeModel> Nodes { get; set; }
 	public List<ConnectorModel> Connectors { get; set; }
 	//TODO confusion with name, filename, etc
@@ -30,14 +31,14 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	public string FileName { get; set; }
 
 
-	public static GraphModel ByXmlFile(string filepath)
+	public static GraphModel ByXmlFile(string filepath,ProgramEntry appmodel)
 	{
 		//TODO parse the filepath, load the file here, and then call graphmodel constructor
 		// which will deserialze
-		return new GraphModel("loaded");
+		return new GraphModel("loaded",appmodel);
 	}
 
-	public GraphModel(String name)
+	public GraphModel(String name,ProgramEntry appmodel)
 	{
 
 		Name = name;
@@ -51,11 +52,12 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 		HasUnsavedChanges = false;
 		LastSaved = DateTime.Now;
+		_appmodel = appmodel;
 
 	}
 
 	private GraphModel(String name, IEnumerable<NodeModel> nodes,
-						 IEnumerable<ConnectorModel> connectors, float x, float y, float z)
+						 IEnumerable<ConnectorModel> connectors, float x, float y, float z, ProgramEntry appmodel)
 	{
 
 		Name = name;
@@ -69,6 +71,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 		HasUnsavedChanges = false;
 		LastSaved = DateTime.Now;
+		_appmodel = appmodel;
 
 		//WorkspaceSaved += OnWorkspaceSaved;
 		//WorkspaceVersion = AssemblyHelper.GetDynamoVersion();
@@ -124,7 +127,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	{
 
 		var realConnector = new GameObject("Connector");
-		if (end.GetType() == typeof(ExecutionPortView))
+		if (end.GetType() == typeof(ExecutionPortModel))
 		{
 			realConnector.AddComponent<ExecutionConnectorModel>();
 		}
@@ -153,14 +156,118 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	{
 		if (xmlpath != null)
 		{
-			deserialzeGraoh(xmlpath);
+			deserialzeGraph(xmlpath);
 		}
 
 	}
 
+	/// <summary>
+	///sub routine for deserialzation that needs to be run 
+	///only after nodes are done being created
+	/// </summary>
+	private IEnumerator loadConnectors(XmlNode cNodesList, XmlNode ceNodesList)
+	{
+		yield return null;
+		foreach (XmlNode connector in cNodesList.ChildNodes)
+		{
+			XmlAttribute guidStartAttrib = connector.Attributes[0];
+			XmlAttribute intStartAttrib = connector.Attributes[1];
+			XmlAttribute guidEndAttrib = connector.Attributes[2];
+			XmlAttribute intEndAttrib = connector.Attributes[3];
+			XmlAttribute portTypeAttrib = connector.Attributes[4];
+			
+			var guidStart = new Guid(guidStartAttrib.Value);
+			var guidEnd = new Guid(guidEndAttrib.Value);
+			int startIndex = Convert.ToInt16(intStartAttrib.Value);
+			int endIndex = Convert.ToInt16(intEndAttrib.Value);
+			PortModel.porttype portType = ((PortModel.porttype)Convert.ToInt16(portTypeAttrib.Value));
+			
+			//find the elements to connect
+			NodeModel start = null;
+			NodeModel end = null;
+			
+			foreach (NodeModel e in Nodes)
+			{
+				if (e.GUID == guidStart)
+				{
+					start = e;
+				}
+				else if (e.GUID == guidEnd)
+				{
+					end = e;
+				}
+				if (start != null && end != null)
+				{
+					break;
+				}
+			}
+			//TODO should return connector?
+			this.AddConnection(start.Outputs[startIndex], end.Inputs[endIndex]);
+			Debug.Log("<color=orange>file load:</color>" + " done loading data connectors");	
+			
+			//OnConnectorAdded(newConnector);
+		}
+		
+		
+		foreach (XmlNode connector in ceNodesList.ChildNodes)
+		{
+			XmlAttribute guidStartAttrib = connector.Attributes[0];
+			XmlAttribute intStartAttrib = connector.Attributes[1];
+			XmlAttribute guidEndAttrib = connector.Attributes[2];
+			XmlAttribute intEndAttrib = connector.Attributes[3];
+			XmlAttribute portTypeAttrib = connector.Attributes[4];
+			
+			var guidStart = new Guid(guidStartAttrib.Value);
+			var guidEnd = new Guid(guidEndAttrib.Value);
+			int startIndex = Convert.ToInt32(intStartAttrib.Value);
+			int endIndex = Convert.ToInt32(intEndAttrib.Value);
+			PortModel.porttype portType = ((PortModel.porttype)Convert.ToInt32(portTypeAttrib.Value));
+			
+			//find the elements to connect
+			NodeModel start = null;
+			NodeModel end = null;
+			
+			foreach (NodeModel e in Nodes)
+			{
+				if (e.GUID == guidStart)
+				{
+					start = e;
+				}
+				else if (e.GUID == guidEnd)
+				{
+					end = e;
+				}
+				if (start != null && end != null)
+				{
+					break;
+				}
+			}
+			if (start == null)
+			{
+				Debug.LogException(new Exception("could not find start node"));
+			}
+			if (end == null)
+			{
+				Debug.LogException(new Exception("could not find end node"));
+			}
+			
+			Debug.Log("<color=orange>start node:</color> " + start.name );
+			Debug.Log("<color=orange>end node:</color> " + end.name );
+			
+			//TODO should return connector?
+			// it's possible the outputs have not been added yet, we may need to wait until the 
+			// the next frame for the start method to finish completing on nodemodels.
+			// if this is the case, we can just check if the node is started, if not, start it here.
+			
+			this.AddConnection(start.ExecutionOutputs[startIndex], end.ExecutionInputs[endIndex]);
+			Debug.Log("<color=orange>file load:</color>" + " done loading execution connectors");	
+			
+			//OnConnectorAdded(newConnector);
+		}
+	}
 
 
-	public bool deserialzeGraoh(string xmlpath)
+	public bool deserialzeGraph(string xmlpath)
 	{
 		Debug.Log("opening a graph " + xmlpath);
 
@@ -230,7 +337,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 				float x = float.Parse(xAttrib.Value);
 				float y = float.Parse(yAttrib.Value);
-				float z = float.Parse(yAttrib.Value);
+				float z = float.Parse(zAttrib.Value);
 
 				
 				// Retrieve optional 'function' attribute (only for DSFunction).
@@ -313,97 +420,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 			Debug.Log("<color=orange>file load:</color>" + " done loading nodes");
 
-			foreach (XmlNode connector in cNodesList.ChildNodes)
-			{
-				XmlAttribute guidStartAttrib = connector.Attributes[0];
-				XmlAttribute intStartAttrib = connector.Attributes[1];
-				XmlAttribute guidEndAttrib = connector.Attributes[2];
-				XmlAttribute intEndAttrib = connector.Attributes[3];
-				XmlAttribute portTypeAttrib = connector.Attributes[4];
-
-				var guidStart = new Guid(guidStartAttrib.Value);
-				var guidEnd = new Guid(guidEndAttrib.Value);
-				int startIndex = Convert.ToInt16(intStartAttrib.Value);
-				int endIndex = Convert.ToInt16(intEndAttrib.Value);
-				PortModel.porttype portType = ((PortModel.porttype)Convert.ToInt16(portTypeAttrib.Value));
-
-				//find the elements to connect
-				NodeModel start = null;
-				NodeModel end = null;
-
-				foreach (NodeModel e in Nodes)
-				{
-					if (e.GUID == guidStart)
-					{
-						start = e;
-					}
-					else if (e.GUID == guidEnd)
-					{
-						end = e;
-					}
-					if (start != null && end != null)
-					{
-						break;
-					}
-				}
-				//TODO should return connector?
-				 this.AddConnection(start.Outputs[startIndex], end.Inputs[endIndex]);
-				Debug.Log("<color=orange>file load:</color>" + " done loading data connectors");	
-
-				//OnConnectorAdded(newConnector);
-			}
-
-
-		foreach (XmlNode connector in ceNodesList.ChildNodes)
-			{
-				XmlAttribute guidStartAttrib = connector.Attributes[0];
-				XmlAttribute intStartAttrib = connector.Attributes[1];
-				XmlAttribute guidEndAttrib = connector.Attributes[2];
-				XmlAttribute intEndAttrib = connector.Attributes[3];
-				XmlAttribute portTypeAttrib = connector.Attributes[4];
-
-				var guidStart = new Guid(guidStartAttrib.Value);
-				var guidEnd = new Guid(guidEndAttrib.Value);
-				int startIndex = Convert.ToInt16(intStartAttrib.Value);
-				int endIndex = Convert.ToInt16(intEndAttrib.Value);
-				PortModel.porttype portType = ((PortModel.porttype)Convert.ToInt16(portTypeAttrib.Value));
-
-				//find the elements to connect
-				NodeModel start = null;
-				NodeModel end = null;
-
-				foreach (NodeModel e in Nodes)
-				{
-					if (e.GUID == guidStart)
-					{
-						start = e;
-					}
-					else if (e.GUID == guidEnd)
-					{
-						end = e;
-					}
-					if (start != null && end != null)
-					{
-						break;
-					}
-				}
-				if (start == null)
-				{
-					Debug.LogException(new Exception("could not find start node"));
-				}
-				if (end == null)
-				{
-					Debug.LogException(new Exception("could not find end node"));
-				}
-
-
-				//TODO should return connector?
-				this.AddConnection(start.ExecutionOutputs[startIndex], end.ExecutionInputs[endIndex]);
-				Debug.Log("<color=orange>file load:</color>" + " done loading execution connectors");	
-
-				//OnConnectorAdded(newConnector);
-			}
-
+		_appmodel.StartCoroutine(loadConnectors(cNodesList,ceNodesList));
 			
 			this.FileName = xmlpath;
 			this.HasUnsavedChanges = false;
