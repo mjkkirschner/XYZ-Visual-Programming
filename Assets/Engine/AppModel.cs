@@ -7,12 +7,14 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEditor;
 
-public class ProgramEntry : MonoBehaviour
+public class AppModel : MonoBehaviour
 {
 
-		
-	public List<GraphModel> workmodels = new List<GraphModel>();
+	private List<GraphModel> workmodels = new List<GraphModel>();
+	private List<NodeModel> loadedNodeModels = new List<NodeModel>();
 
+	public List<GraphModel> Workmoldels {get;set;}
+	public List<NodeModel> LoadedNodeModels {get;set;}
 
 	public void SaveGraph(){
 		// call save on the current graphmodel
@@ -68,6 +70,8 @@ public class ProgramEntry : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
+			//create a nodeModelloader for this instance of appmodel
+
 			// on program start, we load a home screen into the main canvas 
 			//var maincanvas = GameObject.Find("Canvas");
 			

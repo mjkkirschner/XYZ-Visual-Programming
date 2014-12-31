@@ -17,7 +17,7 @@ using System.Collections;
 
 public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 {
-	private ProgramEntry _appmodel;
+	private AppModel _appmodel;
 	public List<NodeModel> Nodes { get; set; }
 	public List<ConnectorModel> Connectors { get; set; }
 	//TODO confusion with name, filename, etc
@@ -31,14 +31,14 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	public string FileName { get; set; }
 
 
-	public static GraphModel ByXmlFile(string filepath,ProgramEntry appmodel)
+	public static GraphModel ByXmlFile(string filepath,AppModel appmodel)
 	{
 		//TODO parse the filepath, load the file here, and then call graphmodel constructor
 		// which will deserialze
 		return new GraphModel("loaded",appmodel);
 	}
 
-	public GraphModel(String name,ProgramEntry appmodel)
+	public GraphModel(String name,AppModel appmodel)
 	{
 
 		Name = name;
@@ -57,7 +57,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	}
 
 	private GraphModel(String name, IEnumerable<NodeModel> nodes,
-						 IEnumerable<ConnectorModel> connectors, float x, float y, float z, ProgramEntry appmodel)
+						 IEnumerable<ConnectorModel> connectors, float x, float y, float z, AppModel appmodel)
 	{
 
 		Name = name;
@@ -367,6 +367,8 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 					
 					MethodInfo method = this.GetType().GetMethod("InstantiateNode");
 					MethodInfo generic = method.MakeGenericMethod(nodetype);
+					//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
+					//this is a fully qualified type extracted from the xml file
 					el = (generic.Invoke(this, new object[]{new Vector3(x,y,z),guid}) as GameObject).GetComponent<NodeModel>();
 					//TODO not using nickname should I?
 					
