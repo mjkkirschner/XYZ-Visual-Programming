@@ -36,9 +36,9 @@ namespace Nodeplay.UI
 
 		public void InputChangeHandler ( string text){
 			//TODO really need to use implementation of observable dictionary...
-			var dictcopy =  new Dictionary<string,object>(inputowner.model.InputValueDict);
+			var dictcopy =  new Dictionary<string,object>(inputowner.model.UIInputValueDict);
 			dictcopy[InputName] = text;
-			inputowner.model.InputValueDict = dictcopy;
+			inputowner.model.UIInputValueDict = dictcopy;
 			Debug.Log("modifying inputdict on model");
 			Debug.Log(InputName +" : " + text);
 		}

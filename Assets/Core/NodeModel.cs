@@ -30,27 +30,31 @@ public class NodeModel : BaseModel
     public List<PortModel> Outputs { get; set; }
 	public List<ExecutionPortModel> ExecutionInputs {get;set;}
 	public List<ExecutionPortModel> ExecutionOutputs {get;set;}
-	private Dictionary<string,System.Object> inputvaluedict;
-	public Dictionary<string,System.Object> InputValueDict
+	//adding a string key to the inputvaluedict
+	// will search the node model for that property and expose it in the UI
+	private Dictionary<string,System.Object> uiinputvalueDict;
+	public Dictionary<string,System.Object> UIInputValueDict
 	
 	{
 		get
 		{
-			return this.inputvaluedict;
+			return this.uiinputvalueDict;
 			
 		}
 		
 		set
 		{
-			if (value != inputvaluedict)
+			if (value != uiinputvalueDict)
 			{
-				this.inputvaluedict = value;
+				this.uiinputvalueDict = value;
 				//update all properties in dict
-				UpdateModelProperties(inputvaluedict);
+				UpdateModelProperties(uiinputvalueDict);
 				NotifyPropertyChanged("InputValues");
 			}
 		}
 	}
+
+	//stored value dictionary is the output value dictionary of finished computation
     private Dictionary<string,System.Object> storedvaluedict;
     public Dictionary<string,System.Object> StoredValueDict
     {
@@ -240,7 +244,7 @@ public class NodeModel : BaseModel
     /// method that gathers port names and evaluated values from connected nodes
     /// </summary>
     /// <returns></returns>
-    private List<Tuple<string, System.Object>> gatherInputPortData()
+    protected List<Tuple<string, System.Object>> gatherInputPortData()
     {
         var inputdata = new List<Tuple<string, System.Object>>();
         foreach (var port in Inputs)
@@ -266,7 +270,7 @@ public class NodeModel : BaseModel
 	/// by any evaluator to trigger these outputs at the correct time during eval.
 	/// </summary>
 	/// <returns>The execution data.</returns>
-	private List<Tuple<string,Action>> gatherExecutionData ()
+	protected List<Tuple<string,Action>> gatherExecutionData ()
 	{
 		var outputTriggers = new List<Tuple<string,System.Action>>();
 		foreach (var trigger in ExecutionOutputs){
@@ -339,12 +343,14 @@ public class NodeModel : BaseModel
 
 
     //this points to evaluation engine or some delegate
-	internal void Evaluate()
+	internal virtual void Evaluate()
 	{
 		OnEvaluation();
         //build packages for all data 
         var inputdata = gatherInputPortData();
-
+		if (Code == null){
+			Debug.Break();
+		}
 
        //build packages for output execution triggers, these
 		// are tuples that connect an execution output string to a delegate
@@ -355,9 +361,13 @@ public class NodeModel : BaseModel
 		//i.e. For i in range(10):
 					//triggers["iteration"]()
 				//triggers["donewithiteration"]()
-
 		var executiondata = gatherExecutionData();
-        var outvar = Evaluator.Evaluate(Code, inputdata.Select(x => x.First).ToList(), inputdata.Select(x => x.Second).ToList(), Outputs.Select(x=>x.NickName).ToList(),executiondata);
+		var evalpackage = new EvaluationPackage(Code,
+		                                        inputdata.Select(x => x.First).ToList(),
+		                                        inputdata.Select(x => x.Second).ToList(),
+		                                        Outputs.Select(x=>x.NickName).ToList(),
+		                                        executiondata);
+        var outvar = Evaluator.Evaluate(evalpackage);
 		this.StoredValueDict = outvar;
         OnEvaluated();
 

@@ -35,7 +35,7 @@ namespace Nodeplay.UI
 
             //find the model
             model = this.gameObject.GetComponentInParent<NodeModel>();
-			inputDict = model.InputValueDict;
+			inputDict = model.UIInputValueDict;
 			nodeNameControl.GetComponent<Text>().text = model.GetType().Name;
 			NodeName = model.GetType().Name;
 			UpdateInputs();

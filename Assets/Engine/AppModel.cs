@@ -58,12 +58,12 @@ public class AppModel : MonoBehaviour
 		ls.SetActive(false);
 
 		model.InstantiateNode<ForLoopTest> (new Vector3 (1, 1, 1));
-		model.InstantiateNode<ForLoopTest>(new Vector3(2,2,1));
 		model.InstantiateNode<DebugLogTest> (new Vector3 (2, 2, 2));
-		model.InstantiateNode<DebugLogTest> (new Vector3 (3, 3, 3));
 		model.InstantiateNode<StartExecution> (new Vector3 (0, 0, 0));
 		model.InstantiateNode<InstantiateCube> (new Vector3 (0, 0, 0));
-
+		model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
+		model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
+		model.InstantiateNode<csharpsum> (new Vector3 (3, 0, 0));
 
 	}
 

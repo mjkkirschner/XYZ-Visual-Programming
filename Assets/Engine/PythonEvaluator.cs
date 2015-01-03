@@ -18,10 +18,7 @@ namespace Nodeplay.Engine
 {
     class PythonEvaluator : Evaluator
     {
-
-        public String code;
-        public List<String> names;
-        public List<System.Object> vals;
+		
         public String StdOut;
         private ScriptScope scope;
 
@@ -34,11 +31,7 @@ namespace Nodeplay.Engine
 
         }
 
-        public override Dictionary<string,object> Evaluate(string script, 
-		                                                   List<string> variableNames,
-		                                                   List<System.Object> variableValues,
-		                                                   List<string> OutputNames,
-		                                                   List<Tuple<string,Action>> ExecutionPointers)
+        public override Dictionary<string,object> Evaluate(EvaluationPackage evalpackage)
         {
 
             var engine = IronPython.Hosting.Python.CreateEngine();
@@ -62,6 +55,13 @@ namespace Nodeplay.Engine
 			init.AppendLine ("import UnityEditor as editor");  
 			init.AppendLine ("import StringIO");  
 			init.AppendLine ("unity.Debug.Log(\"Python console initialized\")");  
+
+
+			var OutputNames = evalpackage.OutputNames;
+			var variableNames = evalpackage.VariableNames;
+			var variableValues = evalpackage.VariableValues;
+			var ExecutionPointers = evalpackage.ExecutionPointers;
+			var script = evalpackage.Code;
 
             foreach (var variable in variableNames)
             {
@@ -124,8 +124,6 @@ namespace Nodeplay.Engine
 
 
         }
-
-       
 
         public override  Dictionary<string, object> PollScopeForOutputs(List<string> OutputNames)
         {
