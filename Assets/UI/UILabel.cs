@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
 
-public class UILabel : MonoBehaviour, IPointerDownHandler
+public class UILabel : MonoBehaviour
 {
 	RectTransform m_transform = null;
 	void Start ()
@@ -22,11 +22,6 @@ public class UILabel : MonoBehaviour, IPointerDownHandler
 		{
 			this.GetComponentInChildren<Text>().text = model.name;
 		}
-
-	}
-
-	public void OnPointerDown (PointerEventData pointerdata)
-	{
 
 	}
 	
