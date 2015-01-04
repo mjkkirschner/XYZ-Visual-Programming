@@ -79,8 +79,12 @@ public class BoundingRenderer : MonoBehaviour
 		if (tempgeo != null){
 			GameObject.Destroy(tempgeo);
 		}
-		tempgeo = GenerateBounds(BFS(Model.ExecutionOutputs[1].connectors[0].PEnd.Owner.gameObject));
+		//generate the bounds of all gameobjects downstream from the second execution connector
+		if (Model.ExecutionOutputs[1].IsConnected)
 
+		{
+				tempgeo = GenerateBounds(BFS(Model.ExecutionOutputs[1].connectors[0].PEnd.Owner.gameObject));
+			}
 		}
 }
 

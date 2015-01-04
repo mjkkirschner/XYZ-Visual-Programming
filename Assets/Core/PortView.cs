@@ -8,6 +8,7 @@ using System.ComponentModel;
 using UnityEngine.EventSystems;
 using Nodeplay.UI;
 using System.Collections;
+using UnityEngine.UI;
 
 class PortView : BaseView<PortModel>
 {
@@ -17,7 +18,12 @@ class PortView : BaseView<PortModel>
         base.Start();
 		this.gameObject.AddComponent<EventConsumer>();
         PositionNewPort(this.gameObject);
-
+		//TODO unclear if this belongs here, but portview creates a label
+		// and attaches it to portview, could possibly be moved to build scene elements
+		var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
+		var label = GameObject.Instantiate(labelprefab,this.transform.localPosition,Quaternion.identity) as GameObject;
+		label.GetComponent<RectTransform>().SetParent(this.transform,false);
+		label.AddComponent<UILabel>();
     }
 
     /// <summary>
