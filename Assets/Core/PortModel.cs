@@ -154,16 +154,21 @@ public class PortModel :BaseModel
             GameObject UI = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
-			
-			var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
-			var label = GameObject.Instantiate(labelprefab, this.transform.localPosition, Quaternion.identity) as GameObject;
-			label.GetComponent<RectTransform>().SetParent(this.transform, false);
-			label.AddComponent<UILabel>();
+
+			AddPortLabel();
             return UI;
 
 
 
         }
+
+		protected void AddPortLabel()
+		{
+			var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
+			var label = GameObject.Instantiate(labelprefab, this.transform.localPosition, Quaternion.identity) as GameObject;
+			label.GetComponent<RectTransform>().SetParent(this.transform, false);
+			label.AddComponent<UILabel>();
+		}
 
 
 }

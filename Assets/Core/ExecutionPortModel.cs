@@ -26,6 +26,8 @@ using System.ComponentModel;
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
 
+			AddPortLabel();
+
             return UI;
 
 

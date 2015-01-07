@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.UI;
 using Nodeplay.UI;
 using System.Xml;
+using UnityEngine.EventSystems;
 
 public class NodeModel : BaseModel
 {
@@ -210,6 +211,22 @@ public class NodeModel : BaseModel
 		nodedisplay.AddComponent<HorizontalLayoutGroup>();
 		nodedisplay.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
 
+		//load the togglepanel that will point to the outputpanel and toggle it
+		var togglepanel = Instantiate(Resources.Load("ToggleLabel")) as GameObject;
+		togglepanel.transform.localPosition = this.gameObject.transform.position;
+		//translate position down to the bottom of the bounds of nodeview
+		//togglepanel.transform.Translate(0,-3* UI.renderer.bounds.size.y, 0);
+		togglepanel.transform.localPosition = new Vector3(
+			togglepanel.transform.localPosition.x,
+			//TODO something strange here
+			-4 * UI.renderer.bounds.size.y,
+			togglepanel.transform.localPosition.z);
+		togglepanel.transform.SetParent(this.transform);
+		togglepanel.AddComponent<TogglePanelButton>();
+		var tpb = togglepanel.GetComponentInChildren<TogglePanelButton>();
+		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.TogglePanel(nodedisplay); });
+		togglepanel.AddComponent<UILabel>();
+		togglepanel.AddComponent<EventConsumer>();
 
         // now load the outputview
         var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;

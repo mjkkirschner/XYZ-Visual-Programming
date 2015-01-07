@@ -20,7 +20,7 @@ public class UILabel : MonoBehaviour
 		}
 		else
 		{
-			this.GetComponentInChildren<Text>().text = model.name;
+			this.GetComponentInChildren<Text>().text = model.GetType().ToString();
 		}
 
 	}
