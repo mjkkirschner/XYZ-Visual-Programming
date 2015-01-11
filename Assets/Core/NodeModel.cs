@@ -216,32 +216,40 @@ public class NodeModel : BaseModel
 		togglepanel.transform.localPosition = this.gameObject.transform.position;
 		//translate position down to the bottom of the bounds of nodeview
 		//togglepanel.transform.Translate(0,-3* UI.renderer.bounds.size.y, 0);
+		togglepanel.transform.SetParent(this.transform,false);
 		togglepanel.transform.localPosition = new Vector3(
 			togglepanel.transform.localPosition.x,
 			//TODO something strange here
-			-4 * UI.renderer.bounds.size.y,
+			-4 * UI.renderer.bounds.min.y,
 			togglepanel.transform.localPosition.z);
-		togglepanel.transform.SetParent(this.transform);
+
 		togglepanel.AddComponent<TogglePanelButton>();
 		var tpb = togglepanel.GetComponentInChildren<TogglePanelButton>();
-		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.TogglePanel(nodedisplay); });
+		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.ToggleCanvasPanel(nodedisplay); });
 		togglepanel.AddComponent<UILabel>();
 		togglepanel.AddComponent<EventConsumer>();
 
+
+		nodedisplay.transform.SetParent(togglepanel.transform.FindChild("Window").transform,false);
+
         // now load the outputview
         var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
-		output.AddComponent<LayoutElement>().minWidth = 6;
+		output.transform.localScale = Vector3.one;
+		output.AddComponent<LayoutElement>().minWidth = 100;
 		output.GetComponent<UIWindowBase>().enabled = false;
         output.transform.localPosition = this.gameObject.transform.position;
 		output.transform.SetParent(nodedisplay.transform, false);
+		output.transform.localPosition = Vector3.zero;
         this.PropertyChanged+= output.AddComponent<OutDisplay>().HandleModelChanges;
         
 		//add input window for this node...may not add one... this maybe should be per node override
 		var input = Instantiate(Resources.Load("InputWindow")) as GameObject;
-		input.AddComponent<LayoutElement>().minWidth = 6;
+		input.transform.localScale = Vector3.one;
+		input.AddComponent<LayoutElement>().minWidth = 100;
 		input.GetComponent<UIWindowBase>().enabled = false;
 		input.transform.localPosition = this.gameObject.transform.position;
 		input.transform.SetParent(nodedisplay.transform, false);
+		input.transform.localPosition = Vector3.zero;
 		this.PropertyChanged+= input.AddComponent<InputDisplay>().HandleModelChanges;                
 
         //iterate all graphics casters and turn blocking on for 3d objects
