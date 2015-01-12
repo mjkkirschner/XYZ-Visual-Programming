@@ -24,7 +24,7 @@ namespace Nodeplay.UI
         protected override void Start()
         {
             //find child window and text controls here
-            mainPanel = this.gameObject.GetComponentInChildren<ContentSizeFitter>().gameObject;
+			mainPanel = this.gameObject;
             //find the model
             model = this.gameObject.GetComponentInParent<NodeModel>();
         }

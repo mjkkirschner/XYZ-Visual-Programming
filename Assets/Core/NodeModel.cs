@@ -206,10 +206,11 @@ public class NodeModel : BaseModel
 		var nodedisplay = new GameObject();
 		nodedisplay.transform.localPosition = this.gameObject.transform.position;
 		nodedisplay.transform.parent = UI.transform.parent;
-		nodedisplay.AddComponent<UIWindowBase>();
+		//nodedisplay.AddComponent<UIWindowBase>();
 		nodedisplay.AddComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
 		nodedisplay.AddComponent<HorizontalLayoutGroup>();
 		nodedisplay.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
+		nodedisplay.GetComponent<HorizontalLayoutGroup>().childForceExpandHeight = false;
 
 		//load the togglepanel that will point to the outputpanel and toggle it
 		var togglepanel = Instantiate(Resources.Load("ToggleLabel")) as GameObject;
@@ -229,14 +230,17 @@ public class NodeModel : BaseModel
 		togglepanel.AddComponent<UILabel>();
 		togglepanel.AddComponent<EventConsumer>();
 
+		//set the correct settings for this canvas renderer
+		togglepanel.GetComponent<Canvas>().worldCamera = Camera.main;
+
 
 		nodedisplay.transform.SetParent(togglepanel.transform.FindChild("Window").transform,false);
 
         // now load the outputview
-        var output = Instantiate(Resources.Load("OutputWindowText")) as GameObject;
+        var output = Instantiate(Resources.Load("OutputWindow")) as GameObject;
 		output.transform.localScale = Vector3.one;
 		output.AddComponent<LayoutElement>().minWidth = 100;
-		output.GetComponent<UIWindowBase>().enabled = false;
+		//output.GetComponent<UIWindowBase>().enabled = false;
         output.transform.localPosition = this.gameObject.transform.position;
 		output.transform.SetParent(nodedisplay.transform, false);
 		output.transform.localPosition = Vector3.zero;
@@ -246,7 +250,7 @@ public class NodeModel : BaseModel
 		var input = Instantiate(Resources.Load("InputWindow")) as GameObject;
 		input.transform.localScale = Vector3.one;
 		input.AddComponent<LayoutElement>().minWidth = 100;
-		input.GetComponent<UIWindowBase>().enabled = false;
+		//input.GetComponent<UIWindowBase>().enabled = false;
 		input.transform.localPosition = this.gameObject.transform.position;
 		input.transform.SetParent(nodedisplay.transform, false);
 		input.transform.localPosition = Vector3.zero;
