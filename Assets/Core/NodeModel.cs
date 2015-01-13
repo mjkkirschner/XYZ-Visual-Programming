@@ -228,7 +228,7 @@ public class NodeModel : BaseModel
 		var tpb = togglepanel.GetComponentInChildren<TogglePanelButton>();
 		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.ToggleCanvasPanel(nodedisplay); });
 		togglepanel.AddComponent<UILabel>();
-		togglepanel.AddComponent<EventConsumer>();
+		//togglepanel.AddComponent<EventConsumer>();
 
 		//set the correct settings for this canvas renderer
 		togglepanel.GetComponent<Canvas>().worldCamera = Camera.main;

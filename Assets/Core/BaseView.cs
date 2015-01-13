@@ -167,7 +167,8 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     {
         Debug.Log("drag called");
 
-        if (pointerdata.rawPointerPress == this.UI && pointerdata.button == PointerEventData.InputButton.Left )
+		if (pointerdata.rawPointerPress == this.UI && pointerdata.button == PointerEventData.InputButton.Left ||
+			this.GetComponentsInChildren<CanvasRenderer>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)  && pointerdata.button == PointerEventData.InputButton.Left)
         {
             // get the hit world coord
             var pos = HitPosition(this.gameObject);
