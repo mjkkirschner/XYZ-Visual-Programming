@@ -170,15 +170,10 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 		if (pointerdata.rawPointerPress == this.UI && pointerdata.button == PointerEventData.InputButton.Left ||
 			this.GetComponentsInChildren<CanvasRenderer>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)  && pointerdata.button == PointerEventData.InputButton.Left)
         {
-            // get the hit world coord
-            var pos = HitPosition(this.gameObject);
-
-            // project from camera through mouse currently and use same distance
-            Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
-
-            // move object to new coordinate
-            this.gameObject.transform.position = to_point;
-
+			Ray ray = Camera.main.ScreenPointToRay(pointerdata.position - pointerdata.delta);
+			var orginalPoint = ray.GetPoint(dist_to_camera);
+			Vector3 threeddelta = BaseView<BaseModel>.ProjectCurrentDrag(dist_to_camera) - orginalPoint;
+			this.transform.position += threeddelta;
         }
 
     }
