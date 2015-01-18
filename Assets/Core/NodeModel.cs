@@ -226,7 +226,7 @@ public class NodeModel : BaseModel
 
 		togglepanel.AddComponent<TogglePanelButton>();
 		var tpb = togglepanel.GetComponentInChildren<TogglePanelButton>();
-		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.ToggleCanvasPanel(nodedisplay); });
+		togglepanel.GetComponentInChildren<Toggle>().onValueChanged.AddListener(delegate { tpb.ToggleContentFitMethod(nodedisplay); });
 		togglepanel.AddComponent<UILabel>();
 		//togglepanel.AddComponent<EventConsumer>();
 

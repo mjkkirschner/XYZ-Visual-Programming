@@ -76,8 +76,9 @@ namespace Nodeplay.UI
                 newdisplay = GameObject.Instantiate(newdisplay) as GameObject;
                 newdisplay.GetComponent<RectTransform>().SetParent(inputPanel.GetComponent<RectTransform>(),false);
                 //update the labels with the current output dictionary data
-                newdisplay.GetComponent<InputDisplayPair>().UpdateLabels(entry.Key, entry.Value);
 				newdisplay.GetComponent<InputDisplayPair>().InputName = entry.Key;
+				newdisplay.GetComponent<InputDisplayPair>().UpdateLabels(entry.Key, entry.Value);
+				
 				}
             }
         }

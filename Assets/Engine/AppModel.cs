@@ -57,13 +57,13 @@ public class AppModel : MonoBehaviour
 		var ls = GameObject.Find("LoadScreen");
 		ls.SetActive(false);
 
-		model.InstantiateNode<ForLoopTest> (new Vector3 (1, 1, 1));
-		model.InstantiateNode<DebugLogTest> (new Vector3 (2, 2, 2));
+		//model.InstantiateNode<ForLoopTest> (new Vector3 (1, 1, 1));
+		//model.InstantiateNode<DebugLogTest> (new Vector3 (2, 2, 2));
 		model.InstantiateNode<StartExecution> (new Vector3 (0, 0, 0));
 		model.InstantiateNode<InstantiateCube> (new Vector3 (0, 0, 0));
 		model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
-		model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
-		model.InstantiateNode<csharpsum> (new Vector3 (3, 0, 0));
+		//model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
+		//model.InstantiateNode<csharpsum> (new Vector3 (3, 0, 0));
 
 	}
 
