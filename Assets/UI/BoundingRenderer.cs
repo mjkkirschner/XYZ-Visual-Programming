@@ -2,83 +2,88 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class BoundingRenderer : MonoBehaviour
+
+namespace Nodeplay.UI
 {
 
-	public NodeModel Model;
-
-	public GameObject tempgeo;
-	// Use this for initialization
-	void Start()
+	public class BoundingRenderer : MonoBehaviour
 	{
-		Model = this.GetComponentInParent<NodeModel>();
-	}
 
+		public NodeModel Model;
 
-	public static List<GameObject> BFS(GameObject root)
-	{
-		// now can start actually traversing the graph
-		List<GameObject> visited = new List<GameObject>();
-		Queue<GameObject> Q = new Queue<GameObject>();
-
-
-		Q.Enqueue(root);
-		while (Q.Count > 0)
+		public GameObject tempgeo;
+		// Use this for initialization
+		void Start()
 		{
-			GameObject currentVertex = Q.Dequeue();
-			var alloutputs = currentVertex.GetComponent<NodeModel>().ExecutionOutputs.SelectMany(x => x.connectors).ToList();
+			Model = this.GetComponentInParent<NodeModel>();
+		}
 
-			foreach (var connector in alloutputs)
+
+		public static List<GameObject> BFS(GameObject root)
+		{
+			// now can start actually traversing the graph
+			List<GameObject> visited = new List<GameObject>();
+			Queue<GameObject> Q = new Queue<GameObject>();
+
+
+			Q.Enqueue(root);
+			while (Q.Count > 0)
 			{
-				var head = connector.PEnd.Owner.gameObject;
-				if (visited.Contains(head) == false)
+				GameObject currentVertex = Q.Dequeue();
+				var alloutputs = currentVertex.GetComponent<NodeModel>().ExecutionOutputs.SelectMany(x => x.connectors).ToList();
+
+				foreach (var connector in alloutputs)
 				{
-					Q.Enqueue(head);
+					var head = connector.PEnd.Owner.gameObject;
+					if (visited.Contains(head) == false)
+					{
+						Q.Enqueue(head);
+					}
+
 				}
+				// look at BFS implementation again - CLRS ? colors? I am mutating verts too many times?
+				// check how many times this loop is running with acounter
+				visited.Add(currentVertex);
 
 			}
-			// look at BFS implementation again - CLRS ? colors? I am mutating verts too many times?
-			// check how many times this loop is running with acounter
-			visited.Add(currentVertex);
-
+			return visited;
 		}
-		return visited;
+
+
+		public GameObject GenerateBounds(List<GameObject> toBound)
+		{
+			Vector3 center = Vector3.zero;
+			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
+			var totalBounds = allrenderers[0].bounds;
+			foreach (Renderer ren in allrenderers)
+			{
+				center = center + ren.gameObject.transform.position;
+				totalBounds.Encapsulate(ren.bounds);
+
+			}
+			center = center / (allrenderers.Count);
+			var xx = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+			xx.transform.localScale = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
+			xx.transform.localPosition = totalBounds.center;
+			xx.collider.enabled = false;
+			xx.renderer.material = Resources.Load("NestingZone") as Material;
+			return xx;
+		}
+
+		// Update is called once per frame
+		void Update()
+		{
+
+			if (tempgeo != null)
+			{
+				GameObject.Destroy(tempgeo);
+			}
+			//generate the bounds of all gameobjects downstream from the second execution connector
+			if (Model.ExecutionOutputs[1].IsConnected)
+			{
+				tempgeo = GenerateBounds(BFS(Model.ExecutionOutputs[1].connectors[0].PEnd.Owner.gameObject));
+			}
+		}
 	}
 
-
-	public GameObject GenerateBounds(List<GameObject> toBound)
-	{
-		Vector3 center = Vector3.zero;
-		var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
-		var totalBounds = allrenderers[0].bounds;
-		foreach (Renderer ren in allrenderers)
-		{
-			center = center + ren.gameObject.transform.position;
-			totalBounds.Encapsulate(ren.bounds);
-
-		}
-		center = center / (allrenderers.Count);
-		var xx = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-		xx.transform.localScale = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
-		xx.transform.localPosition = totalBounds.center;
-		xx.collider.enabled = false;
-		xx.renderer.material = Resources.Load("NestingZone") as Material;
-		return xx;
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-
-		if (tempgeo != null)
-		{
-			GameObject.Destroy(tempgeo);
-		}
-		//generate the bounds of all gameobjects downstream from the second execution connector
-		if (Model.ExecutionOutputs[1].IsConnected)
-		{
-			tempgeo = GenerateBounds(BFS(Model.ExecutionOutputs[1].connectors[0].PEnd.Owner.gameObject));
-		}
-	}
 }
-
