@@ -26,7 +26,11 @@ class PortView : BaseView<PortModel>
     /// </summary>
     private GameObject tempconnector;
 
-    //TODO this method should be on portview
+   /// <summary>
+   /// method that positions the port relative to the other ports
+   /// </summary>
+   /// <param name="port"></param>
+   /// <returns></returns>
     public GameObject PositionNewPort(GameObject port)
     {
 
@@ -85,6 +89,10 @@ class PortView : BaseView<PortModel>
         return port;
     }
     
+	/// <summary>
+	/// method that creates connections when dropping from a port to a port
+	/// </summary>
+	/// <param name="pointerdata"></param>
     public override void OnDrop(PointerEventData pointerdata)
     {
 		if(pointerdata.button == PointerEventData.InputButton.Left){
@@ -105,6 +113,19 @@ class PortView : BaseView<PortModel>
                 return;
             }
 
+			if (startport.GetType() != Model.GetType())
+			{
+				Debug.Log("can't connect execution connectors and data connectors");
+				return;
+			}
+
+			//if the starting port was an output, then we'll need to reverse the connetion direction
+			if (startport.PortType == PortModel.porttype.input)
+			{
+				Debug.Log("creating a reversed connection");
+				Model.Owner.GraphOwner.AddConnection(this.Model, pointerdata.pointerDrag.GetComponent<PortModel>());
+				return;
+			}
             //TODO we must also look if we're about to create a cyclic dependencey, we should return a blank state
 
             // if port is already connected then disconnect old port before creating new connector
@@ -116,7 +137,12 @@ class PortView : BaseView<PortModel>
         }
    	 }
 	}
-    public override void OnPointerUp(PointerEventData pointerdata)
+    
+	/// <summary>
+	/// on pointerup clean the temp connector geometry
+	/// </summary>
+	/// <param name="pointerdata"></param>
+	public override void OnPointerUp(PointerEventData pointerdata)
     {
 
 

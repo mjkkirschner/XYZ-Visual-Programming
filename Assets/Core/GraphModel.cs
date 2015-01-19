@@ -102,7 +102,24 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		return newnode;
 	}
 
+	/// <summary>
+	/// iterate all ports on node and have graph model remove connections
+	/// this should call disconnect on other nodes correctly
+	/// </summary>
+	/// <param name="node"></param>
+	public void DeleteNode(GameObject node)
+	{
+		Nodes.Remove(node.GetComponent<NodeModel>());
+		//TODO need to check if the connections exist before trying to remove them
+		node.GetComponent<NodeModel>().Inputs.ForEach(x => RemoveConnection(x));
+		node.GetComponent<NodeModel>().Outputs.ForEach(x => RemoveConnection(x));
+		node.GetComponent<NodeModel>().ExecutionInputs.ForEach(x => RemoveConnection(x));
+		node.GetComponent<NodeModel>().ExecutionOutputs.ForEach(x => RemoveConnection(x));
 
+		//then destory gameobject
+		GameObject.Destroy(node);
+
+	}
 
 	public event PropertyChangedEventHandler PropertyChanged;
 

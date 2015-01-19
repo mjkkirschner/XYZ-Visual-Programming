@@ -191,7 +191,8 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
-
+			GameObject.Find("EventSystem").GetComponent<EventSystem>().SetSelectedGameObject(this.gameObject);
+			Debug.Log("setting " + this.name + "to selected game object");
             if (pointerdata.clickCount != 2)
             {
 

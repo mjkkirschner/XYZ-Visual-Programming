@@ -10,15 +10,13 @@ using UnityEditor;
 public class AppModel : MonoBehaviour
 {
 
-	private List<GraphModel> workmodels = new List<GraphModel>();
-	private List<NodeModel> loadedNodeModels = new List<NodeModel>();
-
-	public List<GraphModel> Workmoldels {get;set;}
+	public List<GraphModel> WorkModels {get;set;}
 	public List<NodeModel> LoadedNodeModels {get;set;}
 
+	
 	public void SaveGraph(){
 		// call save on the current graphmodel
-		var current = workmodels.Where(x=>x.Current == true).First();
+		var current = WorkModels.Where(x=>x.Current == true).First();
 
 		var path = EditorUtility.SaveFilePanel(
 					"Save Graph As xml File",
@@ -35,7 +33,7 @@ public class AppModel : MonoBehaviour
 		//then call load on it with path, which will deserialze an xml file into that model
 		var temp = new GraphModel("tempload",this);
 		temp.LoadGraphModel(path);
-		workmodels.Add(temp);
+		WorkModels.Add(temp);
 		var ls = GameObject.Find("LoadScreen");
 		ls.SetActive(false);
 		temp.Current = true;
@@ -44,7 +42,7 @@ public class AppModel : MonoBehaviour
 
 	public void NewGraph(){
 
-		var model = new GraphModel("untitled"+workmodels.Count.ToString(),this);
+		var model = new GraphModel("untitled"+WorkModels.Count.ToString(),this);
 		//TODO remove this next line just for testing, this bool might be set when this model
 		//is the assigned model of the canvas, or something like this, 
 		//the graphmodel needs to set current when its loaded and displaying its nodes,
@@ -52,7 +50,7 @@ public class AppModel : MonoBehaviour
 		// which it will call instantiate on, and possibly other commands, current will be set from the canvas etc...
 
 		model.Current = true;
-		workmodels.Add(model);
+		WorkModels.Add(model);
 		//hide the loadscreen
 		var ls = GameObject.Find("LoadScreen");
 		ls.SetActive(false);
@@ -77,7 +75,8 @@ public class AppModel : MonoBehaviour
 			
 			//the home screen will have some callbacks here that create graphmodels
 			// either by loading them and passing the string to parse back, or by creating a new one
-			
+			WorkModels = new List<GraphModel>();
+			LoadedNodeModels = new List<NodeModel>();
 		}
 
 
