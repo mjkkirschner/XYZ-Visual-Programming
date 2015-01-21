@@ -133,6 +133,13 @@ class PortView : BaseView<PortModel>
             {	
 					Model.Owner.GraphOwner.RemoveConnection(this.Model);
             }
+			//if the port is a execution connector then we should remove the previous connection
+			// because execution flow can't branch
+			if (Model.GetType() == typeof(ExecutionPortModel) && startport.IsConnected)
+			{
+				startport.Owner.GraphOwner.RemoveConnection(startport.connectors[0].PEnd);
+			}
+
 				Model.Owner.GraphOwner.AddConnection(pointerdata.pointerDrag.GetComponent<PortModel>(),this.Model);
         }
    	 }
