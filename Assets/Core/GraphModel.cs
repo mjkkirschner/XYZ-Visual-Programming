@@ -134,10 +134,14 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	public void RemoveConnection(PortModel connectionEnd)
 	{
-		//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... and data connectors, not execution connectors
-		Connectors.Remove(connectionEnd.connectors[0]);
-		connectionEnd.Disconnect(connectionEnd.connectors[0]);
-
+		//do a null check to make sure the port actually has a connector  here
+		//before attemtping to remove it
+		if (connectionEnd.connectors.Count > 0 && connectionEnd.connectors[0]!=null)
+		{
+			//TODO THIS ONLY MAKES SENSE FOR INPUT NODES... and data connectors, not execution connectors
+			Connectors.Remove(connectionEnd.connectors[0]);
+			connectionEnd.Disconnect(connectionEnd.connectors[0]);
+		}
 	}
 
 	public void AddConnection(PortModel start, PortModel end)
