@@ -153,7 +153,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Run Evaluation
+  m_Text: Nodeplay.Nodes.NodeType
 --- !u!222 &22200000
 CanvasRenderer:
   m_ObjectHideFlags: 1

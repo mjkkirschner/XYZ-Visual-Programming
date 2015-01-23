@@ -27,7 +27,14 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	public float Z { get; set; }
 	public bool HasUnsavedChanges { get; set; }
 	public DateTime LastSaved { get; set; }
-	public bool Current { get; set; }
+	private bool _current;
+	public bool Current { 
+		get{return _current;}
+		set{ _current = value;
+			setLibrarySubscribtion(_current);
+			}
+			
+	}
 	public string FileName { get; set; }
 
 
@@ -77,7 +84,33 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		//WorkspaceVersion = AssemblyHelper.GetDynamoVersion();
 		//undoRecorder = new UndoRedoRecorder(this);
 	}
+	/// <summary>
+	/// Sets the library subscribtion of this graph depending on if the graph is the current active graph or not.
+	/// </summary>
+	private void setLibrarySubscribtion (bool isCurrentWorkspace)
+	{
+		if (isCurrentWorkspace)
+		{
+			_appmodel.NodeLibrary.ButtonPressed += OnLibraryButtonPress;
 
+		}
+		else
+		{
+			_appmodel.NodeLibrary.ButtonPressed -= OnLibraryButtonPress;
+		}
+
+	}
+
+	private void OnLibraryButtonPress(LibraryButton button,EventArgs e)
+	{
+		var nodetype = button.LoadedType;
+		MethodInfo method = this.GetType().GetMethod("InstantiateNode");
+		MethodInfo generic = method.MakeGenericMethod(nodetype);
+		//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
+		//this is a fully qualified type extracted from the libraryButton
+		generic.Invoke(this, new object[]{new Vector3(0,0,0),new Guid()});
+		
+	}
 	
 	/// <summary>
 	/// this method instantiates a node of any type that inherits from node model

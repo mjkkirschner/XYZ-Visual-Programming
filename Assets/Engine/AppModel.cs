@@ -6,13 +6,64 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEditor;
+using System.ComponentModel;
 
 public class AppModel : MonoBehaviour
 {
 
 	public List<GraphModel> WorkModels {get;set;}
-	public List<NodeModel> LoadedNodeModels {get;set;}
+	private List<Type> _loadedNodeModels;
+	//TODO implement observable collection list
+	public List<Type> LoadedNodeModels
+		
+	{
+		get
+		{
+			return this._loadedNodeModels;
+			
+		}
+		
+		set
+		{
+			if (value != this._loadedNodeModels)
+			{
+				this._loadedNodeModels = value;
+				NotifyPropertyChanged("LoadadNodes");
+			}
+		}
+	}
+	public Library NodeLibrary {get;set;}
 
+
+	public event PropertyChangedEventHandler PropertyChanged;
+	protected virtual void NotifyPropertyChanged(String info)
+	{
+		Debug.Log("sending " + info + " change notification");
+		if (PropertyChanged != null)
+		{
+			PropertyChanged(this, new PropertyChangedEventArgs(info));
+		}
+	}
+
+	 
+	/// <summary>
+	/// method that polls the app for the current graph model, also ensures there is only one current
+	/// </summary>
+	/// <returns>The graph model.</returns>
+	public GraphModel GetCurrentGraphModel()
+	{ 
+		var currentGraphs = WorkModels.Where(x=>x.Current == true).ToList();
+				if (currentGraphs.Count>1)
+					{
+				Debug.Log("Somehow there is more than one current graph...this should not be possible");
+				Debug.Break();
+			return null;
+					}
+				else
+					{
+			return currentGraphs.First();
+					}
+		}
 	
 	public void SaveGraph(){
 		// call save on the current graphmodel
@@ -69,14 +120,23 @@ public class AppModel : MonoBehaviour
 		void Start ()
 		{
 			//create a nodeModelloader for this instance of appmodel
-
+			var nodeloaderinst = new NodeModelLoader();
 			// on program start, we load a home screen into the main canvas 
 			//var maincanvas = GameObject.Find("Canvas");
+			//the home screen comtains, run, save(possibly), and the library component
 			
-			//the home screen will have some callbacks here that create graphmodels
+			//TODO for now find the object, but we should load it here instead
+			var homescreen = GameObject.Find("HomeCanvas");
+		 	NodeLibrary = homescreen.GetComponentInChildren<Library>();
+			this.PropertyChanged += NodeLibrary.HandleAppModelChanges;
+
+			LoadedNodeModels = nodeloaderinst.LoadNodeModels();
+			Debug.Log("loaded "+ LoadedNodeModels.Count.ToString() + " nodes");
+
+			//the load screen will have some callbacks here that create graphmodels
 			// either by loading them and passing the string to parse back, or by creating a new one
 			WorkModels = new List<GraphModel>();
-			LoadedNodeModels = new List<NodeModel>();
+			LoadedNodeModels = new List<Type>();
 		}
 
 

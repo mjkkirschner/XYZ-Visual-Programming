@@ -10,6 +10,20 @@ public class LibraryButton : UIBehaviour, IPointerClickHandler
 	public Button Button{get;set;}
 	public Text NameLabel{get;set;}
 	public Type LoadedType{get;set;}
+	private Library _nodelibrary {get;set;}
+
+	 protected override void OnEnable()
+	{	//find the library that is somewhere above the library button
+		_nodelibrary = this.transform.root.GetComponentInChildren<Library>();
+		if (_nodelibrary == null)
+		{
+			_nodelibrary = GameObject.FindObjectOfType<Library>();
+		}
+
+		Button = this.GetComponent<Button>();
+		NameLabel = this.GetComponentInChildren<Text>();
+
+	}
 
 	#region IPointerClickHandler implementation
 
@@ -23,9 +37,12 @@ public class LibraryButton : UIBehaviour, IPointerClickHandler
 	/// <param name="eventData">Event data.</param>
 	public void OnPointerClick (PointerEventData eventData)
 	{
-		throw new NotImplementedException ();
+		_nodelibrary.OnButtonPress(this,EventArgs.Empty);
 	}
 
 	#endregion
+
+
+
 }
 

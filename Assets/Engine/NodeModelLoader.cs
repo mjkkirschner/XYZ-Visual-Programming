@@ -17,7 +17,6 @@ public class NodeModelLoader
 	public HashSet<Assembly> LoadedAssemblies {get;set;}
 	public HashSet<String> LoadedAssemblyNames {get;set;}
 
-
 	public NodeModelLoader(){
 		LoadedAssemblies = new HashSet<Assembly>();
 		LoadedAssemblyNames = new HashSet<string>();
@@ -52,7 +51,7 @@ public class NodeModelLoader
 	/// the bin/nodes directory. Add the types to the searchviewmodel and
 	/// the controller's dictionaries.
 	/// </summary>
-	public void LoadNodeModels()
+	public List<Type> LoadNodeModels()
 	{
 		var loadedAssembliesByPath = new Dictionary<string, Assembly>();
 		var loadedAssembliesByName = new Dictionary<string, Assembly>();
@@ -74,13 +73,15 @@ public class NodeModelLoader
 		//var result2 = new List<TypeLoadData>();
 
 
-
+		var loadedTypes = new List<Type>();
 
 		// going to look in all currently loaded assemblies for nodes, then we'll also look
 		// in a specific folder of the resources or data folder, unsure on this path yet...
 		var allNodeAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
 		string path = Application.dataPath;
-		path = Path.Combine(path,"/Nodes");
+		Debug.Log(path);
+		path = Path.Combine(path,"Nodes");
+		Debug.Log(path);
 		List<Assembly> allAssembliesinbuild = new List<Assembly>();
 		foreach (string dll in Directory.GetFiles(path, "*.dll"))
 		{
@@ -92,11 +93,12 @@ public class NodeModelLoader
 		//iterate each assembly location
 		foreach (var assemblyPath in allNodeAssemblies.Select(x=>x.Location).ToList())
 		{
+			Debug.Log("current assembly path is " + assemblyPath);
 			//get the filename at each location and check it's not null
 			var fn = Path.GetFileName(assemblyPath);
 			if (fn == null)
 				continue;
-			
+			Debug.Log("filename is " + fn);
 			// if the assembly has already been loaded, then
 			// skip it, otherwise cache it.
 			if (LoadedAssemblyNames.Contains(fn))
@@ -109,12 +111,13 @@ public class NodeModelLoader
 				Assembly assembly;
 				if (!loadedAssembliesByPath.TryGetValue(assemblyPath, out assembly))
 				{
+					Debug.Log("about to load assembly from" + assemblyPath);
 					assembly = Assembly.LoadFrom(assemblyPath);
 					loadedAssembliesByName[assembly.GetName().Name] = assembly;
 					loadedAssembliesByPath[assemblyPath] = assembly;
 				}
 				
-				LoadNodesFromAssembly(assembly);
+			loadedTypes.AddRange(LoadNodesFromAssembly(assembly));
 				LoadedAssemblies.Add(assembly);
 				//TODO possibly readd event that fires when assemlbly loaded
 				//OnAssemblyLoaded(assembly);
@@ -130,7 +133,7 @@ public class NodeModelLoader
 		}
 		
 		//AppDomain.CurrentDomain.AssemblyResolve -= resolver;
-
+		return loadedTypes;
 	}
 
 
@@ -144,6 +147,7 @@ public class NodeModelLoader
 	public List<Type> LoadNodesFromAssembly(
 		Assembly assembly)
 	{
+		Debug.Log("inside load nodes from specific assembly: " + assembly.FullName);
 		var nodeModelTypes = new List<Type>();
 
 		if (assembly == null)
@@ -179,6 +183,7 @@ public class NodeModelLoader
 				//and have the elementname attribute
 				if (IsNodeSubType(t))
 				{
+					Debug.Log(t.ToString() + "was a nodemodel");
 					//TODO adding type, could replace with typeload class later
 					nodeModelTypes.Add(t);
 				}
@@ -203,6 +208,7 @@ public class NodeModelLoader
 	/// <returns>True if the type is node.</returns>
 	public static bool IsNodeSubType(Type t)
 	{
+		//Debug.Log("checking if type " + t.ToString() + "is a nodemodel ");
 		return //t.Namespace == "Dynamo.Nodes" &&
 			!t.IsAbstract &&
 				t.IsSubclassOf(typeof(NodeModel));
