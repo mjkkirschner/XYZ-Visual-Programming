@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
- 
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using System.Linq;
+
 public class ExtendedFlycam : MonoBehaviour
 {
  
@@ -37,10 +41,25 @@ public class ExtendedFlycam : MonoBehaviour
 		rotationX = transform.rotation.x;
 		rotationY = transform.rotation.y;
 	}
+
  
 	void Update ()
 	{
-		
+		//cast into the scene, if we hit anything and if the item we hit is a UI tagged object
+		// then do not enter input loop
+		var hits = new List<RaycastResult>();
+		var pointer = new PointerEventData(EventSystem.current);
+		pointer.position = Input.mousePosition;//Camera.main.WorldToScreenPoint(Input.mousePosition);
+		EventSystem.current.RaycastAll(pointer,hits);
+		Debug.Log("just hit " + hits.Count);
+		var filterdhits = hits.Where(x=>x.gameObject.transform.root.GetComponentInChildren<ScrollRect>() != null ).ToList();
+		hits.ForEach(x=>Debug.Log(x.gameObject.name));
+		if (filterdhits.Count>0 )
+			{
+				
+				return;
+			}
+
 		// if the right mouse is clicked then rotate the camera
 		if (Input.GetMouseButton(1))
 		{
@@ -81,7 +100,6 @@ public class ExtendedFlycam : MonoBehaviour
  
 		if (Input.GetKey (KeyCode.Q)) {transform.position += transform.up * climbSpeed * Time.deltaTime;}
 		if (Input.GetKey (KeyCode.E)) {transform.position -= transform.up * climbSpeed * Time.deltaTime;}
- 
 		
 	}
 }
