@@ -49,11 +49,9 @@ public class ExtendedFlycam : MonoBehaviour
 		// then do not enter input loop
 		var hits = new List<RaycastResult>();
 		var pointer = new PointerEventData(EventSystem.current);
-		pointer.position = Input.mousePosition;//Camera.main.WorldToScreenPoint(Input.mousePosition);
+		pointer.position = Input.mousePosition;
 		EventSystem.current.RaycastAll(pointer,hits);
-		Debug.Log("just hit " + hits.Count);
 		var filterdhits = hits.Where(x=>x.gameObject.transform.root.GetComponentInChildren<ScrollRect>() != null ).ToList();
-		hits.ForEach(x=>Debug.Log(x.gameObject.name));
 		if (filterdhits.Count>0 )
 			{
 				
