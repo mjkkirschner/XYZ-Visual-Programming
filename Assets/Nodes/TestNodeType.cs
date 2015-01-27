@@ -6,17 +6,19 @@ using Nodeplay.Engine;
 
 namespace Nodeplay.Nodes
 {
-    public class TestNodeType : NodeModel
+    public class NumberRange : NodeModel
     {
 
 
         protected override void Start()
         {
             base.Start();
-            AddOutPutPort("OUTPUT");
-            AddInputPort("input1");
-            AddInputPort("input2");
-            Code = "OUTPUT = range(input1,input2*2);print OUTPUT";
+			AddExecutionInputPort("generateRange");
+			AddExecutionOutPutPort("generated");
+            AddOutPutPort("range");
+            AddInputPort("start");
+            AddInputPort("end");
+			Code = "range = range(start,end);generated();";
             Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
         }
 

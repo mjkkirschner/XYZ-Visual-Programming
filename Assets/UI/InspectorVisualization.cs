@@ -19,7 +19,7 @@ namespace Nodeplay.UI
 	/// it contains methods for generating the top level of the elements contained the tree
 	/// for instantiating those elements, and organizing the visualzation of all elements under it
 	/// </summary>
-
+	[RequireComponent(typeof(VerticalLayoutGroup))]
 	public class InspectorVusualization : MonoBehaviour
 	{
 
@@ -36,14 +36,14 @@ namespace Nodeplay.UI
 		}
 
 
-		private bool IsList(object o)
+		public static bool IsList(object o)
 		{
-			return o is IList &&
+			return o is IList || o is IList &&
 				   o.GetType().IsGenericType &&
 				   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
 		}
 
-		private bool IsDictionary(object o)
+		public static bool IsDictionary(object o)
 		{
 			return o is IDictionary &&
 				   o.GetType().IsGenericType &&
@@ -51,36 +51,46 @@ namespace Nodeplay.UI
 		}
 
 
-		private GameObject generateInspectableElementGameObject(object someObject)
+		public static GameObject generateInspectableElementGameObject(object someObject,GameObject parent)
 		{
-			var x = new GameObject(someObject.GetType().ToString());
+			//TODO replace with call to specific item type depending on item system.type
+			var x = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			x.name = (someObject.GetType().ToString());
+			x.transform.position = parent.transform.position;
 			var inspectable = x.AddComponent<InspectableElement>();
 			inspectable.ElementType = x.GetType();
 			inspectable.reference = someObject;
+			Debug.Log("building inspectable element representing: " + someObject.ToString());
+			//this.SubElement.Add(x);
 
 			return x;
 		}
 
 		public void PopulateTopLevel(object inputObject)
 		{
+
+			TopLevelElement = inputObject;
 			if (IsList(inputObject))
 			{
-				TopLevelElement = inputObject;
+				Debug.Log("inputobject is a list");
 				foreach (var item in (IEnumerable)inputObject)
 				{
-					var inspectabelgo = generateInspectableElementGameObject(item);
+					var inspectabelgo = generateInspectableElementGameObject(item,this.gameObject);
 					inspectabelgo.transform.SetParent(this.transform);
 				}
 			}
 
 			else if (IsDictionary(inputObject))
 			{
-
+				Debug.Log("inputobject is a dictionary");
 				foreach (var pair in (IEnumerable)inputObject)
 				{
 					var realpair = DictionaryHelpers.CastFrom(pair);
 					var key = realpair.Key;
 					var value = realpair.Value;
+
+					var inspectabelgo = generateInspectableElementGameObject(value,this.gameObject);
+					inspectabelgo.transform.SetParent(this.transform);
 				}
 			}
 
@@ -88,54 +98,12 @@ namespace Nodeplay.UI
 
 			else
 			{
-				//reflect over this object and grab propeties if there are any
-				if (inputObject is IDynamicMetaObjectProvider)
-				{
-					var names = new List<string>();
-					var dynobj = inputObject as IDynamicMetaObjectProvider;
-					if (dynobj != null)
-					{
-						
-						names.AddRange(dynobj.GetMetaObject(Expression.Constant(dynobj)).GetDynamicMemberNames());
-					}
+				Debug.Log("inputobject is a object");
+				//because this is the top level, we wont reflect over this object
+				//but instead just generate an element that represents it as the root.
 
-					//filter names so that python private and builtin members do not show
-					var filterednames = names.Where(x => x.StartsWith("__") != true).ToList();
-
-					foreach (var name in filterednames)
-					{
-
-						var val = GetDynamicValue(objectinput, name);
-						
-						if (val != null)
-						{
-							membersandvals.Add(new DynamoDropDownItem(string.Format("{0}:{1}", name, val), val));
-						}
-
-					}
-
-
-				}
-
-
-
-				  // if object was not dynamic use regular reflection
-				else
-				{
-					var propertyInfos = inputObject.GetType().GetProperties(
-			   BindingFlags.Public | BindingFlags.NonPublic // Get public and non-public
-			 | BindingFlags.Static | BindingFlags.Instance  // Get instance + static
-			 | BindingFlags.FlattenHierarchy); // Search up the hierarchy
-
-
-
-					foreach (var prop in propertyInfos.ToList())
-					{
-						var val = prop.GetValue(objectinput, null);
-						membersandvals.Add(new DynamoDropDownItem(string.Format("{0}:{1}", prop.Name, val), val));
-					}
-				}
-
+				var inspectabelgo = generateInspectableElementGameObject(inputObject,this.gameObject);
+				inspectabelgo.transform.SetParent(this.transform);
 
 			}
 
@@ -145,7 +113,7 @@ namespace Nodeplay.UI
 
 		//method for grabbing member values from a dynamic object, we use this for python objects...
 		//  http://stackoverflow.com/questions/1926776/getting-a-value-from-a-dynamic-object-dynamically
-		private static object GetDynamicValue(IronPython.Runtime.Binding.IPythonExpandable ob, string name)
+		public static object GetDynamicValue(IronPython.Runtime.Binding.IPythonExpandable ob, string name)
 		{
 			CallSite<Func<CallSite, object, object>> site
 				= CallSite<Func<CallSite, object, object>>.Create(ob.Context.LanguageContext.CreateGetMemberBinder(name,false));

@@ -120,7 +120,7 @@ namespace Nodeplay.Engine
 				}
 
 				//redirect the output for this delegate
-				Console.SetOut (new StreamWriter(memoryStream));
+				//Console.SetOut (new StreamWriter(memoryStream));
 
 				try
 				{
@@ -143,7 +143,7 @@ namespace Nodeplay.Engine
 
 
 				}
-				Console.OpenStandardOutput();
+				//Console.OpenStandardOutput();
 				return outdict;
 			}
 

@@ -639,7 +639,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		// the view will call a method on the model to construct UI elements
 		// which will be added to the scene and form some tree structure under the root
 
-		var newnode = InstantiateNode<TestNodeType>(creationPoint);
+		var newnode = InstantiateNode<NumberRange>(creationPoint);
 
 	}
 
