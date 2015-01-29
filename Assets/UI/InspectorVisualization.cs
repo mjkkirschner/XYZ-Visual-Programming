@@ -19,8 +19,8 @@ namespace Nodeplay.UI
 	/// it contains methods for generating the top level of the elements contained the tree
 	/// for instantiating those elements, and organizing the visualzation of all elements under it
 	/// </summary>
-	[RequireComponent(typeof(VerticalLayoutGroup))]
-	public class InspectorVusualization : MonoBehaviour
+	//[RequireComponent(typeof(VerticalLayoutGroup))]
+	public class InspectorVisualization : MonoBehaviour
 	{
 
 		public NodeModel Model;
@@ -53,15 +53,23 @@ namespace Nodeplay.UI
 
 		public static GameObject generateInspectableElementGameObject(object someObject,GameObject parent)
 		{
+
+			var wrapper = new GameObject("subelement_wrapper");
+			wrapper.transform.position = parent.transform.position;
+			wrapper.transform.SetParent(parent.transform);
+			wrapper.AddComponent<VerticalLayoutGroup>();
+			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
+			//wrapper.transform.Rotate(0,90,0);
+
 			//TODO replace with call to specific item type depending on item system.type
 			var x = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			x.name = (someObject.GetType().ToString());
-			x.transform.position = parent.transform.position;
+			x.transform.position = wrapper.transform.position;
 			var inspectable = x.AddComponent<InspectableElement>();
 			inspectable.ElementType = x.GetType();
 			inspectable.reference = someObject;
 			Debug.Log("building inspectable element representing: " + someObject.ToString());
-			//this.SubElement.Add(x);
+			inspectable.transform.SetParent(wrapper.transform);
 
 			return x;
 		}
@@ -69,14 +77,23 @@ namespace Nodeplay.UI
 		public void PopulateTopLevel(object inputObject)
 		{
 
+			var wrapper = new GameObject("wrapper");
+			wrapper.transform.position = this.transform.position;
+			wrapper.transform.SetParent(this.transform);
+			wrapper.AddComponent<VerticalLayoutGroup>();
+			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
+			wrapper.transform.Rotate(0,90,0);
 			TopLevelElement = inputObject;
 			if (IsList(inputObject))
 			{
+
 				Debug.Log("inputobject is a list");
 				foreach (var item in (IEnumerable)inputObject)
 				{
-					var inspectabelgo = generateInspectableElementGameObject(item,this.gameObject);
-					inspectabelgo.transform.SetParent(this.transform);
+
+					var inspectabelgo = generateInspectableElementGameObject(item,wrapper);
+
+
 				}
 			}
 
@@ -89,8 +106,8 @@ namespace Nodeplay.UI
 					var key = realpair.Key;
 					var value = realpair.Value;
 
-					var inspectabelgo = generateInspectableElementGameObject(value,this.gameObject);
-					inspectabelgo.transform.SetParent(this.transform);
+					var inspectabelgo = generateInspectableElementGameObject(value,wrapper);
+
 				}
 			}
 
@@ -102,8 +119,8 @@ namespace Nodeplay.UI
 				//because this is the top level, we wont reflect over this object
 				//but instead just generate an element that represents it as the root.
 
-				var inspectabelgo = generateInspectableElementGameObject(inputObject,this.gameObject);
-				inspectabelgo.transform.SetParent(this.transform);
+				var inspectabelgo = generateInspectableElementGameObject(inputObject,wrapper);
+
 
 			}
 

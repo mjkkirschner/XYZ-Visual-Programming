@@ -34,6 +34,8 @@ namespace Nodeplay.UI
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
 			GetComponent<LayoutElement>().minHeight =1;
 			GetComponent<LayoutElement>().preferredHeight = 1;
+			GetComponent<LayoutElement>().minWidth =1;
+			GetComponent<LayoutElement>().preferredWidth = 1;
 		}
 
 
@@ -55,18 +57,23 @@ namespace Nodeplay.UI
 		private void populateNextLevel(System.Object subTreeRoot)
 		{
 
+			var wrapper = new GameObject("warpper");
+			wrapper.transform.position = this.transform.position;
+			wrapper.transform.SetParent(this.transform.parent);
+			wrapper.AddComponent<HorizontalLayoutGroup>();
+			wrapper.transform.localScale = new Vector3(.5f,.5f,.5f);
 
-			if (InspectorVusualization.IsList(subTreeRoot))
+			if (InspectorVisualization.IsList(subTreeRoot))
 			{
 				Debug.Log("inputobject is a list");
 				foreach (var item in (IEnumerable)subTreeRoot)
 				{
-					var inspectabelgo = InspectorVusualization.generateInspectableElementGameObject(item,this.gameObject);
-					inspectabelgo.transform.SetParent(this.transform);
+					var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(item,wrapper);
+
 				}
 			}
 			
-			else if (InspectorVusualization.IsDictionary(subTreeRoot))
+			else if (InspectorVisualization.IsDictionary(subTreeRoot))
 			{
 				Debug.Log("inputobject is a dictionary");
 				foreach (var pair in (IEnumerable)subTreeRoot)
@@ -75,8 +82,8 @@ namespace Nodeplay.UI
 					var key = realpair.Key;
 					var value = realpair.Value;
 					
-					var inspectabelgo = InspectorVusualization.generateInspectableElementGameObject(value,this.gameObject);
-					inspectabelgo.transform.SetParent(this.transform);
+					var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+
 				}
 			}
 			
@@ -105,12 +112,12 @@ namespace Nodeplay.UI
 					foreach (var name in filterednames)
 					{
 						
-						var value = InspectorVusualization.GetDynamicValue(dynobj, name);
+						var value = InspectorVisualization.GetDynamicValue(dynobj, name);
 						
 						if (value != null)
 						{
-							var inspectabelgo = InspectorVusualization.generateInspectableElementGameObject(value,this.gameObject);
-							inspectabelgo.transform.SetParent(this.transform);
+							var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+
 							
 						}
 						
@@ -133,8 +140,8 @@ namespace Nodeplay.UI
 					foreach (var prop in propertyInfos.ToList())
 					{
 						var value = prop.GetValue(subTreeRoot, null);
-						var inspectabelgo = InspectorVusualization.generateInspectableElementGameObject(value,this.gameObject);
-						inspectabelgo.transform.SetParent(this.transform);
+						var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+
 						
 					}
 				}

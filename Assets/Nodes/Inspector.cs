@@ -47,7 +47,7 @@ namespace Nodeplay.Nodes
 			//for now we just passthrough data, but the visualization might redirect output
 			// so this data might be assigned through whatever function runs on the component
 
-			transform.root.GetComponentInChildren<InspectorVusualization>().PopulateTopLevel(tempx);
+			transform.root.GetComponentInChildren<InspectorVisualization>().PopulateTopLevel(tempx);
 
 			output["passThrough"] = tempx;
 			//this just calls the execution trigger
@@ -65,7 +65,7 @@ namespace Nodeplay.Nodes
 			GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
 			UI.transform.localPosition = this.gameObject.transform.position;
 			UI.transform.parent = this.gameObject.transform;
-			UI.AddComponent<InspectorVusualization>();
+			UI.AddComponent<InspectorVisualization>();
 			//iterate all graphics casters and turn blocking on for 3d objects
 			var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();
 			allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
