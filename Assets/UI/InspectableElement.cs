@@ -24,26 +24,35 @@ namespace Nodeplay.UI
 	public class InspectableElement: UIBehaviour ,IPointerClickHandler
 	{
 		public NodeModel Model;
-		public GameObject tempgeo;
 		public Type ElementType;
-		public object reference;
+		public object Reference;
 		private bool exposesubElements = false;
 		// Use this for initialization
 		protected override void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
-			GetComponent<LayoutElement>().minHeight =1;
-			GetComponent<LayoutElement>().preferredHeight = 1;
-			GetComponent<LayoutElement>().minWidth =1;
-			GetComponent<LayoutElement>().preferredWidth = 1;
+			//GetComponent<LayoutElement>().minHeight =30;
+			//GetComponent<LayoutElement>().minWidth =150;
+
 		}
 
+		public void UpdateText(object pointer = null)
+		{
+			if (pointer == null)
+			{
+			GetComponentInChildren<Text>().text = ElementType.ToString() + " : " + Reference.ToString(); 
+			}
+			else{
+			GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : " + pointer.ToString(); 
+			}
+		}
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
 			if (exposesubElements == false){
-				populateNextLevel(this.reference);
 				exposesubElements = true;
+				populateNextLevel(this.Reference);
+
 			}
 			else{
 
@@ -57,11 +66,11 @@ namespace Nodeplay.UI
 		private void populateNextLevel(System.Object subTreeRoot)
 		{
 
-			var wrapper = new GameObject("warpper");
+			var wrapper = new GameObject("sub_tree_wrapper");
 			wrapper.transform.position = this.transform.position;
 			wrapper.transform.SetParent(this.transform.parent);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
-			wrapper.transform.localScale = new Vector3(.5f,.5f,.5f);
+			//wrapper.transform.localScale = new Vector3(.5f,.5f,.5f);
 
 			if (InspectorVisualization.IsList(subTreeRoot))
 			{
@@ -82,7 +91,7 @@ namespace Nodeplay.UI
 					var key = realpair.Key;
 					var value = realpair.Value;
 					
-					var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+					InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
 
 				}
 			}
@@ -116,7 +125,7 @@ namespace Nodeplay.UI
 						
 						if (value != null)
 						{
-							var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+							 InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
 
 							
 						}
@@ -139,8 +148,15 @@ namespace Nodeplay.UI
 					
 					foreach (var prop in propertyInfos.ToList())
 					{
+						if (prop.GetIndexParameters().Length > 0)
+						{
+							// Property is an indexer
+							Debug.Log("this property is an indexed property, for now we won't reflect further");
+							continue;
+						}
+
 						var value = prop.GetValue(subTreeRoot, null);
-						var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+						InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
 
 						
 					}

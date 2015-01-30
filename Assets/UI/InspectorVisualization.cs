@@ -56,33 +56,45 @@ namespace Nodeplay.UI
 
 			var wrapper = new GameObject("subelement_wrapper");
 			wrapper.transform.position = parent.transform.position;
-			wrapper.transform.SetParent(parent.transform);
+			wrapper.transform.SetParent(parent.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
 			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			//wrapper.transform.Rotate(0,90,0);
 
 			//TODO replace with call to specific item type depending on item system.type
-			var x = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			x.name = (someObject.GetType().ToString());
-			x.transform.position = wrapper.transform.position;
-			var inspectable = x.AddComponent<InspectableElement>();
-			inspectable.ElementType = x.GetType();
-			inspectable.reference = someObject;
-			Debug.Log("building inspectable element representing: " + someObject.ToString());
-			inspectable.transform.SetParent(wrapper.transform);
+			var element = Resources.Load<GameObject>("listele");
 
-			return x;
+			var instantiatedelement = GameObject.Instantiate(element) as GameObject;
+			instantiatedelement.name = (someObject.GetType().ToString());
+			instantiatedelement.transform.position = wrapper.transform.position;
+
+			var inspectable = instantiatedelement.AddComponent<InspectableElement>();
+			inspectable.ElementType = someObject.GetType();
+			inspectable.Reference = someObject;
+			Debug.Log("building inspectable element representing: " + someObject.ToString());
+			instantiatedelement.transform.SetParent(wrapper.transform,false);
+			//we need to set the font to half the size of the font of the first sibling of this inspectable
+			//TODO THIS does not work
+			inspectable.GetComponentInChildren<Text>().fontSize = inspectable.transform.parent.parent.GetComponentInChildren<Text>().fontSize/2;
+			inspectable.UpdateText();
+			return instantiatedelement;
 		}
 
 		public void PopulateTopLevel(object inputObject)
 		{
 
-			var wrapper = new GameObject("wrapper");
-			wrapper.transform.position = this.transform.position;
-			wrapper.transform.SetParent(this.transform);
+			var wrapper = new GameObject("root_wrapper");
+			wrapper.transform.position = new Vector3(0,0,0);
+			wrapper.transform.SetParent(this.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
 			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
-			wrapper.transform.Rotate(0,90,0);
+			wrapper.AddComponent<Canvas>();
+			wrapper.AddComponent<GraphicRaycaster>();
+			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.003f,.003f,.003f);
+			var fitter = wrapper.AddComponent<ContentSizeFitter>();
+			fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+			fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; 
+			//wrapper.transform.Rotate(0,90,0);
 			TopLevelElement = inputObject;
 			if (IsList(inputObject))
 			{
