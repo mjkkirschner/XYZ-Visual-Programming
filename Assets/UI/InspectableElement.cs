@@ -27,6 +27,7 @@ namespace Nodeplay.UI
 		public Type ElementType;
 		public object Reference;
 		private bool exposesubElements = false;
+		public string Name;
 		// Use this for initialization
 		protected override void Start()
 		{
@@ -40,7 +41,7 @@ namespace Nodeplay.UI
 		{
 			if (pointer == null)
 			{
-			GetComponentInChildren<Text>().text = ElementType.ToString() + " : " + Reference.ToString(); 
+				GetComponentInChildren<Text>().text = ElementType.ToString() + " : " + Name +" : " + Reference.ToString(); 
 			}
 			else{
 			GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : " + pointer.ToString(); 
@@ -68,7 +69,7 @@ namespace Nodeplay.UI
 
 			var wrapper = new GameObject("sub_tree_wrapper");
 			wrapper.transform.position = this.transform.position;
-			wrapper.transform.SetParent(this.transform.parent);
+			wrapper.transform.SetParent(this.transform.parent,false);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
 			//wrapper.transform.localScale = new Vector3(.5f,.5f,.5f);
 
@@ -156,7 +157,7 @@ namespace Nodeplay.UI
 						}
 
 						var value = prop.GetValue(subTreeRoot, null);
-						InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
+						InspectorVisualization.generateInspectableElementGameObject(value,wrapper,prop.Name);
 
 						
 					}

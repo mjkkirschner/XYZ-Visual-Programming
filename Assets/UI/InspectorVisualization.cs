@@ -51,7 +51,7 @@ namespace Nodeplay.UI
 		}
 
 
-		public static GameObject generateInspectableElementGameObject(object someObject,GameObject parent)
+		public static GameObject generateInspectableElementGameObject(object someObject, GameObject parent, string name = null)
 		{
 
 			var wrapper = new GameObject("subelement_wrapper");
@@ -71,11 +71,22 @@ namespace Nodeplay.UI
 			var inspectable = instantiatedelement.AddComponent<InspectableElement>();
 			inspectable.ElementType = someObject.GetType();
 			inspectable.Reference = someObject;
+			inspectable.Name = name;
 			Debug.Log("building inspectable element representing: " + someObject.ToString());
+
+			//TODO oh the horror, should extract as constants
+			if (inspectable.GetComponentInChildren<Text>().fontSize != 14)
+			{
+				var parentfontsize = parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize;
+				inspectable.GetComponentInChildren<Text>().fontSize = parentfontsize / 2;
+			}
+			else
+			{
+				inspectable.GetComponentInChildren<Text>().fontSize = 40;
+			}
+
 			instantiatedelement.transform.SetParent(wrapper.transform,false);
-			//we need to set the font to half the size of the font of the first sibling of this inspectable
-			//TODO THIS does not work
-			inspectable.GetComponentInChildren<Text>().fontSize = inspectable.transform.parent.parent.GetComponentInChildren<Text>().fontSize/2;
+			
 			inspectable.UpdateText();
 			return instantiatedelement;
 		}
@@ -84,6 +95,7 @@ namespace Nodeplay.UI
 		{
 
 			var wrapper = new GameObject("root_wrapper");
+			wrapper.AddComponent<PositionWindow>();
 			wrapper.transform.position = new Vector3(0,0,0);
 			wrapper.transform.SetParent(this.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();

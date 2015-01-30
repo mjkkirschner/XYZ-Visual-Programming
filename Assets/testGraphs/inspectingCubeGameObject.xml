@@ -1,0 +1,18 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="ed364b10-8a8a-4e18-af47-785a03167751" nickname="node StartExecutioned364b10-8a8a-4e18-af47-785a03167751" x="-7.999046" y="14.48174" z="-14.36558" />
+    <Nodeplay.Nodes.InstantiateCube type="Nodeplay.Nodes.InstantiateCube" guid="46f33f24-3b52-413c-844e-60d2a8ecf6f8" nickname="node InstantiateCube46f33f24-3b52-413c-844e-60d2a8ecf6f8" x="0.2694435" y="22.95358" z="-4.976178" />
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" nickname="node Number32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" x="-5.963393" y="20.07505" z="-11.23216" />
+    <Nodeplay.Nodes.Inspector type="Nodeplay.Nodes.Inspector" guid="6b278e7b-89ad-492a-972c-d9627426e747" nickname="node Inspector6b278e7b-89ad-492a-972c-d9627426e747" x="8.832003" y="22.60728" z="6.713219" />
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="46f33f24-3b52-413c-844e-60d2a8ecf6f8" start_index="0" end="6b278e7b-89ad-492a-972c-d9627426e747" end_index="0" portType="0" />
+    <ConnectorModel start="32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" start_index="0" end="46f33f24-3b52-413c-844e-60d2a8ecf6f8" end_index="1" portType="0" />
+    <ConnectorModel start="32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" start_index="0" end="46f33f24-3b52-413c-844e-60d2a8ecf6f8" end_index="0" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="ed364b10-8a8a-4e18-af47-785a03167751" start_index="0" end="32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="46f33f24-3b52-413c-844e-60d2a8ecf6f8" start_index="0" end="6b278e7b-89ad-492a-972c-d9627426e747" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="32c9bdc6-30c9-4fc1-bd89-70e9e7d44947" start_index="0" end="46f33f24-3b52-413c-844e-60d2a8ecf6f8" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>
