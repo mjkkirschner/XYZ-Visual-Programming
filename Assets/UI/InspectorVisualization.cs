@@ -158,10 +158,16 @@ namespace Nodeplay.UI
 
 		}
 		
-
+		// this method will process renderableitems, extracting meshes and other representations that can be rendered
+		// and place them near the inspectableItems representing them
+		// might have methods for points,vectors,meshes,lines,images,etc etc.
+		private GameObject processItem(){
+			throw new NotImplementedException();
+		}
 
 		//method for grabbing member values from a dynamic object, we use this for python objects...
-		//  http://stackoverflow.com/questions/1926776/getting-a-value-from-a-dynamic-object-dynamically
+		//still untested
+		//, modified from  http://stackoverflow.com/questions/1926776/getting-a-value-from-a-dynamic-object-dynamically
 		public static object GetDynamicValue(IronPython.Runtime.Binding.IPythonExpandable ob, string name)
 		{
 			CallSite<Func<CallSite, object, object>> site

@@ -121,6 +121,7 @@ public class AppModel : MonoBehaviour
 		{
 			//create a nodeModelloader for this instance of appmodel
 			var nodeloaderinst = new NodeModelLoader();
+			var ZTnodeloaderinst = new ZTsubsetLoader();
 			// on program start, we load a home screen into the main canvas 
 			//var maincanvas = GameObject.Find("Canvas");
 			//the home screen comtains, run, save(possibly), and the library component
@@ -130,9 +131,11 @@ public class AppModel : MonoBehaviour
 		 	NodeLibrary = homescreen.GetComponentInChildren<Library>();
 			this.PropertyChanged += NodeLibrary.HandleAppModelChanges;
 
-			LoadedNodeModels = nodeloaderinst.LoadNodeModels();
+			LoadedNodeModels = nodeloaderinst.LoadNodeModels("Nodes",true);
 			Debug.Log("loaded "+ LoadedNodeModels.Count.ToString() + " nodes");
 
+			LoadedNodeModels.AddRange(nodeloaderinst.LoadNodeModels("ZTNodes",false));
+			Debug.Log("loaded " + LoadedNodeModels.Count.ToString() + " nodes");
 			//the load screen will have some callbacks here that create graphmodels
 			// either by loading them and passing the string to parse back, or by creating a new one
 			WorkModels = new List<GraphModel>();

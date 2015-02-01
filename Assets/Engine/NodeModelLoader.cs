@@ -51,36 +51,35 @@ public class NodeModelLoader
 	/// the bin/nodes directory. Add the types to the searchviewmodel and
 	/// the controller's dictionaries.
 	/// </summary>
-	public List<Type> LoadNodeModels()
+	public virtual List<Type> LoadNodeModels(string folderToSearch,bool searchAppDomain)
 	{
 		var loadedAssembliesByPath = new Dictionary<string, Assembly>();
 		var loadedAssembliesByName = new Dictionary<string, Assembly>();
-		
+		var allNodeAssemblies = new List<System.Reflection.Assembly>();
 		// cache the loaded assembly information
-		foreach (
-			var assembly in 
-			AppDomain.CurrentDomain.GetAssemblies())
+		if (searchAppDomain)
 		{
-			try
+			foreach (
+				var assembly in
+				AppDomain.CurrentDomain.GetAssemblies())
 			{
-				loadedAssembliesByPath[assembly.Location] = assembly;
-				loadedAssembliesByName[assembly.FullName] = assembly;
+				try
+				{
+					loadedAssembliesByPath[assembly.Location] = assembly;
+					loadedAssembliesByName[assembly.FullName] = assembly;
+				}
+				catch { }
 			}
-			catch { }
+			 allNodeAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
 		}
-
-		//var result = new List<TypeLoadData>();
-		//var result2 = new List<TypeLoadData>();
-
-
 		var loadedTypes = new List<Type>();
 
 		// going to look in all currently loaded assemblies for nodes, then we'll also look
 		// in a specific folder of the resources or data folder, unsure on this path yet...
-		var allNodeAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+		
 		string path = Application.dataPath;
 		Debug.Log(path);
-		path = Path.Combine(path,"Nodes");
+		path = Path.Combine(path,folderToSearch);
 		Debug.Log(path);
 		List<Assembly> allAssembliesinbuild = new List<Assembly>();
 		foreach (string dll in Directory.GetFiles(path, "*.dll"))
@@ -144,7 +143,7 @@ public class NodeModelLoader
 	/// </summary>
 	/// <Returns>The list of node types loaded from this assembly</Returns>
 	/// //TODO possibly change this back to using typeloadData or simplified version to embed search tags, name, etc in search view and appmodel easily
-	public List<Type> LoadNodesFromAssembly(
+	public virtual List<Type> LoadNodesFromAssembly(
 		Assembly assembly)
 	{
 		Debug.Log("inside load nodes from specific assembly: " + assembly.FullName);
@@ -214,6 +213,8 @@ public class NodeModelLoader
 				t.IsSubclassOf(typeof(NodeModel));
 
 	}
+
+	
 
 }
 
