@@ -22,7 +22,7 @@ namespace Nodeplay.UI
 	//[RequireComponent(typeof(VerticalLayoutGroup))]
 	public class InspectorVisualization : MonoBehaviour
 	{
-
+		
 		public NodeModel Model;
 		public List<GameObject> SubElement;
 		public object TopLevelElement;
@@ -67,6 +67,7 @@ namespace Nodeplay.UI
 			var instantiatedelement = GameObject.Instantiate(element) as GameObject;
 			instantiatedelement.name = (someObject.GetType().ToString());
 			instantiatedelement.transform.position = wrapper.transform.position;
+			
 
 			var inspectable = instantiatedelement.AddComponent<InspectableElement>();
 			inspectable.ElementType = someObject.GetType();
@@ -83,6 +84,13 @@ namespace Nodeplay.UI
 			else
 			{
 				inspectable.GetComponentInChildren<Text>().fontSize = 40;
+			}
+
+			if (someObject == null || ReferenceEquals(someObject,null) ||someObject.ToString() == "null" )
+			{
+				Debug.Log("in here mofo");
+				inspectable.GetComponentInChildren<Text>().fontSize /= 2;
+				instantiatedelement.GetComponent<Image>().color = Color.red;
 			}
 
 			instantiatedelement.transform.SetParent(wrapper.transform,false);

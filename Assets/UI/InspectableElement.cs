@@ -32,8 +32,7 @@ namespace Nodeplay.UI
 		protected override void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
-			//GetComponent<LayoutElement>().minHeight =30;
-			//GetComponent<LayoutElement>().minWidth =150;
+			
 
 		}
 
@@ -43,7 +42,8 @@ namespace Nodeplay.UI
 			{
 				GetComponentInChildren<Text>().text = ElementType.ToString() + " : " + Name +" : " + Reference.ToString(); 
 			}
-			else{
+			else
+			{
 			GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : " + pointer.ToString(); 
 			}
 		}
@@ -57,8 +57,8 @@ namespace Nodeplay.UI
 			}
 			else{
 
-				var children  = this.GetComponentsInChildren<Transform>().ToList();
-				children.ForEach(x=>GameObject.Destroy(x));
+				var childrenRoot = transform.parent.GetChild(1);
+				GameObject.DestroyImmediate(childrenRoot.gameObject);
 				exposesubElements = false;
 			}
 		}
@@ -71,7 +71,7 @@ namespace Nodeplay.UI
 			wrapper.transform.position = this.transform.position;
 			wrapper.transform.SetParent(this.transform.parent,false);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
-			//wrapper.transform.localScale = new Vector3(.5f,.5f,.5f);
+			
 
 			if (InspectorVisualization.IsList(subTreeRoot))
 			{
