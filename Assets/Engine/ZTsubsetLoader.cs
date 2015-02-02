@@ -83,7 +83,7 @@ public class ZTsubsetLoader : NodeModelLoader
 					Type ztnode = typebuilder.CreateType();
 					nodeModelTypes.Add(ztnode);
 					//define a function descriptor that wraps the needed parameters, type, and method for a specific node
-					var currentFunc = new FunctionDescription(method.GetParameters().ToList(), method, ztnode,t);
+					var currentFunc = new FunctionDescription(method.GetParameters().ToList(), method, t,ztnode);
 					//push this into the functions dictionary for this loader
 					functions.Add(ztnode.FullName, currentFunc);
 

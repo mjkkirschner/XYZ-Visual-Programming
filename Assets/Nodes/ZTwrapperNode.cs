@@ -50,8 +50,15 @@ namespace Nodeplay.Nodes
 				throw new ArgumentException("type pointer cannot be null for loaded zt node");
 			}
 
+			Debug.Log("about to call method:" + funcdef.MethodPointer.Name + "on original type:" + funcdef.LoadedTypePointer); 
+
+			var keystoselect = funcdef.Parameters.Select(x=>x.Name).ToList();
+	          var inputportvals = keystoselect.Where(inputstate.ContainsKey)
+	          .Select(x => inputstate[x])
+	          .ToList();
+			 
 			//TODO throwing errors :(
-			output["OUTPUT"] = funcdef.LoadedTypePointer.InvokeMember(funcdef.MethodPointer.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, inputstate.Select(x => x.Value).ToArray(), null, null, inputstate.Select(y => y.Key).ToArray());
+			output["OUTPUT"] = funcdef.LoadedTypePointer.InvokeMember(funcdef.MethodPointer.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, inputportvals.ToArray() , null, null, keystoselect.ToArray());
 			(inputstate["done"] as Delegate).DynamicInvoke();
 			return output;
 
