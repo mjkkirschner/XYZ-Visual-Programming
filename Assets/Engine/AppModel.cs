@@ -7,10 +7,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEditor;
 using System.ComponentModel;
+using Nodeplay.Engine;
 
 public class AppModel : MonoBehaviour
 {
-
+	public Dictionary<string, FunctionDescription> LoadedFunctions { get; set; }
 	public List<GraphModel> WorkModels {get;set;}
 	private List<Type> _loadedNodeModels;
 	//TODO implement observable collection list
@@ -119,6 +120,9 @@ public class AppModel : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
+			WorkModels = new List<GraphModel>();
+			LoadedNodeModels = new List<Type>();
+			LoadedFunctions = new Dictionary<string, FunctionDescription>();
 			//create a nodeModelloader for this instance of appmodel
 			var nodeloaderinst = new NodeModelLoader();
 			var ZTnodeloaderinst = new ZTsubsetLoader();
@@ -134,12 +138,14 @@ public class AppModel : MonoBehaviour
 			LoadedNodeModels = nodeloaderinst.LoadNodeModels("Nodes",true);
 			Debug.Log("loaded "+ LoadedNodeModels.Count.ToString() + " nodes");
 
-			LoadedNodeModels.AddRange(nodeloaderinst.LoadNodeModels("ZTNodes",false));
+			LoadedNodeModels = LoadedNodeModels.Concat(ZTnodeloaderinst.LoadNodeModels("ZTNodes",false)).ToList();
 			Debug.Log("loaded " + LoadedNodeModels.Count.ToString() + " nodes");
+
+			LoadedFunctions = LoadedFunctions.Concat(ZTnodeloaderinst.functions).ToDictionary(x => x.Key, x => x.Value);
+			Debug.Log("loaded " + LoadedFunctions.Keys.Count.ToString() + " function pointers");
 			//the load screen will have some callbacks here that create graphmodels
 			// either by loading them and passing the string to parse back, or by creating a new one
-			WorkModels = new List<GraphModel>();
-			LoadedNodeModels = new List<Type>();
+			
 		}
 
 

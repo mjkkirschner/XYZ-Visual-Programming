@@ -7,15 +7,18 @@ using System.Reflection;
 using UnityEngine;
 using System.IO;
 using System.Reflection.Emit;
+using Nodeplay.Engine;
 
 /// <summary>
 /// sections of this class forked from https://github.com/DynamoDS/Dynamo/blob/DynamoCoreModularization/src/DynamoCore/Core/DynamoLoader.cs
 /// </summary>
-public class ZTsubsetLoader:NodeModelLoader
+public class ZTsubsetLoader : NodeModelLoader
 {
-
-	public ZTsubsetLoader():base()
+	public Dictionary<string, FunctionDescription> functions { get; private set; }
+	public ZTsubsetLoader()
+		: base()
 	{
+		functions = new Dictionary<string, FunctionDescription>();
 
 	}
 
@@ -33,15 +36,16 @@ public class ZTsubsetLoader:NodeModelLoader
 		Debug.Log("inside load nodes from specific assembly: " + assembly.FullName);
 		var nodeModelTypes = new List<Type>();
 
+
 		if (assembly == null)
 			throw new ArgumentNullException("assembly");
 
 		Type[] loadedTypes = null;
-		var loadedMethodDict = new Dictionary<Type,List<MethodInfo>>();
+		var loadedMethodDict = new Dictionary<Type, List<MethodInfo>>();
 		try
 		{
 			loadedTypes = assembly.GetTypes();
-			
+
 		}
 		catch (ReflectionTypeLoadException e)
 		{
@@ -63,21 +67,31 @@ public class ZTsubsetLoader:NodeModelLoader
 		{
 			try
 			{
+
 				//load all declared,static,public methods on the type
 				loadedMethodDict[t] = t.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static).ToList();
-				//now we need to build a nodemodel type that represents this method
+				//now we need to build a nodemodel type that represents each method
+				foreach (var method in loadedMethodDict[t])
+				{
+					//http://stackoverflow.com/questions/9053440/create-type-at-runtime-that-inherits-an-abstract-class-and-implements-an-interfa
+					AssemblyName asmName = new AssemblyName("ZeroTouchWrappers");
+					string typename = t.FullName;
+					AssemblyBuilder asmbuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
+					ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule("loadedlib");
+					TypeBuilder typebuilder = modulebuilder.DefineType(typename +method.Name + "Node");
+					typebuilder.SetParent(typeof(ZTwrapperNode));
+					Type ztnode = typebuilder.CreateType();
+					nodeModelTypes.Add(ztnode);
+					//define a function descriptor that wraps the needed parameters, type, and method for a specific node
+					var currentFunc = new FunctionDescription(method.GetParameters().ToList(), method, ztnode,t);
+					//push this into the functions dictionary for this loader
+					functions.Add(ztnode.FullName, currentFunc);
 
-				//http://stackoverflow.com/questions/9053440/create-type-at-runtime-that-inherits-an-abstract-class-and-implements-an-interfa
-				AssemblyName asmName = new AssemblyName("ZeroTouchWrappers");
-				string typename = t.FullName;
-				AssemblyBuilder asmbuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
-				ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule("loadedlib");
-				TypeBuilder typebuilder = modulebuilder.DefineType(typename+"Node");
-				typebuilder.SetParent(typeof(ZTwrapperNode));
-				Type ztnode = typebuilder.CreateType();
-				nodeModelTypes.Add(t);
+				}
 				//TODO need to inject the methodinfo,typeinfo,and parameter info somehow or the type is really nothing....
-				
+
+
+
 			}
 			catch (Exception e)
 			{

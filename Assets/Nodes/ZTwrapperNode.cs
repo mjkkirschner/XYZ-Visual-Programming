@@ -10,18 +10,20 @@ namespace Nodeplay.Nodes
 {
 	public class ZTwrapperNode : DelegateNodeModel
 	{
+		protected FunctionDescription funcdef;
 		//TODO might just be a string...
-		protected List<ParameterInfo> parameters;
-		protected MethodInfo methodPointer;
-		protected Type loadedTypePointer;
 		protected override void Start()
 		{
 			base.Start();
 			
+			//on start go grab the correct information from the appmodel's loadedFunctions dict
+			// use the name of this type as the key into the dictionary
+			funcdef = GameObject.FindObjectOfType<AppModel>().LoadedFunctions[this.GetType().FullName];
+
 			//on start add a correctly named input port for each 
 			//parameter in methodinfo that we've loaded
 
-			foreach (var param in parameters)
+			foreach (var param in funcdef.Parameters)
 			{
 				AddInputPort(param.Name);
 			}
@@ -39,16 +41,17 @@ namespace Nodeplay.Nodes
 		protected override Dictionary<string, object> CompiledNodeEval(Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)
 		{
 			var output = intermediateOutVals;
-			if (methodPointer == null)
+			if (funcdef.MethodPointer == null)
 			{
 				throw new ArgumentException("method pointer cannot be null for loaded zt node");
 			}
-			if (loadedTypePointer == null)
+			if (funcdef.LoadedTypePointer == null)
 			{
 				throw new ArgumentException("type pointer cannot be null for loaded zt node");
 			}
 
-			output["OUTPUT"] = loadedTypePointer.InvokeMember(methodPointer.Name,BindingFlags.InvokeMethod, null, null, inputstate.Select(x => x.Value).ToArray(), null, null, inputstate.Select(y => y.Key).ToArray());
+			//TODO throwing errors :(
+			output["OUTPUT"] = funcdef.LoadedTypePointer.InvokeMember(funcdef.MethodPointer.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, inputstate.Select(x => x.Value).ToArray(), null, null, inputstate.Select(y => y.Key).ToArray());
 			(inputstate["done"] as Delegate).DynamicInvoke();
 			return output;
 
