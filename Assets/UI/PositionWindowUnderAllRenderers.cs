@@ -9,7 +9,7 @@ namespace Nodeplay.UI
 {
 
 
-	public class PositionWindow : MonoBehaviour
+	public class PositionWindowUnderAllRenderers : MonoBehaviour
 	{
 
 		public GameObject Model_GO;

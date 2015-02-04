@@ -32,9 +32,63 @@ namespace Nodeplay.UI
 		protected override void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
-			
 
+			var visualization = searchforvisualization(this.Reference);
+			visualization.transform.position = this.transform.position;
+			//TODO move the 3d visualization down or something, another possibility
+			//is to feed it to a custom button that places the renderer next to text
+			visualization.transform.SetParent(this.transform);
+			//disable all colliders on these visualizations
+			visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
 		}
+
+		//tentatively return a new gameobject that renders some representation of this object
+		//probably based on its type, so we'll need a mapping from type to visualization
+		private GameObject searchforvisualization(object objectToVisualize)
+		{
+			//if a gameobject then extract the renderer and use it on a new gameobject
+			//could possibly just grab the entire gameobject...
+			if (objectToVisualize is UnityEngine.GameObject)
+			{
+
+				if (((GameObject)objectToVisualize).GetComponent<Renderer>() != null)
+					{
+					//just return the actual object and we'll just move it.
+					return Instantiate(((GameObject)objectToVisualize)) as GameObject ;
+					}
+
+				else{
+					//this is a unityobject with no renderer, potentially many things that would be good to visualize
+					//like colliders, images,sprites,text...prefabs,meshes,etc,etc
+					return (new GameObject("unimplemented visualization"));
+					}
+
+			}
+
+			else
+			{
+				//this is any other type not a unity object:
+
+				//if a vector2 or 3
+
+				//if a transform
+
+				//if a list
+
+				//if a dictionary
+
+				//if a number
+
+				//if a string
+
+				//
+				return (new GameObject("unimplemented visualization"));
+
+			}
+
+		
+		}
+
 
 		public void UpdateText(object pointer = null)
 		{
@@ -53,6 +107,7 @@ namespace Nodeplay.UI
 			if (exposesubElements == false){
 				exposesubElements = true;
 				populateNextLevel(this.Reference);
+				this.GetComponent<Image>().color = Color.green;
 
 			}
 			else{
@@ -60,6 +115,7 @@ namespace Nodeplay.UI
 				var childrenRoot = transform.parent.GetChild(1);
 				GameObject.DestroyImmediate(childrenRoot.gameObject);
 				exposesubElements = false;
+				this.GetComponent<Image>().color = Color.white;
 			}
 		}
 
