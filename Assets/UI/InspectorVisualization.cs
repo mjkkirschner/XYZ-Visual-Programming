@@ -50,7 +50,14 @@ namespace Nodeplay.UI
 				   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
 		}
 
+		/// <summary>
+		/// where main work is done of generating a new inspectable object and setting its properties, the object is then made a child of the parent
 
+		/// </summary>
+		/// <param name="someObject"></param>
+		/// <param name="parent"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public static GameObject generateInspectableElementGameObject(object someObject, GameObject parent, string name = null)
 		{
 			if (someObject == null){
@@ -85,7 +92,7 @@ namespace Nodeplay.UI
 			//TODO extract constants, fix this mess, possibly recalc based on distance to camera
 			if (parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize == 14)
 			{
-				//we are still creating the root visualization, so just set the size to 40
+				//we are still creating the root visualization, so just set the size to 500
 				parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize = 500;
 			}
 			else
@@ -126,10 +133,10 @@ namespace Nodeplay.UI
 			fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; 
 			//wrapper.transform.Rotate(0,90,0);
 			TopLevelElement = inputObject;
-			if (IsList(inputObject))
+			/*if (IsList(inputObject))
 			{
 
-				Debug.Log("inputobject is a list");
+				/*Debug.Log("inputobject is a list");
 				foreach (var item in (IEnumerable)inputObject)
 				{
 
@@ -139,7 +146,7 @@ namespace Nodeplay.UI
 				}
 			}
 
-			else if (IsDictionary(inputObject))
+			else*/ if (IsDictionary(inputObject))
 			{
 				Debug.Log("inputobject is a dictionary");
 				foreach (var pair in (IEnumerable)inputObject)

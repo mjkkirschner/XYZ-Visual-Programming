@@ -34,7 +34,7 @@ namespace Nodeplay.Nodes
 			//destroy them on next execution
 			var childrenofVisualization = GetComponentInChildren<InspectorVisualization>().transform.Cast<Transform>().ToList();
 			if (childrenofVisualization.Count > 0){
-				childrenofVisualization.ForEach(x=>DestroyObject(x.gameObject));
+				childrenofVisualization.ForEach(x=>DestroyImmediate(x.gameObject));
 			}
 			var output = intermediateOutVals;
 			var tempx = inputstate["inputData"];

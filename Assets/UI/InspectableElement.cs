@@ -94,11 +94,11 @@ namespace Nodeplay.UI
 		{
 			if (pointer == null)
 			{
-				GetComponentInChildren<Text>().text = ElementType.ToString() + " : " + Name +" : " + Reference.ToString(); 
+				GetComponentInChildren<Text>().text = ElementType.ToString() + " : \n " + Name +" : \n " + Reference.ToString(); 
 			}
 			else
 			{
-			GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : " + pointer.ToString(); 
+				GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : \n " + pointer.ToString(); 
 			}
 		}
 
