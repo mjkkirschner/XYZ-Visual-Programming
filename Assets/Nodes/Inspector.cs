@@ -32,7 +32,7 @@ namespace Nodeplay.Nodes
 			//clear output
 			//TODO may need a way to do this on all nodes, keep track of all gameobjects generated during execution and
 			//destroy them on next execution
-			var childrenofVisualization= GetComponentsInChildren<InspectableElement>().ToList();
+			var childrenofVisualization = GetComponentInChildren<InspectorVisualization>().transform.Cast<Transform>().ToList();
 			if (childrenofVisualization.Count > 0){
 				childrenofVisualization.ForEach(x=>DestroyObject(x.gameObject));
 			}
@@ -65,6 +65,7 @@ namespace Nodeplay.Nodes
 			GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
 			UI.transform.localPosition = this.gameObject.transform.position;
 			UI.transform.parent = this.gameObject.transform;
+			UI.renderer.material.color = Color.yellow;
 			UI.AddComponent<InspectorVisualization>();
 			//iterate all graphics casters and turn blocking on for 3d objects
 			var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();

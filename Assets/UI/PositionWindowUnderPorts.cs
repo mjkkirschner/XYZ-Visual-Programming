@@ -47,7 +47,11 @@ namespace Nodeplay.UI
 			this.gameObject.transform.position = newPoint;
 			
 		}
-		
+
+		void OnDestroy()
+		{	// if the gameobject hosting this window is destroyed we need to unsubscribe to this event
+			Model_GO.GetComponent<NodeModel>().PropertyChanged -= NodePropertyChangeEventHandler;
+		}
 		
 	}
 }

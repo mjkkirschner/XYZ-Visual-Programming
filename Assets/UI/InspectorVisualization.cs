@@ -79,18 +79,23 @@ namespace Nodeplay.UI
 			inspectable.Name = name;
 			Debug.Log("building inspectable element representing: " + someObject.ToString());
 
-			//TODO oh the horror, should extract as constants
-			//if (inspectable.GetComponentInChildren<Text>().fontSize != 14)
-			//{
-				if parent = parent.transform.GetChild(0)
-				var parentfontsize = parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize;
-				inspectable.GetComponentInChildren<Text>().fontSize = parentfontsize / 2;
-			//}
-			//else
-			//{
-			//	inspectable.GetComponentInChildren<Text>().fontSize = 40;
-			//}
+			
+			instantiatedelement.transform.SetParent(wrapper.transform, false);
 
+			//TODO extract constants, fix this mess, possibly recalc based on distance to camera
+			if (parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize == 14)
+			{
+				//we are still creating the root visualization, so just set the size to 40
+				parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize = 500;
+			}
+			else
+			{
+				//in all other cases halve it
+					var parentfontsize = parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize;
+					inspectable.GetComponentInChildren<Text>().fontSize = parentfontsize / 2;
+			}
+		
+			
 			if (someObject == null || ReferenceEquals(someObject,null) ||someObject.ToString() == "null" )
 			{
 				Debug.Log("in here mofo");
@@ -98,7 +103,7 @@ namespace Nodeplay.UI
 				instantiatedelement.GetComponent<Image>().color = Color.red;
 			}
 
-			instantiatedelement.transform.SetParent(wrapper.transform,false);
+			
 			
 			inspectable.UpdateText();
 			return instantiatedelement;
@@ -115,7 +120,7 @@ namespace Nodeplay.UI
 			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			wrapper.AddComponent<Canvas>();
 			wrapper.AddComponent<GraphicRaycaster>();
-			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.003f,.003f,.003f);
+			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.0003f,.0003f,.0003f);
 			var fitter = wrapper.AddComponent<ContentSizeFitter>();
 			fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 			fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; 
