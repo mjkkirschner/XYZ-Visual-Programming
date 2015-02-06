@@ -401,13 +401,52 @@ public class NodeModel : BaseModel
         OnEvaluated();
 
     }
+	//base save implementation iterates all members of the inputdict and saves their element 
+	public virtual void Save(XmlDocument doc, XmlElement element)
+	
+	{
+		var nodeData = doc.CreateElement("nodeinputdict");
+		element.AppendChild(nodeData);
+		if (UIInputValueDict != null)
+		{
+			foreach (var pair in UIInputValueDict)
+			{
+				nodeData.SetAttribute(pair.Key, pair.Value.ToString());
+			}
+		}
 
-	public virtual void Save(XmlDocument doc, XmlElement element){
 
 	}
 
 	public virtual void Load(XmlNode node)
 	{
+		XmlNode inputdata = null ;
+		
+		foreach(XmlNode subnode in node.ChildNodes)
+		{
+			if (subnode.Name == "nodeinputdict")
+			{
+				inputdata = subnode;
 
+			}
+			
+		}
+
+		if (inputdata != null)
+		{
+			UIInputValueDict = new Dictionary<string, object>();
+			foreach (XmlAttribute attribute in inputdata.Attributes)
+			{
+				Debug.Log("loading " + attribute.Name + attribute.Value.ToString());
+				
+				UIInputValueDict.Add(attribute.Name,attribute.Value);
+			}
+			//force the notify property change to fire
+			//TODO observable dictionary please
+			var dictcopy = new Dictionary<string, object>(UIInputValueDict);
+			UIInputValueDict = dictcopy;
+		}
+		
+		
 	}
 }
