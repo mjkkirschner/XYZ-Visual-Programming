@@ -29,13 +29,10 @@ namespace Nodeplay.Nodes
 		
 		public override GameObject BuildSceneElements()
 		{
-			UIInputValueDict = new Dictionary<string, object>();
-			UIInputValueDict.Add("Code",Code);
+			ExposeVariableInNodeUI ("Code",Code);
+			
 			return base.BuildSceneElements();
 
-			
-			
-			
 		}
 		
 		

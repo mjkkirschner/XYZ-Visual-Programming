@@ -15,7 +15,17 @@ using UnityEngine.EventSystems;
 
 public class NodeModel : BaseModel
 {
-    //todo probably will need to readd location properties if I want to support the non-graph based workflows...$$$
+
+	protected override void NotifyPropertyChanged (string info)
+	{
+		base.NotifyPropertyChanged (info);
+		
+		//also update the model if this property is in the dict
+		//for now just force a rebuild...
+		//TODO we may also want to update the dictionary if the property has changed on the model...
+		//
+		UpdateModelProperties(UIInputValueDict);
+	}
 
 	//add a indexer to nodemodels, this allows getting property by name, so we can lookup
 	//propertie from the input dict if its modififed, and then change properties on the model
@@ -81,9 +91,25 @@ public class NodeModel : BaseModel
     public event EvaluationHandler Evaluation;
     public event EvaluatedHandler Evaluated;
 
+	private string code;
+    public string Code
+	{
+		get
+		{
+			return this.code;
+			
+		}
+		
+		set
+		{
+			if (value != code)
+			{
+				this.code = value;
+				NotifyPropertyChanged("code");
+			}
+		}
+	}
 
-    //TODO rename rethink
-    public string Code { get; set; }
 
     public Evaluator Evaluator;
 
@@ -106,6 +132,13 @@ public class NodeModel : BaseModel
         Outputs = new List<PortModel>();
 		ExecutionInputs = new List<ExecutionPortModel>();
 		ExecutionOutputs = new List<ExecutionPortModel>();
+
+		//this dictionary might be loaded when the node is laoded 
+		//and we dont want to erase it
+		if (UIInputValueDict == null){
+			Debug.Log("the UIinputdict has not been loadead, creating an empty one");
+			UIInputValueDict = new Dictionary<string, object>();
+		}
 		Debug.Log("just finished starting NodeModel");
     }
 
@@ -269,6 +302,22 @@ public class NodeModel : BaseModel
 
 
     }
+
+	protected void ExposeVariableInNodeUI (string variable,object value)
+	{
+		if (UIInputValueDict != null) {
+			// The Add method throws an exception if the new key is  
+			// already in the dictionary. 
+			try {
+				UIInputValueDict.Add (variable, value);
+			}
+			catch (ArgumentException) {
+				Debug.Log ("An element with this key, " +variable +  " already exists on the node" + ", " +
+				           "most likely, it was loaded from a saved file");
+			}
+		}
+	}
+
     /// <summary>
     /// method that gathers port names and evaluated values from connected nodes
     /// </summary>

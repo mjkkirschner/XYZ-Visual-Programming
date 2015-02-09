@@ -5,6 +5,7 @@ using Nodeplay.Interfaces;
 using Nodeplay.Engine;
 using Nodeplay.UI;
 using UnityEngine.UI;
+using System;
 
 namespace Nodeplay.Nodes
 {
@@ -22,15 +23,13 @@ namespace Nodeplay.Nodes
 
 			Code = "OUTPUT = 5;VariableCreated()";
             Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+
         }
 
 		public override GameObject BuildSceneElements()
 		{
-			if (UIInputValueDict == null)
-			{
-				UIInputValueDict = new Dictionary<string, object>();
-				UIInputValueDict.Add("Code", Code);
-			}
+			ExposeVariableInNodeUI ("Code",Code);
+
 			return base.BuildSceneElements();
 
 			
