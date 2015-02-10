@@ -19,7 +19,6 @@ namespace Nodeplay.UI
 	/// it contains methods for generating the top level of the elements contained the tree
 	/// for instantiating those elements, and organizing the visualzation of all elements under it
 	/// </summary>
-	//[RequireComponent(typeof(VerticalLayoutGroup))]
 	public class InspectorVisualization : MonoBehaviour
 	{
 		
@@ -52,8 +51,9 @@ namespace Nodeplay.UI
 
 		/// <summary>
 		/// where main work is done of generating a new inspectable object and setting its properties, the object is then made a child of the parent
-
+		/// 
 		/// </summary>
+		/// 
 		/// <param name="someObject"></param>
 		/// <param name="parent"></param>
 		/// <param name="name"></param>
@@ -66,10 +66,10 @@ namespace Nodeplay.UI
 			}
 
 			var wrapper = new GameObject("subelement_wrapper");
-			wrapper.transform.position = parent.transform.position;
+			//wrapper.transform.position = parent.transform.position;
 			wrapper.transform.SetParent(parent.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
+			//wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			//wrapper.transform.Rotate(0,90,0);
 
 			//TODO replace with call to specific item type depending on item system.type
@@ -77,8 +77,9 @@ namespace Nodeplay.UI
 
 			var instantiatedelement = GameObject.Instantiate(element) as GameObject;
 			instantiatedelement.name = (someObject.GetType().ToString());
-			instantiatedelement.transform.position = wrapper.transform.position;
-			
+			//instantiatedelement.transform.position = wrapper.transform.position;
+
+			instantiatedelement.transform.SetParent(wrapper.transform, false);
 
 			var inspectable = instantiatedelement.AddComponent<InspectableElement>();
 			inspectable.ElementType = someObject.GetType();
@@ -87,7 +88,7 @@ namespace Nodeplay.UI
 			Debug.Log("building inspectable element representing: " + someObject.ToString());
 
 			
-			instantiatedelement.transform.SetParent(wrapper.transform, false);
+
 
 			//TODO extract constants, fix this mess, possibly recalc based on distance to camera
 			if (parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize == 14)
@@ -111,10 +112,15 @@ namespace Nodeplay.UI
 			}
 
 			
-			
+			// when the text is updated the layout is regenerated, this might happen on the next frame
+			// and so lines need to be drawn, afer that, it's best if the visualizations are hooked to an event
+			// watching for changes on the node or the 
 			inspectable.UpdateText();
+			inspectable.UpdateVisualization();
 			return instantiatedelement;
 		}
+
+
 
 		public void PopulateTopLevel(object inputObject)
 		{
@@ -124,7 +130,7 @@ namespace Nodeplay.UI
 			wrapper.transform.position = new Vector3(0,0,0);
 			wrapper.transform.SetParent(this.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
+			//wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			wrapper.AddComponent<Canvas>();
 			wrapper.AddComponent<GraphicRaycaster>();
 			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.0003f,.0003f,.0003f);
