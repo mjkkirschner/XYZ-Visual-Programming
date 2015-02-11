@@ -10,7 +10,7 @@ using Nodeplay.Utils;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.ComponentModel;
 
 namespace Nodeplay.UI
 {
@@ -21,7 +21,7 @@ namespace Nodeplay.UI
 	[RequireComponent(typeof(LayoutElement))]
 	[RequireComponent(typeof(EventConsumer))]
 	//[RequireComponent(typeof(HorizontalLayoutGroup))]
-	public class InspectableElement: UIBehaviour ,IPointerClickHandler
+	public class InspectableElement: UIBehaviour ,IPointerClickHandler,INotifyPropertyChanged
 	{
 		public NodeModel Model;
 		public Type ElementType;
@@ -29,12 +29,68 @@ namespace Nodeplay.UI
 		private bool exposesubElements = false;
 		public string Name;
 		// Use this for initialization
+
+
+		private Vector3 location;
+		public Vector3 Location
+			
+		{
+			get
+			{
+				return this.location;
+				
+			}
+			
+			set
+			{
+				if (value != this.location)
+				{
+					this.location = value;
+					NotifyPropertyChanged("Location");
+				}
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected virtual void NotifyPropertyChanged(String info)
+		{
+			Debug.Log("sending " + info + " change notification");
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(info));
+			}
+		}
+
+		private void handleRectChanges(object sender, PropertyChangedEventArgs info)
+		{
+			if (info.PropertyName == "Location"){
+				UpdateVisualization();
+			}
+		}
+		
 		protected override void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
 
+			this.PropertyChanged += handleRectChanges;
+
+		}
+		protected virtual void Update()
+		{
+			if (transform.hasChanged) {
+				Location = this.gameObject.transform.position;
+				transform.hasChanged = false;
+			}
+
+			
+		}
+		
+		public void UpdateVisualization(){
+
+
 			var visualization = searchforvisualization(this.Reference);
-			visualization.transform.position = this.transform.position;
+			//visualization.transform.position = this.transform.position;
+			
 			//TODO move the 3d visualization down or something, another possibility
 			//is to feed it to a custom button that places the renderer next to text
 			visualization.transform.SetParent(this.transform);
@@ -42,12 +98,42 @@ namespace Nodeplay.UI
 			visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
 		}
 
+		private Vector3 calculateCentroid (List<Vector3>points)
+		{
+			Vector3 center = Vector3.zero;
+			foreach (var point in points)
+			{
+				center = center + point;
+			}
+			center = center / (points.Count);
+			return center;
+		}
+
+		private void drawlineToVisualization(Vector3 To)
+		{
+
+			Debug.Log("current drawing a line that represents:" + this.gameObject.name + Name);
+
+			var line = new GameObject("viz line");
+			line.transform.SetParent(this.transform.parent);
+			line.AddComponent<LineRenderer>();
+			var linerenderer = line.GetComponent<LineRenderer>();
+			linerenderer.useWorldSpace = true;
+			linerenderer.SetVertexCount(2);
+
+			var from = this.GetComponentInChildren<Text>().transform.position;
+			linerenderer.SetPosition(0,from);
+			linerenderer.SetPosition(1,To);
+			linerenderer.material = Resources.Load<Material>("LineMat");
+			linerenderer.SetWidth(.05f,.05f);
+		}
+
 		//tentatively return a new gameobject that renders some representation of this object
 		//probably based on its type, so we'll need a mapping from type to visualization
 		private GameObject searchforvisualization(object objectToVisualize)
 		{
-			//if a gameobject then extract the renderer and use it on a new gameobject
-			//could possibly just grab the entire gameobject...
+			//if a gameobject then just copy the gameobject which will use its
+			//renderer if it has one
 			if (objectToVisualize is UnityEngine.GameObject)
 			{
 
@@ -68,8 +154,25 @@ namespace Nodeplay.UI
 			else
 			{
 				//this is any other type not a unity object:
-
 				//if a vector2 or 3
+
+				if (objectToVisualize is Vector2 || objectToVisualize is Vector3)
+				{
+					//first load the grid object
+					//var gridprefab = Resources.Load<GameObject>("Grid");
+					//var grid = GameObject.Instantiate(gridprefab);
+					//then place a point into the grid
+
+					//if we get a point or vector, lets visualize it as a point, and draw
+					// a line between the point and the inspectable element button
+
+					var point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+					point.transform.position = (Vector3)objectToVisualize;
+
+					drawlineToVisualization(point.transform.position);
+					return point;
+				}
+
 
 				//if a transform
 
@@ -92,13 +195,18 @@ namespace Nodeplay.UI
 
 		public void UpdateText(object pointer = null)
 		{
+			var fontsize = GetComponentInChildren<Text>().fontSize;
 			if (pointer == null)
 			{
-				GetComponentInChildren<Text>().text = ElementType.ToString() + " : \n " + Name +" : \n " + Reference.ToString(); 
+
+				GetComponentInChildren<Text>().text = "<color=teal>"+ElementType.ToString()+"</color>"  + 
+					" : \n " +"<color=orange>"+Name+"</color>"+
+					": \n " + "<size="+(fontsize*1.5).ToString()+">"+Reference.ToString()+"</size>"; 
 			}
 			else
 			{
-				GetComponentInChildren<Text>().text = pointer.GetType().ToString() + " : \n " + pointer.ToString(); 
+				GetComponentInChildren<Text>().text = "<color=teal>"+pointer.GetType().ToString()+"</color>" +
+					": \n "+ "<size="+(fontsize*1.5).ToString()+">"+ pointer.ToString()+"</size>"; 
 			}
 		}
 
@@ -122,9 +230,9 @@ namespace Nodeplay.UI
 
 		private void populateNextLevel(System.Object subTreeRoot)
 		{
-
+			//build a new wrapper for this next level
 			var wrapper = new GameObject("sub_tree_wrapper");
-			wrapper.transform.position = this.transform.position;
+			//wrapper.transform.position = this.transform.position;
 			wrapper.transform.SetParent(this.transform.parent,false);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
 			wrapper.GetComponent<HorizontalLayoutGroup>().spacing = 5;
@@ -159,9 +267,7 @@ namespace Nodeplay.UI
 			else
 			{
 				Debug.Log("inputobject is a object");
-				//because this is the top level, we wont reflect over this object
-				//but instead just generate an element that represents it as the root.
-				
+
 				if (subTreeRoot is IDynamicMetaObjectProvider)
 				{
 					Debug.Log("inputobject is a dynamic object");
