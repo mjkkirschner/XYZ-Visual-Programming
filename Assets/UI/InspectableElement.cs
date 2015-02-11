@@ -127,6 +127,7 @@ namespace Nodeplay.UI
 			wrapper.transform.position = this.transform.position;
 			wrapper.transform.SetParent(this.transform.parent,false);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
+			wrapper.GetComponent<HorizontalLayoutGroup>().spacing = 5;
 			
 
 			if (InspectorVisualization.IsList(subTreeRoot))

@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Ast;
+using UnityEngine.EventSystems;
 
 namespace Nodeplay.UI
 {
@@ -110,7 +111,13 @@ namespace Nodeplay.UI
 				instantiatedelement.GetComponent<Image>().color = Color.red;
 			}
 
-			
+			//if the newly instantiated element is a list lets open it up by sending a click event
+			if (InspectorVisualization.IsList(someObject))
+			{
+				Debug.Log("the item was a list so open it");
+				ExecuteEvents.Execute<IPointerClickHandler>(instantiatedelement, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+				
+			}
 			
 			inspectable.UpdateText();
 			return instantiatedelement;
@@ -126,6 +133,7 @@ namespace Nodeplay.UI
 			wrapper.AddComponent<VerticalLayoutGroup>();
 			wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			wrapper.AddComponent<Canvas>();
+			wrapper.GetComponent<Canvas>().worldCamera = Camera.main;
 			wrapper.AddComponent<GraphicRaycaster>();
 			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.0003f,.0003f,.0003f);
 			var fitter = wrapper.AddComponent<ContentSizeFitter>();
