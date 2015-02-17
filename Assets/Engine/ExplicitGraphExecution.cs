@@ -33,7 +33,7 @@ namespace Nodeplay.Engine
 			var allnodes = GameObject.FindObjectsOfType<NodeModel>();
 			//list of nodemodels where the input list is empty, so
 			// this node has no input ports, or where all inputs are connected...think this does that :P
-			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 || x is StartExecution).ToList();
+			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable) || x is StartExecution).ToList();
 			nodeps.ForEach(x=>Debug.Log(x.name));
 			return nodeps;
 			

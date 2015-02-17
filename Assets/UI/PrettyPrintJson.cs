@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JsonFx.Json;
+using jsonfx =  Pathfinding.Serialization.JsonFx;
 namespace Nodeplay.UI.Utils
 {
 
@@ -10,7 +10,9 @@ namespace Nodeplay.UI.Utils
     {
         public static string ToJSONstring(this object obj)
         {
-            var serializer = new JsonWriter();
+
+			var serializer = new jsonfx.JsonWriter();
+			serializer.Settings.GraphCycles = JsonFx.Serialization.GraphCycles.GraphCycleType.Reference;
             var data = serializer.Write(obj);
             return data;
         }
@@ -18,10 +20,10 @@ namespace Nodeplay.UI.Utils
 
         public static string ToJSONstring(this object obj, int recursiondepth)
         {
-
-            var serialzer = new JsonWriter();
-            serialzer.Settings.MaxDepth = recursiondepth;
-            return serialzer.Write(obj);
+			var serializer = new jsonfx.JsonWriter();
+            serializer.Settings.MaxDepth = recursiondepth;
+			serializer.Settings.GraphCycles = JsonFx.Serialization.GraphCycles.GraphCycleType.MaxDepth;
+            return serializer.Write(obj);
         }
     }
 }

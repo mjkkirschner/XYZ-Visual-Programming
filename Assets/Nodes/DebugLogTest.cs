@@ -10,11 +10,10 @@ namespace Nodeplay.Nodes
 	public class DebugLogTest : NodeModel
 	{
 		
-		
-		protected override void Start()
+		protected override void Start()  
 		{
 			base.Start();
-			//AddOutPutPort("OUTPUT");
+			
 			AddInputPort("message");
 			AddExecutionInputPort("start");
 			AddOutPutPort("OUTPUT");

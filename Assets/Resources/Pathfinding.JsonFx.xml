@@ -1,0 +1,815 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Pathfinding.JsonFx</name>
+    </assembly>
+    <members>
+        <member name="T:Pathfinding.Serialization.JsonFx.DataReaderProvider">
+            <summary>
+            Provides lookup capabilities for finding an IDataReader
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.DataReaderProvider.#ctor(System.Collections.Generic.IEnumerable{Pathfinding.Serialization.JsonFx.IDataReader})">
+            <summary>
+            Ctor
+            </summary>
+            <param name="readers">inject with all possible readers</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.DataReaderProvider.Find(System.String)">
+            <summary>
+            Finds an IDataReader by content-type header
+            </summary>
+            <param name="contentTypeHeader"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.DataWriterProvider">
+            <summary>
+            Provides lookup capabilities for finding an IDataWriter
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.DataWriterProvider.#ctor(System.Collections.Generic.IEnumerable{Pathfinding.Serialization.JsonFx.IDataWriter})">
+            <summary>
+            Ctor
+            </summary>
+            <param name="writers">inject with all possible writers</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.DataWriterProvider.ParseHeaders(System.String,System.String)">
+            <summary>
+            Parses HTTP headers for Media-Types
+            </summary>
+            <param name="accept">HTTP Accept header</param>
+            <param name="contentType">HTTP Content-Type header</param>
+            <returns>sequence of Media-Types</returns>
+            <remarks>
+            http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            </remarks>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.DataWriterProvider.ParseMediaType(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.IDataReader">
+            <summary>
+            A common interface for data deserializers
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.IDataReader.Deserialize(System.IO.TextReader,System.Type)">
+            <summary>
+            Serializes the data to the given output
+            </summary>
+            <param name="input"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.IDataReader.ContentType">
+            <summary>
+            Gets the content type of the serialized data
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.IDataWriter">
+            <summary>
+            A common interface for data serializers
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.IDataWriter.Serialize(System.IO.TextWriter,System.Object)">
+            <summary>
+            Serializes the data to the given output
+            </summary>
+            <param name="output"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.IDataWriter.ContentEncoding">
+            <summary>
+            Gets the content encoding for the serialized data
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.IDataWriter.ContentType">
+            <summary>
+            Gets the content type for the serialized data
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.IDataWriter.FileExtension">
+            <summary>
+            Gets the file extension for the serialized data
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.IJsonSerializable">
+            <summary>
+            Allows classes to control their own JSON serialization
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonDataReader">
+            <summary>
+            An <see cref="T:Pathfinding.Serialization.JsonFx.IDataReader"/> adapter for <see cref="T:Pathfinding.Serialization.JsonFx.JsonDataReader"/>
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataReader.#ctor(Pathfinding.Serialization.JsonFx.JsonReaderSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataReader.Deserialize(System.IO.TextReader,System.Type)">
+            <summary>
+            Deserializes a data object of Type <param name="type">type</param> from the <param name="input">input</param>
+            </summary>
+            <param name="output"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataReader.CreateSettings(System.Boolean)">
+            <summary>
+            Builds a common settings objects
+            </summary>
+            <param name="allowNullValueTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonDataReader.ContentType">
+            <summary>
+            Gets the content type
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonDataWriter">
+            <summary>
+            An <see cref="T:Pathfinding.Serialization.JsonFx.IDataWriter"/> adapter for <see cref="T:Pathfinding.Serialization.JsonFx.JsonWriter"/>
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataWriter.#ctor(Pathfinding.Serialization.JsonFx.JsonWriterSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataWriter.Serialize(System.IO.TextWriter,System.Object)">
+            <summary>
+            Serializes the data object to the output
+            </summary>
+            <param name="output"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDataWriter.CreateSettings(System.Boolean)">
+            <summary>
+            Builds a common settings objects
+            </summary>
+            <param name="prettyPrint"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonDataWriter.ContentEncoding">
+            <summary>
+            Gets the content encoding
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonDataWriter.ContentType">
+            <summary>
+            Gets the content type
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonDataWriter.FileExtension">
+            <summary>
+            Gets the file extension
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonIgnoreAttribute">
+            <summary>
+            Designates a property or field to not be serialized.
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonIgnoreAttribute.IsJsonIgnore(System.Object)">
+            <summary>
+            Gets a value which indicates if should be ignored in Json serialization.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonIgnoreAttribute.IsXmlIgnore(System.Object)">
+            <summary>
+            Gets a value which indicates if should be ignored in Json serialization.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonNameAttribute">
+            <summary>
+            Specifies the naming to use for a property or field when serializing
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonNameAttribute.#ctor">
+            <summary>
+            Ctor
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonNameAttribute.#ctor(System.String)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="jsonName"></param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonNameAttribute.GetJsonName(System.Object)">
+            <summary>
+            Gets the name specified for use in Json serialization.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonNameAttribute.Name">
+            <summary>
+            Gets and sets the name to be used in JSON
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonReader">
+            <summary>
+            Reader for consuming JSON data
+            </summary>
+        </member>
+        <member name="F:Pathfinding.Serialization.JsonFx.JsonReader.previouslyDeserialized">
+            List of previously deserialized objects.
+            Used for reference cycle handling.
+        </member>
+        <member name="F:Pathfinding.Serialization.JsonFx.JsonReader.jsArrays">
+            Cache ArrayLists. Otherwise every new deseriaization of an array will allocate
+            a new ArrayList.
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.IO.TextReader)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">TextReader containing source</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.IO.TextReader,Pathfinding.Serialization.JsonFx.JsonReaderSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">TextReader containing source</param>
+            <param name="settings">JsonReaderSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.IO.Stream)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">Stream containing source</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.IO.Stream,Pathfinding.Serialization.JsonFx.JsonReaderSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">Stream containing source</param>
+            <param name="settings">JsonReaderSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.String)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">string containing source</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.String,Pathfinding.Serialization.JsonFx.JsonReaderSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">string containing source</param>
+            <param name="settings">JsonReaderSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.Text.StringBuilder)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">StringBuilder containing source</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.#ctor(System.Text.StringBuilder,Pathfinding.Serialization.JsonFx.JsonReaderSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="input">StringBuilder containing source</param>
+            <param name="settings">JsonReaderSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize">
+            <summary>
+            Convert from JSON string to Object graph
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.Int32)">
+            <summary>
+            Convert from JSON string to Object graph
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.Type)">
+            <summary>
+            Convert from JSON string to Object graph of specific Type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.Int32,System.Type)">
+            <summary>
+            Convert from JSON string to Object graph of specific Type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Read(System.Type,System.Boolean)">
+            <summary>
+            Convert from JSON string to Object graph of specific Type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.PopulateObject(System.Object@)">
+            Populates an object with serialized data.
+            Note that in case the object has been loaded before (another reference to it)
+            the passed object will be changed to the previously loaded object (this only applies
+            if you have enabled CyclicReferenceHandling in the settings).
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.ReadUnquotedKey">
+            <summary>
+            Reads an unquoted JSON object key
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.ReadString(System.Type)">
+            <summary>
+            Reads a JSON string
+            </summary>
+            <param name="expectedType"></param>
+            <returns>string or value which is represented as a string in JSON</returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.String)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize``1(System.String)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.String,System.Int32)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <param name="value"></param>
+            <param name="start"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize``1(System.String,System.Int32)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="start"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.String,System.Type)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <param name="value"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.Deserialize(System.String,System.Int32,System.Type)">
+            <summary>
+            A fast method for deserializing an object from JSON
+            </summary>
+            <param name="value">source text</param>
+            <param name="start">starting position</param>
+            <param name="type">expected type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.MatchLiteral(System.String)">
+            <summary>
+            Determines if the next token is the given literal
+            </summary>
+            <param name="literal"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.CoerceType``1(System.Object,``0)">
+            <summary>
+            Converts a value into the specified type using type inference.
+            </summary>
+            <typeparam name="T">target type</typeparam>
+            <param name="value">value to convert</param>
+            <param name="typeToMatch">example object to get the type from</param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.CoerceType``1(System.Object)">
+            <summary>
+            Converts a value into the specified type.
+            </summary>
+            <typeparam name="T">target type</typeparam>
+            <param name="value">value to convert</param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReader.CoerceType(System.Type,System.Object)">
+            <summary>
+            Converts a value into the specified type.
+            </summary>
+            <param name="targetType">target type</param>
+            <param name="value">value to convert</param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonReader.EOF">
+            True if there is nothing more to deserialize 
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonReaderSettings">
+            <summary>
+            Controls the deserialization settings for JsonReader
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonReaderSettings.IsTypeHintName(System.String)">
+            <summary>
+            Determines if the specified name is the TypeHint property
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonReaderSettings.HandleCyclicReferences">
+            <summary>
+            Gets or sets a value indicating whether this to handle cyclic references.
+            </summary>
+            <remarks>
+            Handling cyclic references is slightly more expensive and needs to keep a list
+            of all deserialized objects, but it will not crash or go into infinite loops
+            when trying to serialize an object graph with cyclic references and after
+            deserialization all references will point to the correct objects even if
+            it was used in different places (this can be good even if you do not have
+            cyclic references in your data).
+            
+            More specifically, if your object graph (where one reference is a directed edge) 
+            is a tree, this should be false, otherwise it should be true.
+            
+            Note also that the deserialization methods which take a start position
+            will not work with this setting enabled.
+            </remarks>
+            <value>
+            <c>true</c> if handle cyclic references; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonReaderSettings.AllowNullValueTypes">
+            <summary>
+            Gets and sets if ValueTypes can accept values of null
+            </summary>
+            <remarks>
+            Only affects deserialization: if a ValueType is assigned the
+            value of null, it will receive the value default(TheType).
+            Setting this to false, throws an exception if null is
+            specified for a ValueType member.
+            </remarks>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonReaderSettings.AllowUnquotedObjectKeys">
+            <summary>
+            Gets and sets if objects can have unquoted property names
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonReaderSettings.TypeHintName">
+            <summary>
+            Gets and sets the property name used for type hinting.
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonDeserializationException.GetLineAndColumn(System.String,System.Int32@,System.Int32@)">
+            <summary>
+            Helper method which converts the index into Line and Column numbers
+            </summary>
+            <param name="source"></param>
+            <param name="line"></param>
+            <param name="col"></param>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonDeserializationException.Index">
+            <summary>
+            Gets the character position in the stream where the error occurred.
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonSpecifiedPropertyAttribute">
+            <summary>
+            Specifies the name of the property which specifies if member should be serialized.
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonSpecifiedPropertyAttribute.#ctor(System.String)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="propertyName">the name of the property which controls serialization for this member</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonSpecifiedPropertyAttribute.GetJsonSpecifiedProperty(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the name specified for use in Json serialization.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonSpecifiedPropertyAttribute.SpecifiedProperty">
+            <summary>
+            Gets and sets the name of the property which
+            specifies if member should be serialized
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonToken">
+            <summary>
+            Parse Tokens
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonWriter">
+            <summary>
+            Writer for producing JSON data
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.IO.TextWriter)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">TextWriter for writing</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.IO.TextWriter,Pathfinding.Serialization.JsonFx.JsonWriterSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">TextWriter for writing</param>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.IO.Stream)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">Stream for writing</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.IO.Stream,Pathfinding.Serialization.JsonFx.JsonWriterSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">Stream for writing</param>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.String)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">file name for writing</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.String,Pathfinding.Serialization.JsonFx.JsonWriterSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">file name for writing</param>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.Text.StringBuilder)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">StringBuilder for appending</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.#ctor(System.Text.StringBuilder,Pathfinding.Serialization.JsonFx.JsonWriterSettings)">
+            <summary>
+            Ctor
+            </summary>
+            <param name="output">StringBuilder for appending</param>
+            <param name="settings">JsonWriterSettings</param>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.Serialize(System.Object)">
+            <summary>
+            A helper method for serializing an object to JSON
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.IsIgnored(System.Type,System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Determines if the property or field should not be serialized.
+            </summary>
+            <param name="objType"></param>
+            <param name="member"></param>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks>
+            Checks these in order, if any returns true then this is true:
+            - is flagged with the JsonIgnoreAttribute property
+            - has a JsonSpecifiedProperty which returns false
+            </remarks>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.IsDefaultValue(System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Determines if the member value matches the DefaultValue attribute
+            </summary>
+            <returns>if has a value equivalent to the DefaultValueAttribute</returns>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.GetFlagList(System.Type,System.Object)">
+            <summary>
+            Splits a bitwise-OR'd set of enums into a list.
+            </summary>
+            <param name="enumType">the enum type</param>
+            <param name="value">the combined value</param>
+            <returns>list of flag enums</returns>
+            <remarks>
+            from PseudoCode.EnumHelper
+            </remarks>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriter.InvalidIeee754(System.Decimal)">
+            <summary>
+            Determines if a numberic value cannot be represented as IEEE-754.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriter.TextWriter">
+            <summary>
+            Gets the underlying TextWriter
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriter.Settings">
+            <summary>
+            Gets and sets the JsonWriterSettings
+            </summary>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.WriteDelegate`1">
+            <summary>
+            Represents a proxy method for serialization of types which do not implement IJsonSerializable
+            </summary>
+            <typeparam name="T">the type for this proxy</typeparam>
+            <param name="writer">the JsonWriter to serialize to</param>
+            <param name="value">the value to serialize</param>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonWriterSettings">
+            <summary>
+            Controls the serialization settings for JsonWriter
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriterSettings.IsIgnored(System.Type,System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Determines if the property or field should not be serialized.
+            </summary>
+            <param name="objType"></param>
+            <param name="member"></param>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks>
+            Checks these in order, if any returns true then this is true:
+            - is flagged with the JsonIgnoreAttribute property
+            - has a JsonSpecifiedProperty which returns false
+            </remarks>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriterSettings.GetConverter(System.Type)">
+            Returns the converter for the specified type 
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonWriterSettings.AddTypeConverter(Pathfinding.Serialization.JsonFx.JsonConverter)">
+            Adds a converter to use to serialize otherwise non-serializable types.
+            Good if you do not have the source and it throws error when trying to serialize it.
+            For example the Unity3D Vector3 can be serialized using a special converter
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.HandleCyclicReferences">
+            <summary>
+            Gets or sets a value indicating whether this to handle cyclic references.
+            </summary>
+            <remarks>
+            Handling cyclic references is slightly more expensive and needs to keep a list
+            of all deserialized objects, but it will not crash or go into infinite loops
+            when trying to serialize an object graph with cyclic references and after
+            deserialization all references will point to the correct objects even if
+            it was used in different places (this can be good even if you do not have
+            cyclic references in your data).
+            
+            More specifically, if your object graph (where one reference is a directed edge) 
+            is a tree, this should be false, otherwise it should be true.
+            
+            Note also that the deserialization methods which take a start position
+            will not work with this setting enabled.
+            
+            When an object is first encountered, it will be serialized, just as usual,
+            but when it is encountered again, it will be replaced with an object only
+            containing a "@ref" field specifying that this is identical to object number
+            [value] that was serialized. This number is zero indexed.
+            
+            Arrays can unfortunately not be deserialized to the same object if they are
+            referenced in multiple places since the contents of the array needs to be deserialized
+            before the actual array is created.
+            
+            Make sure you also enable cyclic reference handling in the reader settings.
+            </remarks>
+            <value>
+            <c>true</c> if handle cyclic references; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.TypeHintName">
+            <summary>
+            Gets and sets the property name used for type hinting.
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.PrettyPrint">
+            <summary>
+            Gets and sets if JSON will be formatted for human reading.
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.Tab">
+            <summary>
+            Gets and sets the string to use for indentation
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.NewLine">
+            <summary>
+            Gets and sets the line terminator string
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.MaxDepth">
+            <summary>
+            Gets and sets the maximum depth to be serialized.
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.UseXmlSerializationAttributes">
+            <summary>
+            Gets and sets if should use XmlSerialization Attributes.
+            </summary>
+            <remarks>
+            Respects XmlIgnoreAttribute, ...
+            </remarks>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.DateTimeSerializer">
+            <summary>
+            Gets and sets a proxy formatter to use for DateTime serialization
+            </summary>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.JsonWriterSettings.DebugMode">
+            Enables more debugging messages.
+            E.g about why some members are not serialized.
+            The number of debugging messages are in no way exhaustive
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.JsonConverter.CanConvert(System.Type)">
+            Test if this converter can convert the specified type 
+        </member>
+        <member name="F:Pathfinding.Serialization.JsonFx.JsonConverter.convertAtDepthZero">
+            If false, this converter will not be used on the root object in the data.
+            E.g on
+            {
+               "hello": {
+                   "someProperty": 0
+               }
+            }
+            
+            The object containing the field 'hello' will never be able to be converted using this converter if convertAtDepthZero is false, however
+            the object containing 'someProperty' will.
+            
+            Applies for both writing and reading.
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.TypeCoercionUtility">
+            <summary>
+            Utility for forcing conversion between types
+            </summary>
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.ProcessTypeHint(System.Collections.IDictionary,System.String,System.Type@,System.Collections.Generic.Dictionary{System.String,System.Reflection.MemberInfo}@)">
+            <summary>
+            If a Type Hint is present then this method attempts to
+            use it and move any previously parsed data over.
+            </summary>
+            <param name="result">the previous result</param>
+            <param name="typeInfo">the type info string to use</param>
+            <param name="objectType">reference to the objectType</param>
+            <param name="memberMap">reference to the memberMap</param>
+            <returns></returns>
+        </member>
+        <member name="F:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.writingMaps">
+            Dictionary from types to a list of (string,FieldInfo) pairs and a list of (string,PropertyInfo) pairs
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.GetMemberMap(System.Type)">
+            Returns a member map if suitable for the object type.
+            Dictionary types will make this method return null
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.CreateMemberMap(System.Type)">
+            Creates a member map for the type 
+        </member>
+        <member name="M:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.SetMemberValue(System.Object,System.Type,System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Helper method to set value of either property or field
+            </summary>
+            <param name="result"></param>
+            <param name="memberType"></param>
+            <param name="memberInfo"></param>
+            <param name="value"></param>
+        </member>
+        <member name="P:Pathfinding.Serialization.JsonFx.TypeCoercionUtility.AllowNullValueTypes">
+            <summary>
+            Gets and sets if ValueTypes can accept values of null
+            </summary>
+            <remarks>
+            Only affects deserialization: if a ValueType is assigned the
+            value of null, it will receive the value default(TheType).
+            Setting this to false, throws an exception if null is
+            specified for a ValueType member.
+            </remarks>
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonMemberAttribute">
+            Explicitly declare this member to be serialized.
+            \see JsonOptInAttribute
+        </member>
+        <member name="T:Pathfinding.Serialization.JsonFx.JsonOptInAttribute">
+            Specifies that members of this class that should be serialized must be explicitly specified.
+            Classes that this attribute is applied to need to explicitly
+            declare every member that should be serialized with the JsonMemberAttribute.
+            \see JsonMemberAttribute
+        </member>
+    </members>
+</doc>

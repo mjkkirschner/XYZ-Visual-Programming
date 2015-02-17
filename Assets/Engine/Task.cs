@@ -14,6 +14,11 @@ public class Task
 
     private NodeModel findNodeCalled(int index)
     {
+		if (NodeRunningOn.ExecutionOutputs.Count<1)
+		{
+			Debug.Log("this node, "+NodeRunningOn+ " does not have an execution output, so it will call no downstream nodes");
+			return null;
+		}
         var trigger = NodeRunningOn.ExecutionOutputs[index];
         if (trigger.IsConnected)
         {
