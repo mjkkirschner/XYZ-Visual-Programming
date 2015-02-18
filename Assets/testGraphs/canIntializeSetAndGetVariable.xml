@@ -1,18 +1,18 @@
-<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
   <Elements>
     <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="eb800cc7-f9d1-4f60-870d-134295afa168" nickname="node StartExecutioneb800cc7-f9d1-4f60-870d-134295afa168" x="-4.50146" y="16.60399" z="-10.57533">
       <nodeinputdict />
     </Nodeplay.Nodes.StartExecution>
-    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="afc62b50-22a9-4420-9866-6f8fa7acc7cc" nickname="node Numberafc62b50-22a9-4420-9866-6f8fa7acc7cc" x="-12.50274" y="9.819759" z="-6.450463">
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="afc62b50-22a9-4420-9866-6f8fa7acc7cc" nickname="node Numberafc62b50-22a9-4420-9866-6f8fa7acc7cc" x="-14.39628" y="16.60399" z="-10.57533">
       <nodeinputdict Code="OUTPUT = 5;VariableCreated()" />
     </Nodeplay.Nodes.Number>
-    <Nodeplay.Nodes.CreateVariable type="Nodeplay.Nodes.CreateVariable" guid="1bad1bbc-b575-46d1-a8d4-e9928bc13dee" nickname="node CreateVariable1bad1bbc-b575-46d1-a8d4-e9928bc13dee" x="9.359693" y="17.16826" z="1.380254">
-      <nodeinputdict />
+    <Nodeplay.Nodes.CreateVariable type="Nodeplay.Nodes.CreateVariable" guid="1bad1bbc-b575-46d1-a8d4-e9928bc13dee" nickname="node CreateVariable1bad1bbc-b575-46d1-a8d4-e9928bc13dee" x="8.689962" y="20.81157" z="-1.051559">
+      <nodeinputdict VariableName="some variable name" />
     </Nodeplay.Nodes.CreateVariable>
-    <Nodeplay.Nodes.SetVariable type="Nodeplay.Nodes.SetVariable" guid="5d6d9af0-fe6d-4711-94c1-c6a48b8186b2" nickname="node SetVariable5d6d9af0-fe6d-4711-94c1-c6a48b8186b2" x="-8.187973" y="6.047319" z="8.745804">
+    <Nodeplay.Nodes.SetVariable type="Nodeplay.Nodes.SetVariable" guid="5d6d9af0-fe6d-4711-94c1-c6a48b8186b2" nickname="node SetVariable5d6d9af0-fe6d-4711-94c1-c6a48b8186b2" x="-6.000735" y="6.796435" z="13.94815">
       <nodeinputdict />
     </Nodeplay.Nodes.SetVariable>
-    <Nodeplay.Nodes.DebugLogTest type="Nodeplay.Nodes.DebugLogTest" guid="5c2c21a1-8f08-424e-9732-c2b84f0b6c5e" nickname="node DebugLogTest5c2c21a1-8f08-424e-9732-c2b84f0b6c5e" x="14.646" y="12.93485" z="12.22995">
+    <Nodeplay.Nodes.DebugLogTest type="Nodeplay.Nodes.DebugLogTest" guid="5c2c21a1-8f08-424e-9732-c2b84f0b6c5e" nickname="node DebugLogTest5c2c21a1-8f08-424e-9732-c2b84f0b6c5e" x="15.14902" y="16.04624" z="15.6611">
       <nodeinputdict />
     </Nodeplay.Nodes.DebugLogTest>
   </Elements>

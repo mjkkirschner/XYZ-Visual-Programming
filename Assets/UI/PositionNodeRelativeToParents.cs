@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections;
+using Pathfinding.Serialization.JsonFx;
 
 namespace Nodeplay.UI
 {
@@ -14,7 +15,7 @@ namespace Nodeplay.UI
 	/// </summary>
 	public class PositionNodeRelativeToParents : MonoBehaviour
 	{
-		
+
 		public NodeModel Model;
 
 		// Use this for initialization

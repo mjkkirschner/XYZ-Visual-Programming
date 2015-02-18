@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using JsonFx.Json;
+using Pathfinding.Serialization.JsonFx;
 using System.Collections.Generic;
 
 /** \file Some converters you can use with basic Unity built-in types. Supports Bounds, LayerMask and Vector2,3,4. */

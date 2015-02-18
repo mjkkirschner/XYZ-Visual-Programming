@@ -417,7 +417,24 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 					*/
 					//TODO need to add some methods for type resolve before attempting to 
 					// instantiate node..
-					Type nodetype = Type.GetType(typeName);
+				//since we save some nodes with only their fullnames not including assembly name, we'll
+				//iterate all loaded assemblies looking for the correct namespace and type...
+				//alternative would be to save ZT wrapped nodes with their assembly qualified name as opposed to fullname
+					var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+					Type nodetype = null;
+					foreach (var assembly in loadedAssemblies)
+					{
+						nodetype = assembly.GetType(typeName, false);
+						if(nodetype != null){
+						break;
+								}
+					}
+					if (nodetype == null)
+				{
+					Debug.LogException( new ArgumentException("Type " + typeName + " doesn't exist in the current app domain"));
+
+				}	
+					//Type nodetype = Type.GetType(typeName);
 					
 					MethodInfo method = this.GetType().GetMethod("InstantiateNode");
 					MethodInfo generic = method.MakeGenericMethod(nodetype);

@@ -21,12 +21,12 @@ namespace Nodeplay.UI
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
 
 			//force a call to properychangehandelr
-			NodePropertyChangeEventHandler(null,new EventArgs());
+			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
 		}
 		
 		/// this handler is used to respond to changes on the node
 		// when the node is modified in some way we update the windows position
-		public void NodePropertyChangeEventHandler(object sender, EventArgs args)
+		public void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
 			var allchildren = Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList();
 			allchildren.Remove(Model_GO.transform.GetChild(0).gameObject);
