@@ -7,6 +7,8 @@ using System.Web;
 using Nodeplay.Engine;
 using Nodeplay.Nodes;
 using UnityEngine;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Nodeplay.Core
 {
@@ -23,12 +25,15 @@ namespace Nodeplay.Core
 	//		this.migrationManager = migrationManager;
 	//	}
 
-		public CustomNodeManager()
+		public CustomNodeManager(AppModel appmodel)
 		{
+			AppModel _appmodel = appmodel;
 		}
 
 		#region Fields and properties
-		
+
+		private AppModel _appmodel;
+
 		private readonly OrderedSet<Guid> loadOrder = new OrderedSet<Guid>();
 		
 		private readonly Dictionary<Guid, CustomNodeFunctionDescription> loadedCustomNodes =
@@ -95,6 +100,27 @@ namespace Nodeplay.Core
 			if (handler != null) handler(functionId);
 		}
 
+		private Type createCustomNodeType(CustomNodeFunctionDescription defintion,CustomNodeInfo info)
+		{
+
+			AssemblyName asmName = new AssemblyName("CustomNodes");
+			string typename = defintion.FunctionName;
+			AssemblyBuilder asmbuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
+			ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule(info.Category);
+			TypeBuilder typebuilder = modulebuilder.DefineType(typename + "Node");
+			typebuilder.SetParent(typeof(CustomNodeWrapper));
+			var funcfield = typebuilder.def("funcdef");
+			var descfield = typebuilder.GetField("Description");
+			var catfield = typebuilder.GetField("Category");
+
+			funcfield.SetValue(
+
+			Type customnode = typebuilder.CreateType();
+
+
+		}
+
+
 		//TODO not sure if this belongs here or should be moved to graphmodel...
 		//***need to modify this code to generate a new wrapper type inheriting from customnode
 		//we dont want to create customnodes
@@ -140,7 +166,13 @@ namespace Nodeplay.Core
 				def = CustomNodeFunctionDescription.MakeProxy(id, info.Name);
 			}
 
-			//TODO this is not how we creates nodes...we need to 
+			//TODO this is not how we creates nodes...we need to do something else....
+			throw new Exception(NotImplementedException);
+			//TODO I think this is where we can emit our type, then try to set the function def and other infos
+			//possibly before the type is even initialzed/instantiated, alternatively, we just set those properties
+			//after initialization
+			
+				//however we get the type, we then we pass the type to intstantiate node method on the current graph model
 
 			var node = new CustomNodeWrapper(def, info.Name, info.Description, info.Category);
 			if (loadedWorkspaceModels.TryGetValue(id, out workspace))
@@ -439,7 +471,7 @@ namespace Nodeplay.Core
 					return false;
 				}
 				info = new CustomNodeInfo(
-					Guid.Parse(header.ID), 
+					new Guid(header.ID), 
 					header.Name, 
 					header.Category,
 					header.Description, 
@@ -448,8 +480,8 @@ namespace Nodeplay.Core
 			}
 			catch (Exception e)
 			{
-				Log(String.Format(Properties.Resources.FailedToLoadHeader, path));
-				Log(e.ToString());
+				Debug.Log("failed to load header from : " + path);
+				Debug.LogException(e);
 				info = null;
 				return false;
 			}
@@ -484,25 +516,21 @@ namespace Nodeplay.Core
 		
 		private bool InitializeCustomNode(
 			Guid functionId, GraphHeader workspaceInfo,
-			XmlDocument xmlDoc, out CustomNodeGraphModel workspace)
+			string xmlpath, out CustomNodeGraphModel workspace)
 		{
 			// Add custom node definition firstly so that a recursive
 			// custom node won't recursively load itself.
 			SetPreloadFunctionDefinition(functionId);
-			
-			var nodeGraph = NodeGraph.LoadGraphFromXml(xmlDoc, nodeFactory);
-			
-			var newWorkspace = new CustomNodeWorkspaceModel(
+
+			var newWorkspace = new CustomNodeGraphModel(
 				workspaceInfo.Name,
 				workspaceInfo.Category,
 				workspaceInfo.Description,
-				nodeFactory,
-				nodeGraph.Nodes,
-				nodeGraph.Notes,
-				workspaceInfo.X,
-				workspaceInfo.Y,
-				functionId, nodeGraph.ElementResolver, workspaceInfo.FileName);
-			
+				functionId,_appmodel,
+				 workspaceInfo.FileName);
+
+			newWorkspace.LoadGraphModel(xmlpath);
+
 			RegisterCustomNodeWorkspace(newWorkspace);
 			
 			workspace = newWorkspace;
@@ -518,7 +546,7 @@ namespace Nodeplay.Core
 		}
 		
 		private void RegisterCustomNodeWorkspace(
-			GraphModel newWorkspace, CustomNodeInfo info, CustomNodeFunctionDescription definition)
+			CustomNodeGraphModel newWorkspace, CustomNodeInfo info, CustomNodeFunctionDescription definition)
 		{
 			loadedWorkspaceModels[newWorkspace.CustomNodeId] = newWorkspace;
 			
@@ -526,7 +554,7 @@ namespace Nodeplay.Core
 			OnDefinitionUpdated(definition);
 			newWorkspace.DefinitionUpdated += () =>
 			{
-				var newDef = newWorkspace.CustomNodeDefinition;
+				var newDef = newWorkspace.CustomNodeFunctionDescription;
 				SetFunctionDefinition(newDef);
 				OnDefinitionUpdated(newDef);
 			};
@@ -561,36 +589,35 @@ namespace Nodeplay.Core
 				var customNodeInfo = NodeInfos[functionId];
 				
 				var xmlPath = customNodeInfo.Path;
-				
-				Log(String.Format(Properties.Resources.LoadingNodeDefinition, customNodeInfo, xmlPath));
+
+				Debug.Log("<color=orange>file load:</color>" + " loading a custom node def" + customNodeInfo.ToString()+"at" + xmlPath);	
+
 				
 				var xmlDoc = new XmlDocument();
 				xmlDoc.Load(xmlPath);
 				
-				WorkspaceHeader header;
-				if (WorkspaceHeader.FromXmlDocument(
+				GraphHeader header;
+				if (GraphHeader.FromXmlDocument(
 					xmlDoc,
 					xmlPath,
 					isTestMode,
-					AsLogger(),
 					out header) && header.IsCustomNodeWorkspace)
 				{
-					if (migrationManager.ProcessWorkspace(header, xmlDoc, isTestMode, nodeFactory))
-					{
-						return InitializeCustomNode(functionId, header, xmlDoc, out workspace);
-					}
+
+				return InitializeCustomNode(functionId, header, xmlPath, out workspace);
+
 				}
-				Log(string.Format(Properties.Resources.CustomNodeCouldNotBeInitialized, customNodeInfo.Name));
+				Debug.Log("<color=orange>file load:</color>" + "customnode could not be initialized" + customNodeInfo.Name);
 				workspace = null;
 				return false;
 			}
 			catch (Exception ex)
 			{
-				Log(Properties.Resources.OpenWorkspaceError);
-				Log(ex);
+				Debug.Log("<color=orange>file load:</color>" + "could not load customnode graph");
+				Debug.LogException(ex);
 				
 				if (isTestMode)
-					throw; // Rethrow for NUnit.
+					Debug.Break();
 				
 				workspace = null;
 				return false;

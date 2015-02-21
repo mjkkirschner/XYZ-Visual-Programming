@@ -8,12 +8,16 @@ using UnityEngine.Events;
 using UnityEditor;
 using System.ComponentModel;
 using Nodeplay.Engine;
+using Nodeplay.Core;
+
+namespace Nodeplay.Engine {
 
 public class AppModel : MonoBehaviour
 {
 	public Dictionary<string, FunctionDescription> LoadedFunctions { get; set; }
 	public List<GraphModel> WorkModels {get;set;}
 	private List<Type> _loadedNodeModels;
+	public CustomNodeManager CollapsedCustomGraphNodeManager;
 	//TODO implement observable collection list
 	public List<Type> LoadedNodeModels
 		
@@ -160,5 +164,5 @@ public class AppModel : MonoBehaviour
 
 	
 
-		
+	}
 }

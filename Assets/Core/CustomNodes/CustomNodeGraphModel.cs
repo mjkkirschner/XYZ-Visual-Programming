@@ -49,7 +49,19 @@ namespace Nodeplay.Core
 				x,
 				y,
 			customNodeId, elementResolver, fileName) { }*/
-		
+
+		public CustomNodeGraphModel(string name, string category, string description, Guid customNodeId,AppModel appmodel,string fileName ="" )
+			:base(name,appmodel)
+		{
+
+			CustomNodeId = customNodeId;
+			HasUnsavedChanges = false;
+			Category = category;
+			Description = description;
+			
+			PropertyChanged += OnPropertyChanged;
+		}
+
 		public CustomNodeGraphModel(
 			string name, string category, string description, IEnumerable<NodeModel> nodes, IEnumerable<ConnectorModel> connectors, 
 			float x, float y, float z, Guid customNodeId,AppModel appmodel, string fileName="") 

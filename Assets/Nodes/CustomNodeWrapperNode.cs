@@ -15,15 +15,18 @@ namespace Nodeplay.Nodes
 		{
 				//the custom node model class holds these values even outside of it's own evaluation scope
 				//since we're not sure when the custom node definitio will be done executing and may require access to these values
-				public var inputdata = new List<Tuple<string,object>> ();
-				public var executiondata = new List<Tuple<string,Action>> ();
+				public List<Tuple<string,object>> Inputdata{ get; set; }
 
-	
-		public string Description {get;set;}
+				public List<Tuple<string,Action>> Executiondata{ get; set; }
+		//these properties are made static so they can be set on the type before instantiation, 
+		//TODO eveluate if this is really what I want to do to solve the issue of assigning a function definition to custom nodes...
+		//could simply do what zt node wrappers do and lookup the functiondefinition from the customnode manager by typename....
+				public static string Description { get; set; }
 
-		public string Category {get;set;}
+				public static string Category { get; set; }
 
-				public CustomNodeFunctionDescription funcdef;
+				public static CustomNodeFunctionDescription funcdef;
+
 				public event Action Disposed;
 
 				protected override void Start ()
@@ -32,11 +35,11 @@ namespace Nodeplay.Nodes
 			
 						//on start go grab the correct information from the appmodel's customNodeManager dict of loadead custom nodes
 						// use the name of this type as the key into the dictionary, or alteratively, the GUID of the function, which
-						// we could set on load, this shuld be a guid of the definition not of the node model, but we do not know the
+						// we could set on load, this should be a guid of the definition not of the node model, but we do not know the
 						// guid of the function definition at this point...will have to rectify this later, when we create the type,
 						// we may set this function guid explicitly... possibly even assigning the function description instead of getting it.
-						funcdef = GameObject.FindObjectOfType<AppModel> ().CustomNodeManager.loadedCustomNodes [this.GetType ().FullName];
-						//funcdef = GameObject.FindObjectOfType<AppModel>().CustomNodeManager.loadedCustomNodes[];
+						//funcdef = GameObject.FindObjectOfType<AppModel> ().CollapsedCustomGraphNodeManager.LoadedDefinitions [this.GetType ().FullName];
+						
 
 						ValidateDefinition (funcdef);
 
@@ -81,12 +84,12 @@ namespace Nodeplay.Nodes
 
 				}
 
-		protected virtual void OnDestroy()
-		{
-			Disposed();
-		}
+				protected virtual void OnDestroy ()
+				{
+						Disposed ();
+				}
 		
-		internal override void Evaluate ()
+				internal override void Evaluate ()
 				{
 						OnEvaluation ();
 						//build packages for all data 
@@ -117,24 +120,24 @@ namespace Nodeplay.Nodes
 				}				
 
 		#region customnode controller merged some methods into the wrapper
-				public override void SyncNodeWithDefinition(NodeModel model)
+				public override void SyncNodeWithDefinition (NodeModel model)
 				{
-					if (IsInSyncWithNode(model)) 
-						return;
+						if (IsInSyncWithNode (model)) 
+								return;
 					
-					SyncNodeWithDefinition(model);
+						SyncNodeWithDefinition (model);
 					
-					model.OnNodeModified();
+						model.OnNodeModified ();
 				}
 				//do we need this?
-				public override void SerializeCore(XmlElement nodeElement, SaveContext saveContext)
+				public override void SerializeCore (XmlElement nodeElement, SaveContext saveContext)
 				{
-					//Debug.WriteLine(pd.Object.GetType().ToString());
-					XmlElement outEl = nodeElement.OwnerDocument.CreateElement("ID");
+						//Debug.WriteLine(pd.Object.GetType().ToString());
+						XmlElement outEl = nodeElement.OwnerDocument.CreateElement ("ID");
 					
-					outEl.SetAttribute("value", Definition.FunctionId.ToString());
-					nodeElement.AppendChild(outEl);
-					nodeElement.SetAttribute("nickname", NickName);
+						outEl.SetAttribute ("value", Definition.FunctionId.ToString ());
+						nodeElement.AppendChild (outEl);
+						nodeElement.SetAttribute ("nickname", NickName);
 				}
 				
 				/// <summary>
@@ -142,63 +145,61 @@ namespace Nodeplay.Nodes
 				///   It may be out of sync if .dyf file is opened and updated and then
 				///   .dyn file is opened. 
 				/// </summary>
-				public bool IsInSyncWithNode(NodeModel model)
+				public bool IsInSyncWithNode (NodeModel model)
 				{
-					if (funcdef == null)
-						return true;
+						if (funcdef == null)
+								return true;
 					
-					if (funcdef.Parameters != null)
-					{
-						var defParamNames = funcdef.input.Select(p => p.Name);
-						var paramNames = model.Inputs.Select(p => p.NickName);
-						if (!defParamNames.SequenceEqual(paramNames))
-							return false;
+						if (funcdef.Parameters != null) {
+								var defParamNames = funcdef.input.Select (p => p.Name);
+								var paramNames = model.Inputs.Select (p => p.NickName);
+								if (!defParamNames.SequenceEqual (paramNames))
+										return false;
 						
-						var defParamTypes = Definition.Parameters.Select(p => p.Type.ToShortString());
-						var paramTypes = model.InPortData.Select(p => p.ToolTipString);
-						if (!defParamTypes.SequenceEqual(paramTypes))
-							return false;
-					}
+								var defParamTypes = Definition.Parameters.Select (p => p.Type.ToShortString ());
+								var paramTypes = model.InPortData.Select (p => p.ToolTipString);
+								if (!defParamTypes.SequenceEqual (paramTypes))
+										return false;
+						}
 					
-					if (Definition.ReturnKeys != null)
-					{
-						var returnKeys = model.OutPortData.Select(p => p.NickName);
-						if (!Definition.ReturnKeys.SequenceEqual(returnKeys))
-							return false;
-					}
+						if (Definition.ReturnKeys != null) {
+								var returnKeys = model.OutPortData.Select (p => p.NickName);
+								if (!Definition.ReturnKeys.SequenceEqual (returnKeys))
+										return false;
+						}
 					
-					return true;
+						return true;
 				}
 		#endregion	
 
 		#region Serialization/Deserialization methods
 		
-		public override void Save (XmlDocument doc, XmlElement element)
-		{
-			base.Save (doc, element); //Base implementation must be called
+				public override void Save (XmlDocument doc, XmlElement element)
+				{
+						base.Save (doc, element); //Base implementation must be called
 			
-			Controller.SerializeCore (element, context);
+						Controller.SerializeCore (element, context);
 			
-			var xmlDoc = element.OwnerDocument;
+						var xmlDoc = element.OwnerDocument;
 			
-			var outEl = xmlDoc.CreateElement ("Name");
-			outEl.SetAttribute ("value", NickName);
-			element.AppendChild (outEl);
+						var outEl = xmlDoc.CreateElement ("Name");
+						outEl.SetAttribute ("value", NickName);
+						element.AppendChild (outEl);
 			
-			outEl = xmlDoc.CreateElement ("Description");
-			outEl.SetAttribute ("value", Description);
-			element.AppendChild (outEl);
+						outEl = xmlDoc.CreateElement ("Description");
+						outEl.SetAttribute ("value", Description);
+						element.AppendChild (outEl);
 			
-			outEl = xmlDoc.CreateElement ("Inputs");
-			foreach (string input in InPortData.Select(x => x.NickName)) {
-				XmlElement inputEl = xmlDoc.CreateElement ("Input");
-				inputEl.SetAttribute ("value", input);
-				outEl.AppendChild (inputEl);
-			}
-			element.AppendChild (outEl);
+						outEl = xmlDoc.CreateElement ("Inputs");
+						foreach (string input in InPortData.Select(x => x.NickName)) {
+								XmlElement inputEl = xmlDoc.CreateElement ("Input");
+								inputEl.SetAttribute ("value", input);
+								outEl.AppendChild (inputEl);
+						}
+						element.AppendChild (outEl);
 			
-			outEl = xmlDoc.CreateElement ("Outputs");
-			foreach (string output in OutPortData.Select(x => x.NickName)) {
+						outEl = xmlDoc.CreateElement ("Outputs");
+						foreach (string output in OutPortData.Select(x => x.NickName)) {
 								XmlElement outputEl = xmlDoc.CreateElement ("Output");
 								outputEl.SetAttribute ("value", output);
 								outEl.AppendChild (outputEl);
@@ -301,7 +302,6 @@ namespace Nodeplay.Nodes
 						Controller.SyncNodeWithDefinition (this);
 				}
 		}
-		
 		
 		public class Symbol : NodeModel
 		{

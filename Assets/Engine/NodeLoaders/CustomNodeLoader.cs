@@ -1,3 +1,6 @@
+
+//hoping I won't need to use this, instead use the methods on the manager and custmnode graph model
+/*
 using System;
 using System.Linq;
 using System.Xml;
@@ -38,3 +41,4 @@ using System.Xml;
 			return node;
 		}
 	}
+*/

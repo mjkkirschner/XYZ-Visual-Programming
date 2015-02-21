@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using Nodeplay.Nodes;
+using System.Collections;
 
 //originally forked from:https://github.com/DynamoDS/Dynamo/blob/master/src/DynamoCore/Core/CustomNodeDefinition.cs
 
@@ -210,7 +211,7 @@ namespace Nodeplay.Engine
 		
 		public IEnumerable<CustomNodeFunctionDescription> DirectDependencies { get; private set; }
 		
-		private IEnumerable<CustomNodeFunctionDescription> FindAllDependencies(ISet<CustomNodeDefinition> dependencySet)
+		private IEnumerable<CustomNodeFunctionDescription> FindAllDependencies(HashSet<CustomNodeFunctionDescription> dependencySet)
 		{
 			var query = DirectDependencies.Where(def => !dependencySet.Contains(def));
 			
