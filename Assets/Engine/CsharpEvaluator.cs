@@ -39,8 +39,7 @@ namespace Nodeplay.Engine
 		// this evaluation which runs on the nodemodel must make sure to push intermediate values of output back
 		// into the out dict that we supply as an out parameter.
 		// when this function returns it must return the final outputs in a dictionary
-		//TODO think about how to handle the dynamo model of c# functions, this would be much easier if each node only had 1 input trigger
-		 // and 1 output trigger
+
 		/// </summary>
 		/// <param name="variableNames"></param>
 		/// <param name="variableValues"></param>
@@ -68,7 +67,7 @@ namespace Nodeplay.Engine
 				}
 				else
 				{
-					outdict[outname] = "No variable named" + outname + "was defined in the python code";
+					outdict[outname] = "No variable named" + outname + "was defined in the c# code";
 				}
 			}
 			return outdict;

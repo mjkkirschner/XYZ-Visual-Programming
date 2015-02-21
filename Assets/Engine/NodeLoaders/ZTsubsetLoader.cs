@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Nodes;
@@ -14,11 +14,11 @@ using Nodeplay.Engine;
 /// </summary>
 public class ZTsubsetLoader : NodeModelLoader
 {
-	public Dictionary<string, FunctionDescription> functions { get; private set; }
+	public Dictionary<string, ZeroTouchFunctionDescription> functions { get; private set; }
 	public ZTsubsetLoader()
 		: base()
 	{
-		functions = new Dictionary<string, FunctionDescription>();
+		functions = new Dictionary<string, ZeroTouchFunctionDescription>();
 
 	}
 

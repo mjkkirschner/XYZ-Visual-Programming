@@ -63,7 +63,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	}
 
-	private GraphModel(String name, IEnumerable<NodeModel> nodes,
+	protected GraphModel(String name, IEnumerable<NodeModel> nodes,
 						 IEnumerable<ConnectorModel> connectors, float x, float y, float z, AppModel appmodel)
 	{
 
@@ -154,6 +154,15 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	}
 
+	/// <summary>
+	/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	/// </summary>
+	public virtual void Dispose()
+	{
+		foreach (var node in Nodes)
+			DeleteNode(node.gameObject);
+	}
+
 	public event PropertyChangedEventHandler PropertyChanged;
 
 	protected virtual void NotifyPropertyChanged(String info)
@@ -197,13 +206,13 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	}
 
-	public void SaveGraphModel(string targetpath)
+	public virtual bool SaveGraphModel(string targetpath)
 	{
 		if (targetpath != null)
 		{
-			serializeGraph(targetpath);
+			return serializeGraph(targetpath);
 		}
-
+		return false;
 	}
 
 	public void LoadGraphModel(string xmlpath)
@@ -531,7 +540,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		return true;
 	}
 	//slightly modified from Dynamo.74 src
-	protected bool PopulateXmlDocument(XmlDocument xmlDoc)
+	protected virtual bool PopulateXmlDocument(XmlDocument xmlDoc)
 	{
 		try
 		{
@@ -659,7 +668,10 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		var newnode = InstantiateNode<NumberRange>(creationPoint);
 
 	}
-
+	public virtual void OnNodesModified()
+	{
+	
+	}
 
 
 }

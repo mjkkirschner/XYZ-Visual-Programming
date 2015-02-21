@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Interfaces;
@@ -10,7 +10,7 @@ namespace Nodeplay.Nodes
 {
 	public class ZTwrapperNode : DelegateNodeModel
 	{
-		protected FunctionDescription funcdef;
+		protected ZeroTouchFunctionDescription funcdef;
 		//TODO might just be a string...
 		protected override void Start()
 		{

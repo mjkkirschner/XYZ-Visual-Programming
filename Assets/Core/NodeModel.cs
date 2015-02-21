@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using Nodeplay.UI;
 using System.Xml;
 using UnityEngine.EventSystems;
+using Nodeplay.Nodes;
 
 public class NodeModel : BaseModel
 {
@@ -223,6 +224,26 @@ public class NodeModel : BaseModel
     {
 		Debug.Log("I " + this.GetType().Name+  " just got a port DISconnected event on " + (sender as PortModel).NickName);
     }
+
+
+	/// <summary>
+	/// If node is connected to some other node(other than Output) then it is not a 'top' node
+	/// </summary>
+	public bool IsTopMostDataNode
+	{
+		get
+		{
+			if (Outputs.Count < 1)
+				return false;
+			
+			foreach (var port in Outputs.Where(port => port.connectors.Count != 0))
+			{
+				return port.connectors.Any(connector => connector.PEnd.Owner is Output);
+			}
+			
+			return true;
+		}
+	}
 
     public override GameObject BuildSceneElements()
     {

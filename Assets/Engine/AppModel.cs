@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Nodeplay.Nodes;
@@ -122,7 +122,7 @@ public class AppModel : MonoBehaviour
 		{
 			WorkModels = new List<GraphModel>();
 			LoadedNodeModels = new List<Type>();
-			LoadedFunctions = new Dictionary<string, FunctionDescription>();
+			LoadedFunctions = new Dictionary<string, ZeroTouchFunctionDescription>();
 			//create a nodeModelloader for this instance of appmodel
 			var nodeloaderinst = new NodeModelLoader();
 			var ZTnodeloaderinst = new ZTsubsetLoader();
