@@ -65,7 +65,7 @@ namespace Nodeplay.Core
 		public CustomNodeGraphModel(
 			string name, string category, string description, IEnumerable<NodeModel> nodes, IEnumerable<ConnectorModel> connectors, 
 			float x, float y, float z, Guid customNodeId,AppModel appmodel, string fileName="") 
-			: base(name,nodes, x, y,z,appmodel)
+			: base(name,nodes,connectors, x, y,z,appmodel)
 		{
 			CustomNodeId = customNodeId;
 			HasUnsavedChanges = false;
@@ -98,7 +98,7 @@ namespace Nodeplay.Core
 			{
 				return Nodes
 					.OfType<CustomNodeWrapper>()
-						.Select(node => node.funcdef)
+						.Select(node => node.Funcdef)
 						.Where(def => def.FunctionId != CustomNodeId)
 						.Distinct();
 			}
@@ -197,7 +197,7 @@ namespace Nodeplay.Core
 			if (handler != null) handler(oldId);
 		}
 		
-		public override bool SaveGraphModel(string newPath)
+		protected override bool SaveGraphModel(string newPath)
 		{
 			var originalPath = FileName;
 			//this is going to use the base graphmodel save, //which is going to to 

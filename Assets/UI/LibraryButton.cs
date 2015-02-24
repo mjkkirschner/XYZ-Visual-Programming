@@ -23,6 +23,11 @@ public class LibraryButton : UIBehaviour, IPointerClickHandler
 		NameLabel = this.GetComponentInChildren<Text>();
 
 	}
+	public virtual void initializeButtonFromType(Type type){
+		this.NameLabel.text = type.FullName;
+		Debug.Log("name is" + type.FullName);
+		this.LoadedType = type;
+	}
 
 	#region IPointerClickHandler implementation
 
@@ -30,7 +35,7 @@ public class LibraryButton : UIBehaviour, IPointerClickHandler
 	/// <summary>
 	/// on click raise an event that a button in the library has been clicked and send position, and type of node
 	/// the current graphmodel will always be subscribed to events from all library buttons... alternatively
-	/// the library buttons send an event to the library, and workspace is subscribes to a single event from the
+	/// the library buttons send an event to the library, and workspace subscribes to a single event from the
 	/// library 
 	/// </summary>
 	/// <param name="eventData">Event data.</param>

@@ -19,7 +19,7 @@ namespace Nodeplay.Engine
 				float cx = 0;
 				float cy = 0;
 				float cz = 0;
-				float zoom = 1.0;
+				float zoom = 1.0f;
 				string id = "";
 				string category = "";
 				string description = "";
@@ -39,11 +39,11 @@ namespace Nodeplay.Engine
 					foreach (XmlAttribute att in node.Attributes)
 					{
 						if (att.Name.Equals("X"))
-							cx = double.Parse(att.Value, CultureInfo.InvariantCulture);
+							cx = float.Parse(att.Value, CultureInfo.InvariantCulture);
 						else if (att.Name.Equals("Y"))
-							cy = double.Parse(att.Value, CultureInfo.InvariantCulture);
+							cy = float.Parse(att.Value, CultureInfo.InvariantCulture);
 						else if (att.Name.Equals("Z"))
-							cz = double.Parse(att.Value, CultureInfo.InvariantCulture);
+							cz = float.Parse(att.Value, CultureInfo.InvariantCulture);
 						//else if (att.Name.Equals("zoom"))
 						//	zoom = double.Parse(att.Value, CultureInfo.InvariantCulture);
 						else if (att.Name.Equals("Name"))
@@ -83,8 +83,7 @@ namespace Nodeplay.Engine
 			}
 			catch (Exception ex)
 			{
-				logger.Log(Properties.Resources.OpenWorkbenchError);
-				logger.Log(ex);
+
 				Debug.WriteLine(ex.Message + ":" + ex.StackTrace);
 				
 				//TODO(Steve): Need a better way to handle this kind of thing. -- MAGN-5712

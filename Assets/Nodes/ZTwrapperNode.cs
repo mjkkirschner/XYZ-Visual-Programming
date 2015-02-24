@@ -10,7 +10,7 @@ namespace Nodeplay.Nodes
 {
 	public class ZTwrapperNode : DelegateNodeModel
 	{
-		protected ZeroTouchFunctionDescription funcdef;
+		protected FunctionDescription funcdef;
 		//TODO might just be a string...
 		protected override void Start()
 		{

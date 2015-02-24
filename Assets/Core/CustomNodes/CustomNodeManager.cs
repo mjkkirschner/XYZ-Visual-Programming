@@ -36,11 +36,11 @@ namespace Nodeplay.Core
 
 		private readonly OrderedSet<Guid> loadOrder = new OrderedSet<Guid>();
 		
-		private readonly Dictionary<Guid, CustomNodeFunctionDescription> loadedCustomNodes =
-			new Dictionary<Guid, CustomNodeDefinition>();
+		public readonly Dictionary<Guid, CustomNodeFunctionDescription> loadedCustomNodes =
+			new Dictionary<Guid, CustomNodeFunctionDescription>();
 		
 		private readonly Dictionary<Guid, CustomNodeGraphModel> loadedWorkspaceModels =
-			new Dictionary<Guid, CustomNodeWorkspaceModel>();
+			new Dictionary<Guid, CustomNodeGraphModel>();
 		
 		//private readonly NodeFactory nodeFactory;
 		//private readonly MigrationManager migrationManager;
@@ -109,24 +109,25 @@ namespace Nodeplay.Core
 			ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule(info.Category);
 			TypeBuilder typebuilder = modulebuilder.DefineType(typename + "Node");
 			typebuilder.SetParent(typeof(CustomNodeWrapper));
-			var funcfield = typebuilder.def("funcdef");
-			var descfield = typebuilder.GetField("Description");
-			var catfield = typebuilder.GetField("Category");
-
-			funcfield.SetValue(
-
 			Type customnode = typebuilder.CreateType();
-
+			//set the static field functionid guid on the type, we'll use this at start of the type to lookup the correct function
+			//definition
+			var field = customnode.GetField("functiondefinitionID");
+			field.SetValue(null, defintion.FunctionId);
+			return customnode;
 
 		}
 
 
-		//TODO not sure if this belongs here or should be moved to graphmodel...
-		//***need to modify this code to generate a new wrapper type inheriting from customnode
-		//we dont want to create customnodes
+		//this method is going to be called whenever we are actually trying to add a custom node
+		//to a graph, it sets the node instance to listen for updates on definitons etc....
+		//will need to see how this plays with my CustomNodeGraph Specific nodes, it might make sense, 
+		//to kill this method and most other registartion work in this class....
+
+		//for now I'll keep it and if when loading a graph we find any customnodes, I'll point this here
 
 		/// <summary>
-		///     Creates a new Custom Node Instance.
+		///     Creates a new Custom Node Type Instance.
 		/// </summary>
 		/// <param name="id">Identifier referring to a custom node definition.</param>
 		/// <param name="nickname">
@@ -137,48 +138,59 @@ namespace Nodeplay.Core
 		///     Flag specifying whether or not this should operate in "test mode".
 		/// </param>
 		public CustomNodeWrapper CreateCustomNodeInstance(
-			Guid id, string nickname = null, bool isTestMode = false)
+			Guid functionid,Guid nodeid,Vector3 position,GraphModel currentgraph,XmlNode elementnode = null, string nickname = null, bool isTestMode = false)
 		{
 			CustomNodeGraphModel workspace;
 			CustomNodeFunctionDescription def;
 			CustomNodeInfo info;
 			// Try to get the definition, initializing the custom node if necessary
-			if (TryGetFunctionDefinition(id, isTestMode, out def))
+			if (TryGetFunctionDefinition(functionid, isTestMode, out def))
 			{
 				// Got the definition, proceed as planned.
-				info = NodeInfos[id];
+				info = NodeInfos[functionid];
 			}
 			else
 			{
 				// Couldn't get the workspace with the given ID, try a nickname lookup instead.
 				if (nickname != null && TryGetNodeInfo(nickname, out info))
-					return CreateCustomNodeInstance(info.FunctionId, nickname, isTestMode);
+					return CreateCustomNodeInstance(info.FunctionId,nodeid,position, currentgraph, elementnode, nickname, isTestMode);
 				
 				// Couldn't find the workspace at all, prepare for a late initialization.
 
-				Debug.LogException("UnableToCreateCustomNodeID" + id.ToString() );
+				Debug.LogException(new Exception("UnableToCreateCustomNodeID" + functionid.ToString()) );
 					
-				info = new CustomNodeInfo(id, nickname ?? "", "", "", "");
+				info = new CustomNodeInfo(functionid, nickname ?? "", "", "", "");
 			}
 			
 			if (def == null)
 			{
-				def = CustomNodeFunctionDescription.MakeProxy(id, info.Name);
+				def = CustomNodeFunctionDescription.MakeProxy(functionid, info.Name);
 			}
 
-			//TODO this is not how we creates nodes...we need to do something else....
-			throw new Exception(NotImplementedException);
-			//TODO I think this is where we can emit our type, then try to set the function def and other infos
-			//possibly before the type is even initialzed/instantiated, alternatively, we just set those properties
-			//after initialization
-			
-				//however we get the type, we then we pass the type to intstantiate node method on the current graph model
+			//var node = new CustomNodeWrapper(def, info.Name, info.Description, info.Category);
 
-			var node = new CustomNodeWrapper(def, info.Name, info.Description, info.Category);
-			if (loadedWorkspaceModels.TryGetValue(id, out workspace))
+			//we have 2 options, either we also store our customnode emited type, which is basically just
+			//a wrapper around a specific definition, and store that at load, OR we just emit it here
+			//a pass it to the initialization function, this lets us simplify loading of custom nodes,
+			//might be able to use regular methods on customnode manager
+			var nodetype = createCustomNodeType(def,info);
+
+			MethodInfo method = currentgraph.GetType().GetMethod("InstantiateNode");
+			MethodInfo generic = method.MakeGenericMethod(nodetype);
+			CustomNodeWrapper node = null;
+			//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
+			//this is a fully qualified type extracted from the xml file
+			node = (generic.Invoke(currentgraph, new object[]{position,nodeid}) as GameObject).GetComponent<CustomNodeWrapper>();
+			
+			if (node != null && elementnode != null)
+			{
+				node.Load(elementnode);
+			}
+
+			if (loadedWorkspaceModels.TryGetValue(functionid, out workspace))
 				RegisterCustomNodeInstanceForUpdates(node, workspace);
 			else
-				RegisterCustomNodeInstanceForLateInitialization(node, id, nickname, isTestMode);
+				RegisterCustomNodeInstanceForLateInitialization(node, functionid, nickname, isTestMode);
 			
 			return node;
 		}
@@ -338,10 +350,11 @@ namespace Nodeplay.Core
 		private IEnumerable<CustomNodeInfo> ScanNodeHeadersInDirectory(string dir, bool isTestMode)
 		{
 			if (!Directory.Exists(dir))
-				break;
+				return null;
 			var results = new List<CustomNodeInfo>();
 			foreach (var file in Directory.GetFiles (dir, "*.ccgn"))
 			{
+				Debug.Log("trying to load node info from" + file);
 				CustomNodeInfo info;
 				if (TryGetInfoFromPath(file, isTestMode, out info))
 					 results.Add(info);
@@ -498,13 +511,13 @@ namespace Nodeplay.Core
 		/// <param name="workspace"></param>
 		/// <returns></returns>
 		public bool OpenCustomNodeWorkspace(
-			XmlDocument xmlDoc, GraphHeader workspaceInfo, bool isTestMode, out GraphModel workspace)
+			string xmlPath, GraphHeader workspaceInfo, bool isTestMode, out GraphModel workspace)
 		{
 			CustomNodeGraphModel customNodeWorkspace;
 			if (InitializeCustomNode(
 				new Guid(workspaceInfo.ID),
 				workspaceInfo,
-				xmlDoc,
+				xmlPath,
 				out customNodeWorkspace))
 			{
 				workspace = customNodeWorkspace;
@@ -637,7 +650,7 @@ namespace Nodeplay.Core
 		public CustomNodeGraphModel CreateCustomNodeGraphModel(string name, string category, string description,AppModel appmodel, Guid? functionId = null)
 		{
 			var newId = functionId ?? Guid.NewGuid();
-			var workspace = new CustomNodeGraphModel(name, category, description, 0,0,0, newId,appmodel, string.Empty);
+			var workspace = new CustomNodeGraphModel(name, category, description, newId,appmodel, string.Empty);
 			RegisterCustomNodeWorkspace(workspace);
 			return workspace;
 		}

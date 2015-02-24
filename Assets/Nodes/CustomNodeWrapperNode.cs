@@ -18,14 +18,15 @@ namespace Nodeplay.Nodes
 				public List<Tuple<string,object>> Inputdata{ get; set; }
 
 				public List<Tuple<string,Action>> Executiondata{ get; set; }
-		//these properties are made static so they can be set on the type before instantiation, 
-		//TODO eveluate if this is really what I want to do to solve the issue of assigning a function definition to custom nodes...
-		//could simply do what zt node wrappers do and lookup the functiondefinition from the customnode manager by typename....
-				public static string Description { get; set; }
+				//this static property is injected by reflection.emit when this type is built on loading a custom node
+				public static Guid functiondefinitionID;	
+				//TODO
+				//it's possible we'll want to inject these as well so that they can be grabbed from the type for display in the library?
+				public string Description { get; set; }
 
-				public static string Category { get; set; }
+				public string Category { get; set; }
 
-				public static CustomNodeFunctionDescription funcdef;
+				public CustomNodeFunctionDescription Funcdef;
 
 				public event Action Disposed;
 
@@ -34,45 +35,41 @@ namespace Nodeplay.Nodes
 						base.Start ();
 			
 						//on start go grab the correct information from the appmodel's customNodeManager dict of loadead custom nodes
-						// use the name of this type as the key into the dictionary, or alteratively, the GUID of the function, which
-						// we could set on load, this should be a guid of the definition not of the node model, but we do not know the
-						// guid of the function definition at this point...will have to rectify this later, when we create the type,
-						// we may set this function guid explicitly... possibly even assigning the function description instead of getting it.
-						//funcdef = GameObject.FindObjectOfType<AppModel> ().CollapsedCustomGraphNodeManager.LoadedDefinitions [this.GetType ().FullName];
 						
+						CustomNodeFunctionDescription _funcdef;
+			GameObject.FindObjectOfType<AppModel> ().CollapsedCustomGraphNodeManager.TryGetFunctionDefinition(functiondefinitionID,false,out _funcdef);
+			if(_funcdef != null){
 
-						ValidateDefinition (funcdef);
+				Funcdef = _funcdef;		
+			}
+			ValidateDefinition (Funcdef);
 
 			
 						//on start add a correctly named input port for each 
 						//parameter in methodinfo that we've loaded
 			
-						foreach (var param in funcdef.Parameters) {
-								AddInputPort (param.Name);
+						foreach (var param in Funcdef.Parameters) {
+								AddInputPort (param.Second.First);
 						}
 						//add an output port for each outputnode in the customnode graph
-						foreach (var dataOutput in funcdef.OutputNodes) {
-								AddOutPutPort (dataOutput.Name);
+						foreach (var dataOutput in Funcdef.OutputNodes) {
+								AddOutPutPort (dataOutput.Symbol);
 						}
 
 						//add an execution trigger for each inputexec node in the customnode graph
-						if (funcdef.InputExecutionNodes.count > 1) {
+						if (Funcdef.InputExecutionNodes.Count > 1) {
 								Debug.LogException (new ArgumentException ("customnodes cannot yet have more than 1 input trigger"));
 				          
 						}
 
-						foreach (var inTrigger in funcdef.InputExecutionNodes) {
-								AddExecutionInputPort (inTrigger.Name);
+						foreach (var inTrigger in Funcdef.InputExecutionNodes) {
+								AddExecutionInputPort (inTrigger.Symbol);
 						}
 						//add an execution trigger out for each outputexec node in the customnode graph
-						foreach (var outTrigger in funcdef.OutputExecutionNodes) {
-								AddExecutionInputPort (outTrigger.Name);
+						foreach (var outTrigger in Funcdef.OutputExecutionNodes) {
+								AddExecutionInputPort (outTrigger.Symbol);
 						}
-			
 
-
-
-						CodePointer = CustomNodeEval;
 						//we do not need an evaluator, there is nothing to evaluate...
 						//instead we'll directly compose our scope for evaluation on this node
 						//gathering all inputs and storing them on the nodemodel (customnode)
@@ -84,6 +81,11 @@ namespace Nodeplay.Nodes
 
 				}
 
+		void OnNodeModified ()
+		{
+			throw new NotImplementedException ();
+		}
+
 				protected virtual void OnDestroy ()
 				{
 						Disposed ();
@@ -92,16 +94,13 @@ namespace Nodeplay.Nodes
 				internal override void Evaluate ()
 				{
 						OnEvaluation ();
-						//build packages for all data 
-						inputdata = gatherInputPortData ();
-						if (CodePointer == null) {
-								Debug.Break ();
-						}
+						//build packages for all data , and store them on this wrapper
+						Inputdata = gatherInputPortData ();
 						//grab the pointers for downstream execution after the custom node is done
-						executiondata = gatherExecutionData ();
+						Executiondata = gatherExecutionData ();
 						//here we use the codepointer instead of the code string
 						//and we'll just call it directly...instead of using an evaluator
-						CustomNodeEval ();
+						CustomNodeEval (this);
 
 						//instead of returning something from the evaluation of this node
 						//we rely on the output nodes inside the customnode graph to write their output vals
@@ -111,34 +110,30 @@ namespace Nodeplay.Nodes
 		
 				}
 
-				protected override void CustomNodeEval ()
+		protected virtual void CustomNodeEval (CustomNodeWrapper callingInstance)
 				{
+
+						Debug.Log ("the calling instance is"+ callingInstance.name);
 						//for now only allow 1 execution input to simplify things
-						Debug.Log ("about to call method:" + funcdef.InputExecutionNodes [0].Name + "on original type:" + this.GetType ().FullName); 
+						Debug.Log ("about to call custom node graph:" + Funcdef.InputExecutionNodes [0].Symbol); 
 						//now call the method on the "start" execution trigger
-						funcdef.InputExecutionNodes [0].DynamicInvoke ();
+				//TODO make this a public method on the inputexecutionnode
+				Funcdef.InputExecutionNodes[0].CustomNodeWrapperCaller = callingInstance;
+				Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
+
 				}				
 
 		#region customnode controller merged some methods into the wrapper
-				public override void SyncNodeWithDefinition (NodeModel model)
+				public virtual void SyncNodeWithDefinition (NodeModel model)
 				{
 						if (IsInSyncWithNode (model)) 
 								return;
 					
 						SyncNodeWithDefinition (model);
 					
-						model.OnNodeModified ();
+			this.OnNodeModified ();
 				}
-				//do we need this?
-				public override void SerializeCore (XmlElement nodeElement, SaveContext saveContext)
-				{
-						//Debug.WriteLine(pd.Object.GetType().ToString());
-						XmlElement outEl = nodeElement.OwnerDocument.CreateElement ("ID");
-					
-						outEl.SetAttribute ("value", Definition.FunctionId.ToString ());
-						nodeElement.AppendChild (outEl);
-						nodeElement.SetAttribute ("nickname", NickName);
-				}
+				
 				
 				/// <summary>
 				///   Return if the custom node instance is in sync with its definition.
@@ -147,24 +142,25 @@ namespace Nodeplay.Nodes
 				/// </summary>
 				public bool IsInSyncWithNode (NodeModel model)
 				{
-						if (funcdef == null)
+						if (Funcdef == null)
 								return true;
 					
-						if (funcdef.Parameters != null) {
-								var defParamNames = funcdef.input.Select (p => p.Name);
-								var paramNames = model.Inputs.Select (p => p.NickName);
+						if (Funcdef.Parameters != null) {
+								var defParamNames = Funcdef.Parameters.Select (p => p.Second.First);
+								var paramNames = this.Inputs.Select (p => p.NickName);
 								if (!defParamNames.SequenceEqual (paramNames))
 										return false;
-						
-								var defParamTypes = Definition.Parameters.Select (p => p.Type.ToShortString ());
-								var paramTypes = model.InPortData.Select (p => p.ToolTipString);
-								if (!defParamTypes.SequenceEqual (paramTypes))
-										return false;
+							
+							//TODO eventually add a check if the type has changed.
+								//var defParamTypes = Funcdef.Parameters.Select (p => p.Second.ParameterType.ToString());
+								//var paramTypes = this.Inputs.Select (p => p.sec);
+								//if (!defParamTypes.SequenceEqual (paramTypes))
+								//		return false;
 						}
 					
-						if (Definition.ReturnKeys != null) {
-								var returnKeys = model.OutPortData.Select (p => p.NickName);
-								if (!Definition.ReturnKeys.SequenceEqual (returnKeys))
+						if (Funcdef.ReturnKeys != null) {
+								var returnKeys = this.Outputs.Select (p => p.NickName);
+								if (!Funcdef.ReturnKeys.SequenceEqual (returnKeys))
 										return false;
 						}
 					
@@ -178,12 +174,18 @@ namespace Nodeplay.Nodes
 				{
 						base.Save (doc, element); //Base implementation must be called
 			
-						Controller.SerializeCore (element, context);
+						
+						
+			XmlElement outEl = element.OwnerDocument.CreateElement ("ID");
 			
+						outEl.SetAttribute ("value", Funcdef.FunctionId.ToString ());
+						element.AppendChild (outEl);
+						element.SetAttribute ("nickname", name);
+
 						var xmlDoc = element.OwnerDocument;
 			
-						var outEl = xmlDoc.CreateElement ("Name");
-						outEl.SetAttribute ("value", NickName);
+						outEl = xmlDoc.CreateElement ("Name");
+						outEl.SetAttribute ("value", name);
 						element.AppendChild (outEl);
 			
 						outEl = xmlDoc.CreateElement ("Description");
@@ -191,7 +193,7 @@ namespace Nodeplay.Nodes
 						element.AppendChild (outEl);
 			
 						outEl = xmlDoc.CreateElement ("Inputs");
-						foreach (string input in InPortData.Select(x => x.NickName)) {
+						foreach (string input in Inputs.Select(x => x.NickName)) {
 								XmlElement inputEl = xmlDoc.CreateElement ("Input");
 								inputEl.SetAttribute ("value", input);
 								outEl.AppendChild (inputEl);
@@ -199,7 +201,7 @@ namespace Nodeplay.Nodes
 						element.AppendChild (outEl);
 			
 						outEl = xmlDoc.CreateElement ("Outputs");
-						foreach (string output in OutPortData.Select(x => x.NickName)) {
+						foreach (string output in Outputs.Select(x => x.NickName)) {
 								XmlElement outputEl = xmlDoc.CreateElement ("Output");
 								outputEl.SetAttribute ("value", output);
 								outEl.AppendChild (outputEl);
@@ -207,79 +209,47 @@ namespace Nodeplay.Nodes
 						element.AppendChild (outEl);
 				}
 			
-				protected override void Load (XmlElement nodeElement, SaveContext context)
+				public override void Load (XmlNode node)
 				{
-						base.DeserializeCore (nodeElement, context); //Base implementation must be called
+						base.Load (node); //Base implementation must be called
 				
-						List<XmlNode> childNodes = nodeElement.ChildNodes.Cast<XmlNode> ().ToList ();
+						List<XmlNode> childNodes = node.ChildNodes.Cast<XmlNode> ().ToList ();
 				
 						XmlNode nameNode = childNodes.LastOrDefault (subNode => subNode.Name.Equals ("Name"));
 						if (nameNode != null && nameNode.Attributes != null)
-								NickName = nameNode.Attributes ["value"].Value;
+								name = nameNode.Attributes ["value"].Value;
 				
 						XmlNode descNode = childNodes.LastOrDefault (subNode => subNode.Name.Equals ("Description"));
 						if (descNode != null && descNode.Attributes != null)
 								Description = descNode.Attributes ["value"].Value;
 				
-						if (!Controller.IsInSyncWithNode (this)) {
-								Controller.SyncNodeWithDefinition (this);
-								OnNodeModified ();
+			// TODO I'm unsure if this is needed, if we load a node, won't it add it's output and input ports
+			// onstart() when it loads its functiondefinition....
+					/*	if (!IsInSyncWithNode (this)) {
+								SyncNodeWithDefinition (this);
+								//OnNodeModified ();
 						} else {
 								foreach (XmlNode subNode in childNodes) {
 										if (subNode.Name.Equals ("Outputs")) {
 												var data =
 								subNode.ChildNodes.Cast<XmlNode> ()
 									.Select (
-										(outputNode, i) =>
-										new
+										(outputNode) =>
 										{
-										data = new PortData (outputNode.Attributes [0].Value, Properties.Resources.ToolTipOutput + (i + 1)),
-										idx = i
+									AddInputPort(outputNode.Attributes[0].Value);
 									});
-							
-												foreach (var dataAndIdx in data) {
-														if (OutPortData.Count > dataAndIdx.idx)
-																OutPortData [dataAndIdx.idx] = dataAndIdx.data;
-														else
-																OutPortData.Add (dataAndIdx.data);
-												}
 										} else if (subNode.Name.Equals ("Inputs")) {
 												var data =
 								subNode.ChildNodes.Cast<XmlNode> ()
 									.Select (
-										(inputNode, i) =>
-										new
-										{
-										data = new PortData (inputNode.Attributes [0].Value, Properties.Resources.ToolTipInput + (i + 1)),
-										idx = i
+										(inputNode) =>
+									{
+									AddInputPort(inputNode.Attributes [0].Value);
 									});
-							
-												foreach (var dataAndIdx in data) {
-														if (InPortData.Count > dataAndIdx.idx)
-																InPortData [dataAndIdx.idx] = dataAndIdx.data;
-														else
-																InPortData.Add (dataAndIdx.data);
-												}
 										}
-						
-						#region Legacy output support
-						
-						else if (subNode.Name.Equals ("Output")) {
-												var data = new PortData (subNode.Attributes [0].Value, Properties.Resources.ToolTipFunctionOutput);
-							
-												if (OutPortData.Any ())
-														OutPortData [0] = data;
-												else
-														OutPortData.Add (data);
-										}
-						
-										#endregion
-								}
-					
-								RegisterAllPorts ();
 						}
-				}
-			
+				}*/
+		}
 			#endregion
 			
 				private void ValidateDefinition (CustomNodeFunctionDescription def)
@@ -289,259 +259,21 @@ namespace Nodeplay.Nodes
 						}
 				
 						if (def.IsProxy) {
-								this.Error (Properties.Resources.CustomNodeNotLoaded);
-						} else {
-								this.ClearRuntimeError ();
+								Debug.LogException (new ArgumentNullException ("custom node cannot be loaded"));
 						}
+						
 				}
 			
 				public void ResyncWithDefinition (CustomNodeFunctionDescription def)
 				{
 						ValidateDefinition (def);
-						Controller.Definition = def;
-						Controller.SyncNodeWithDefinition (this);
+						Funcdef = def;
+						SyncNodeWithDefinition (this);
 				}
 		}
 		
-		public class Symbol : NodeModel
-		{
-				private string inputSymbol = String.Empty;
-				private string nickName = String.Empty;
-			
-				public Symbol ()
-				{
-						OutPortData.Add (new PortData ("", Properties.Resources.ToolTipSymbol));
-				
-						RegisterAllPorts ();
-				
-						ArgumentLacing = LacingStrategy.Disabled;
-				
-						InputSymbol = String.Empty;
-				}
-			
-				public string InputSymbol {
-						get { return inputSymbol; }
-						set {
-								inputSymbol = value;
-					
-								ClearRuntimeError ();
-								var substrings = inputSymbol.Split (':');
-					
-								nickName = substrings [0].Trim ();
-								var type = TypeSystem.BuildPrimitiveTypeObject (PrimitiveType.kTypeVar);
-								object defaultValue = null;
-					
-								if (substrings.Count () > 2) {
-										this.Warning (Properties.Resources.WarningInvalidInput);
-								} else if (!string.IsNullOrEmpty (nickName) &&
-										(substrings.Count () == 2 || InputSymbol.Contains ("="))) {
-										// three cases:
-										//    x = default_value
-										//    x : type
-										//    x : type = default_value
-										IdentifierNode identifierNode;
-										AssociativeNode defaultValueNode;
-						
-										if (!TryParseInputSymbol (inputSymbol, out identifierNode, out defaultValueNode)) {
-												this.Warning (Properties.Resources.WarningInvalidInput);
-										} else {
-												if (identifierNode.datatype.UID == Constants.kInvalidIndex) {
-														string warningMessage = String.Format (
-									Properties.Resources.WarningCannotFindType, 
-									identifierNode.datatype.Name);
-														this.Warning (warningMessage);
-												} else {
-														nickName = identifierNode.Value;
-														type = identifierNode.datatype;
-												}
-							
-												if (defaultValueNode != null) {
-														TypeSwitch.Do (
-									defaultValueNode,
-									TypeSwitch.Case<IntNode> (n => defaultValue = n.Value),
-									TypeSwitch.Case<DoubleNode> (n => defaultValue = n.Value),
-									TypeSwitch.Case<BooleanNode> (n => defaultValue = n.Value),
-									TypeSwitch.Case<StringNode> (n => defaultValue = n.value),
-									TypeSwitch.Default (() => defaultValue = null));
-												}
-										}
-								}
-					
-								Parameter = new TypedParameter (nickName, type, defaultValue);
-					
-								OnNodeModified ();
-								RaisePropertyChanged ("InputSymbol");
-						}
-				}
-			
-				public Tuple<object,ParameterInfo> Parameter {
-						get;
-						private set;
-				}
-			
-				public override IdentifierNode GetAstIdentifierForOutputIndex (int outputIndex)
-				{
-						return
-					AstFactory.BuildIdentifier (
-						string.IsNullOrEmpty (nickName) ? AstIdentifierBase : nickName + "__" + AstIdentifierBase);
-				}
-			
-				protected override void SerializeCore (XmlElement nodeElement, SaveContext context)
-				{
-						base.SerializeCore (nodeElement, context);
-						//Debug.WriteLine(pd.Object.GetType().ToString());
-						XmlElement outEl = nodeElement.OwnerDocument.CreateElement ("Symbol");
-						outEl.SetAttribute ("value", InputSymbol);
-						nodeElement.AppendChild (outEl);
-				}
-			
-				protected override void DeserializeCore (XmlElement nodeElement, SaveContext context)
-				{
-						base.DeserializeCore (nodeElement, context);
-						foreach (var subNode in
-				         nodeElement.ChildNodes.Cast<XmlNode>()
-				         .Where(subNode => subNode.Name == "Symbol")) {
-								InputSymbol = subNode.Attributes [0].Value;
-						}
-				
-						ArgumentLacing = LacingStrategy.Disabled;
-				}
-			
-				private bool TryParseInputSymbol (string inputSymbol, 
-			                                 out IdentifierNode identifier, 
-			                                 out AssociativeNode defaultValue)
-				{
-						identifier = null;
-						defaultValue = null;
-				
-						// workaround: there is an issue in parsing "x:int" format unless 
-						// we create the other parser specially for it. We change it to 
-						// "x:int = dummy;" for parsing. 
-						var parseString = InputSymbol;
-				
-						// if it has default value, then append ';'
-						if (InputSymbol.Contains ("=")) {
-								parseString += ";";
-						} else {
-								String dummyExpression = "{0}=dummy;";
-								parseString = string.Format (dummyExpression, parseString);
-						}
-				
-						ParseParam parseParam = new ParseParam (this.GUID, parseString);
-				
-						if (EngineController.CompilationServices.PreCompileCodeBlock (ref parseParam) &&
-								parseParam.ParsedNodes != null &&
-								parseParam.ParsedNodes.Any ()) {
-								var node = parseParam.ParsedNodes.First () as BinaryExpressionNode;
-								Validity.Assert (node != null);
-					
-								if (node != null) {
-										identifier = node.LeftNode as IdentifierNode;
-										if (inputSymbol.Contains ('='))
-												defaultValue = node.RightNode;
-						
-										return identifier != null;
-								}
-						}
-				
-						return false;
-				}
-			
-				protected override bool UpdateValueCore (UpdateValueParams updateValueParams)
-				{
-						string name = updateValueParams.PropertyName;
-						string value = updateValueParams.PropertyValue;
-				
-						if (name == "InputSymbol") {
-								InputSymbol = value;
-								return true; // UpdateValueCore handled.
-						}
-				
-						return base.UpdateValueCore (updateValueParams);
-				}
-		}
 		
-		[NodeName("Output")]
-		[NodeCategory(BuiltinNodeCategories.CORE_INPUT)]
-		[NodeDescription("OutputNodeDescription",typeof(Dynamo.Properties.Resources))]
-		[IsInteractive(false)]
-		[NotSearchableInHomeWorkspace]
-		[IsDesignScriptCompatible]
-		public class Output : NodeModel
-		{
-				private string symbol = "";
-			
-				public Output ()
-				{
-						InPortData.Add (new PortData ("", ""));
-				
-						RegisterAllPorts ();
-				
-						ArgumentLacing = LacingStrategy.Disabled;
-				}
-			
-				public string Symbol {
-						get { return symbol; }
-						set {
-								symbol = value;
-								OnNodeModified ();
-								RaisePropertyChanged ("Symbol");
-						}
-				}
-			
-				public override IdentifierNode GetAstIdentifierForOutputIndex (int outputIndex)
-				{
-						if (outputIndex < 0 || outputIndex > OutPortData.Count)
-								throw new ArgumentOutOfRangeException ("outputIndex", @"Index must correspond to an OutPortData index.");
-				
-						return AstIdentifierForPreview;
-				}
-			
-				internal override IEnumerable<AssociativeNode> BuildAst (List<AssociativeNode> inputAstNodes)
-				{
-						AssociativeNode assignment;
-						if (null == inputAstNodes || inputAstNodes.Count == 0)
-								assignment = AstFactory.BuildAssignment (AstIdentifierForPreview, AstFactory.BuildNullNode ());
-						else
-								assignment = AstFactory.BuildAssignment (AstIdentifierForPreview, inputAstNodes [0]);
-				
-						return new[] { assignment };
-				}
-			
-				protected override void SerializeCore (XmlElement nodeElement, SaveContext context)
-				{
-						base.SerializeCore (nodeElement, context);
-						//Debug.WriteLine(pd.Object.GetType().ToString());
-						XmlElement outEl = nodeElement.OwnerDocument.CreateElement ("Symbol");
-						outEl.SetAttribute ("value", Symbol);
-						nodeElement.AppendChild (outEl);
-				}
-			
-				protected override void DeserializeCore (XmlElement nodeElement, SaveContext context)
-				{
-						base.DeserializeCore (nodeElement, context);
-						foreach (var subNode in 
-				         nodeElement.ChildNodes.Cast<XmlNode>()
-				         .Where(subNode => subNode.Name == "Symbol")) {
-								Symbol = subNode.Attributes [0].Value;
-						}
-				
-						ArgumentLacing = LacingStrategy.Disabled;
-				}
-			
-				protected override bool UpdateValueCore (UpdateValueParams updateValueParams)
-				{
-						string name = updateValueParams.PropertyName;
-						string value = updateValueParams.PropertyValue;
-				
-						if (name == "Symbol") {
-								Symbol = value;
-								return true; // UpdateValueCore handled.
-						}
-				
-						return base.UpdateValueCore (updateValueParams);
-				}
-		}
+		
 
 }
 

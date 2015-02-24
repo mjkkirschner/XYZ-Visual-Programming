@@ -14,11 +14,11 @@ using Nodeplay.Engine;
 /// </summary>
 public class ZTsubsetLoader : NodeModelLoader
 {
-	public Dictionary<string, ZeroTouchFunctionDescription> functions { get; private set; }
+	public Dictionary<string, FunctionDescription> functions { get; private set; }
 	public ZTsubsetLoader()
 		: base()
 	{
-		functions = new Dictionary<string, ZeroTouchFunctionDescription>();
+		functions = new Dictionary<string, FunctionDescription>();
 
 	}
 

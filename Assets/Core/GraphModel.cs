@@ -13,6 +13,7 @@ using Nodeplay.Engine;
 /// initially modified from Dynamo's source version .74
 /// https://github.com/DynamoDS/Dynamo/blob/master/src/DynamoCore/Models/WorkspaceModel.cs
 /// </summary>
+using UnityEditor;
 
 
 public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
@@ -103,13 +104,27 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	private void OnLibraryButtonPress(LibraryButton button,EventArgs e)
 	{
+		//TODO clean this logic up
+		//for now just check the type of library button, and perform the correct instantiation logic
+		//could alternatively store this logic on the button so can just call it from here.... i like that more
+
+		//TODO for both of these methods instantiation points should just be in front of the camera by x units
+
+		if(button.GetType() == typeof(CustomNodeLibraryButton))
+		{
+			var nodeinfo = (button as CustomNodeLibraryButton).Info;
+			_appmodel.CollapsedCustomGraphNodeManager.CreateCustomNodeInstance(nodeinfo.FunctionId,new Guid(),new Vector3(0,0,0),this,null,nodeinfo.Name);
+
+		}
+
+		else{
 		var nodetype = button.LoadedType;
 		MethodInfo method = this.GetType().GetMethod("InstantiateNode");
 		MethodInfo generic = method.MakeGenericMethod(nodetype);
 		//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
 		//this is a fully qualified type extracted from the libraryButton
 		generic.Invoke(this, new object[]{new Vector3(0,0,0),new Guid()});
-		
+		}
 	}
 	
 	/// <summary>
@@ -206,7 +221,17 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	}
 
-	public virtual bool SaveGraphModel(string targetpath)
+	public virtual bool SaveGraph(){
+
+	var path = EditorUtility.SaveFilePanel(
+		"Save Graph As xml File",
+		"",
+		this.Name + ".xml",
+		"xml");
+	
+	return this.SaveGraphModel(path);
+	}
+	protected virtual bool SaveGraphModel(string targetpath)
 	{
 		if (targetpath != null)
 		{
@@ -381,7 +406,6 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 				XmlAttribute xAttrib = elNode.Attributes["x"];
 				XmlAttribute yAttrib = elNode.Attributes["y"];
 				XmlAttribute zAttrib = elNode.Attributes["z"];
-				
 
 				string typeName = typeAttrib.Value;
 
@@ -410,25 +434,42 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 				NodeModel el = null;
 				XmlElement dummyElement = null;
 
+
+				XmlAttribute CustomNodeID = elNode.Attributes["ID"];
+				Guid ID =CustomNodeID == null ? Guid.Empty : new Guid(CustomNodeID.Value);
+				
+				//if the ID was set then we are trying to load a custom node and will
+				//use a special instantiation logic
+			//TODO MAKE SURE THIS IS A VIABLE WAY OF DETERMINING WE ARE TRYING TO LOAD A CUSTOM NODE
+			if (ID != Guid.Empty){
+				try{
+				_appmodel.CollapsedCustomGraphNodeManager.CreateCustomNodeInstance(ID,guid,new Vector3(x,y,z),this,elNode,nickname);
+				}
+				catch(Exception e)
+				{
+					Debug.LogException(new Exception("problem loading... " + typeName));
+				}
+
+				}
+				
+			else
+				// this was a zt or regular nodemodel node and we can just look for its type
+			{
 				try
 				{
-					// The attempt to create node instance may fail due to "type" being
-					// something else other than "NodeModel" derived object type.
-
-					/*typeName = Utils.PreprocessTypeName(typeName);
-					Type type = Utils.ResolveType(this, typeName);
-					if (type != null)
-					{
-						var tld = Utils.GetDataForType(this, type);
-						el = CurrentWorkspace.NodeFactory.CreateNodeInstance(
-							tld, nickname, signature, guid);
-					}
-					*/
+					
 				//TODO need to add some methods for type resolve before attempting to 
 				// instantiate node..
 				//since we save some nodes with only their fullnames not including assembly name, we'll
 				//iterate all loaded assemblies looking for the correct namespace and type...
 				//alternative would be to save ZT wrapped nodes with their assembly qualified name as opposed to fullname
+
+				// if the type derives from a customnodewrapper type we need to 
+				// skip this assembly checking logic since the custom node won't exist in a loaded assembly
+				// and instead use createCustomNode() which will then call a generic initialze node
+				// and also register the node for updates (if the graph model changes for instance)
+
+
 					var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 					Type nodetype = null;
 					foreach (var assembly in loadedAssemblies)
@@ -471,6 +512,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 					//var e = elNode as XmlElement;
 					//dummyElement = MigrationManager.CreateUnresolvedFunctionNode(e);
 					Debug.LogException(new Exception("problem loading... " + typeName));
+					Debug.LogException(e);
 				}
 
 			/*	// If a custom node fails to load its definition, convert it into a dummy node.
@@ -499,7 +541,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 			
 			}
-
+		}
 			Debug.Log("<color=orange>file load:</color>" + " done loading nodes");
 
 		_appmodel.StartCoroutine(loadConnectors(cNodesList,ceNodesList));

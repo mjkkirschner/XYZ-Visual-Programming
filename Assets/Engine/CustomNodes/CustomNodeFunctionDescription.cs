@@ -34,7 +34,7 @@ namespace Nodeplay.Engine
 			
 			var topMost = new List<Tuple<int, NodeModel>>();
 			
-			List<string> outNames;
+			List<string> outNames = new List<string>();
 			
 			// if we found output nodes, add their inputs
 			// these will serve as the function output
@@ -74,7 +74,6 @@ namespace Nodeplay.Engine
 					outNames.Add(rtnAndIndex.rtn.name ?? rtnAndIndex.idx.ToString());
 				}
 			}*/
-			
 			var nameDict = new Dictionary<string, int>();
 			foreach (var name in outNames)
 			{
@@ -109,6 +108,7 @@ namespace Nodeplay.Engine
 
 			//Find function entry point, and then compile
 			var inputNodes = nodeModels.OfType<Symbol>().ToList();
+			var parameters = inputNodes.Select(x=>x.Parameter).ToList();;
 			//will not support storing parameter types on the input nodes yet
 			//TODO bring thiis back, maybe just using reflection and .net types in a dropdown...
 			//TODO complete this feature
@@ -125,11 +125,11 @@ namespace Nodeplay.Engine
 			FunctionId = functionId;
 			Parameters = parameters;
 			ReturnKeys = returnKeys;
-			//DisplayParameters = displayParameters;
-			OutputNodes = topMost.Select(x => x.Second.StoredValueDict.ToList().First());
+			DisplayParameters = parameters.Select(x=>x.Second.First).ToList();
+			OutputNodes = topMost.Select(x => x.Second).Cast<Output>().ToList();
 			DirectDependencies = nodeModels
 				.OfType<CustomNodeWrapper>()
-					.Select(node => node.funcdef)
+					.Select(node => node.Funcdef)
 					.Where(def => def.FunctionId != functionId)
 					.Distinct();
 		}
@@ -179,7 +179,7 @@ namespace Nodeplay.Engine
 		/// <summary>
 		///     Function parameters.
 		/// </summary>
-		public IEnumerable<Tuple<object,ParameterInfo>> Parameters { get; private set; } 
+		public IEnumerable<Tuple<object,Tuple<string,System.Type>>> Parameters { get; private set; } 
 		
 		/// <summary>
 		///     If the function returns a dictionary, this specifies all keys in
@@ -195,7 +195,7 @@ namespace Nodeplay.Engine
 		/// <summary>
 		///     Identifiers associated with the outputs of the custom node.
 		/// </summary>
-		public IEnumerable<NodeModel> OutputNodes { get; private set; }
+		public IEnumerable<Output> OutputNodes { get; private set; }
 		
 		/// <summary>
 		///     User friendly name on UI.
@@ -206,7 +206,7 @@ namespace Nodeplay.Engine
 		
 		public IEnumerable<CustomNodeFunctionDescription> Dependencies
 		{
-			get { return FindAllDependencies(new HashSet<CustomNodeDefinition>()); }
+			get { return FindAllDependencies(new HashSet<CustomNodeFunctionDescription>()); }
 		}
 		
 		public IEnumerable<CustomNodeFunctionDescription> DirectDependencies { get; private set; }

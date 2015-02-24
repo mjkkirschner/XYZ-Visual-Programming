@@ -9,6 +9,8 @@ using UnityEditor;
 using System.ComponentModel;
 using Nodeplay.Engine;
 using Nodeplay.Core;
+using System.IO;
+using System.Xml;
 
 namespace Nodeplay.Engine {
 
@@ -73,26 +75,44 @@ public class AppModel : MonoBehaviour
 	public void SaveGraph(){
 		// call save on the current graphmodel
 		var current = WorkModels.Where(x=>x.Current == true).First();
-
-		var path = EditorUtility.SaveFilePanel(
-					"Save Graph As xml File",
-					"",
-					current.Name + ".xml",
-					"xml");
-
-		current.SaveGraphModel(path);
+			current.SaveGraph();
 	}
 
 	public void LoadGraph(){
-		var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","","xml");
+		var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","","*.xml;*.ccgn");
 		//create a new blank graphmodel
 		//then call load on it with path, which will deserialze an xml file into that model
-		var temp = new GraphModel("tempload",this);
-		temp.LoadGraphModel(path);
-		WorkModels.Add(temp);
+			GraphModel graph;
+
+		GraphModel regulargraph;
+		if (System.IO.Path.GetExtension(path) == "xml")
+			{
+		regulargraph = new GraphModel("tempload",this);
+				regulargraph.LoadGraphModel(path);
+				graph = regulargraph;
+			}
+
+		else{
+				GraphModel customnnodeGraph; 
+				//TODO find better place to create this headear... manager?
+				var xmlDoc = new XmlDocument();
+				xmlDoc.Load(path);
+				
+				GraphHeader header;
+				if (!GraphHeader.FromXmlDocument(xmlDoc, path, false, out header))
+				{
+					Debug.Log("failed to load header from : " + path);
+					return;
+				}
+				CollapsedCustomGraphNodeManager.OpenCustomNodeWorkspace(path,header,false,out customnnodeGraph);
+				graph = customnnodeGraph;
+			}
+
+		
+		WorkModels.Add(graph);
 		var ls = GameObject.Find("LoadScreen");
 		ls.SetActive(false);
-		temp.Current = true;
+		graph.Current = true;
 
 	}
 
@@ -121,16 +141,38 @@ public class AppModel : MonoBehaviour
 
 	}
 
+		public void NewCollapsedNode(){
+			
+			var model = CollapsedCustomGraphNodeManager.CreateCustomNodeGraphModel("nestednode","custom","a test node",this);
+			//TODO need to deal with current property somehow, illustrating to the user 
+			//which nodes are current...
+			model.Current = true;
+			WorkModels.Add(model);
+			//hide the loadscreen
+			var ls = GameObject.Find("LoadScreen");
+			ls.SetActive(false);
+			
+			model.InstantiateNode<InputExecutionNode>(new Vector3(-5,5,0));
+			model.InstantiateNode<OutPutExecutionNode>(new Vector3(10,5,0));
+			model.InstantiateNode<StartExecution> (new Vector3 (0, 0, 0));
+			model.InstantiateNode<InstantiateCube> (new Vector3 (0, 0, 0));
+			model.InstantiateNode<Number> (new Vector3 (3, 0, 0));
+
+		}
+
+
 		// Use this for initialization
 		void Start ()
 		{
 			WorkModels = new List<GraphModel>();
 			LoadedNodeModels = new List<Type>();
-			LoadedFunctions = new Dictionary<string, ZeroTouchFunctionDescription>();
+			LoadedFunctions = new Dictionary<string, FunctionDescription>();
 			//create a nodeModelloader for this instance of appmodel
 			var nodeloaderinst = new NodeModelLoader();
 			var ZTnodeloaderinst = new ZTsubsetLoader();
-			// on program start, we load a home screen into the main canvas 
+
+
+			//on program start, we load a home screen into the main canvas 
 			//var maincanvas = GameObject.Find("Canvas");
 			//the home screen comtains, run, save(possibly), and the library component
 			
@@ -149,7 +191,16 @@ public class AppModel : MonoBehaviour
 			Debug.Log("loaded " + LoadedFunctions.Keys.Count.ToString() + " function pointers");
 			//the load screen will have some callbacks here that create graphmodels
 			// either by loading them and passing the string to parse back, or by creating a new one
-			
+			CollapsedCustomGraphNodeManager = new CustomNodeManager(this);
+			CollapsedCustomGraphNodeManager.InfoUpdated += HandleInfoUpdated;  
+			CollapsedCustomGraphNodeManager.AddUninitializedCustomNodesInPath(Path.Combine(Application.dataPath, "testGraphs/customnodes"),false);
+			Debug.Log("loaded " + CollapsedCustomGraphNodeManager.LoadedDefinitions.Count().ToString() + "cusotm node functions");
+			//TODO inspect logic for firing repopulation of library...
+		}
+
+		void HandleInfoUpdated (CustomNodeInfo obj)
+		{
+			NotifyPropertyChanged("LoadedNodeInfos");
 		}
 
 

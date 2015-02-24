@@ -439,7 +439,8 @@ public class NodeModel : BaseModel
         }
     }
 
-
+	protected virtual void OnNodeModified(){
+	}
 
     //this points to evaluation engine or some delegate
 	internal virtual void Evaluate()
@@ -507,7 +508,7 @@ public class NodeModel : BaseModel
 			UIInputValueDict = new Dictionary<string, object>();
 			foreach (XmlAttribute attribute in inputdata.Attributes)
 			{
-				Debug.Log("loading " + attribute.Name + attribute.Value.ToString());
+				Debug.Log("loading " + attribute.Name +" : "+ attribute.Value.ToString());
 				
 				UIInputValueDict.Add(attribute.Name,attribute.Value);
 			}
