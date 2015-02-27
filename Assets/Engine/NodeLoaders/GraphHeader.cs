@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
 using Nodeplay.Utils;
+using UnityEngine;
 
 namespace Nodeplay.Engine
 {
@@ -15,6 +16,8 @@ namespace Nodeplay.Engine
 		{
 			try
 			{
+				UnityEngine.Debug.Log("<color=orange>file load:</color>" + " constructing graph header by xml:" + path );
+
 				string funName = null;
 				float cx = 0;
 				float cy = 0;
@@ -84,7 +87,7 @@ namespace Nodeplay.Engine
 			catch (Exception ex)
 			{
 
-				Debug.WriteLine(ex.Message + ":" + ex.StackTrace);
+				UnityEngine.Debug.Log(ex.Message + ":" + ex.StackTrace);
 				
 				//TODO(Steve): Need a better way to handle this kind of thing. -- MAGN-5712
 				if (isTestMode)

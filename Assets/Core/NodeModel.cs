@@ -385,7 +385,7 @@ public class NodeModel : BaseModel
             };
 			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);
-			Debug.Log("gathering trigger delegate on node " + name +", this will call method named" +trigger.NickName+ "at:" + trigger.Index);
+			Debug.Log("gathering trigger delegate on node " + name +", this will call method named " +trigger.NickName+ "at: " + trigger.Index);
 
 		}
 		return outputTriggers;

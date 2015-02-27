@@ -16,14 +16,12 @@ namespace Nodeplay.Engine
 	/// </summary>
 	public class CustomNodeFunctionDescription
 	{
-		public CustomNodeFunctionDescription(
-			Guid functionId,
-			string displayName="",
-			IList<NodeModel> nodeModels=null)
+		public CustomNodeFunctionDescription(Guid functionId,string displayName="",IList<NodeModel> nodeModels=null)
 		{
-			if (functionId == Guid.Empty)
-				throw new ArgumentException(@"FunctionId invalid.", "functionId");
-			
+			Debug.Log("inside constructor for new customnodefunction definition / description");
+			if (functionId == Guid.Empty){
+				Debug.LogException((new ArgumentException(@"FunctionId invalid.", "functionId")));
+			}
 			nodeModels = nodeModels ?? new List<NodeModel>();
 			
 			#region Find outputs
@@ -103,7 +101,11 @@ namespace Nodeplay.Engine
 			returnKeys.Reverse();
 			
 			#endregion
-			
+
+			#region Find ExecutionOutputs
+			var execoutputs = nodeModels.OfType<OutPutExecutionNode>().ToList();
+			#endregion
+
 			#region Find inputs
 
 			//Find function entry point, and then compile
@@ -119,7 +121,11 @@ namespace Nodeplay.Engine
 			//var displayParameters = inputNodes.Select(x => x.Parameter.Name);
 			
 			#endregion
-			
+
+			#region Find ExecutionInputs
+			var execinputs = nodeModels.OfType<InputExecutionNode>().ToList();
+			#endregion
+
 			FunctionBody = nodeModels.Where(node => !(node is Symbol));
 			DisplayName = displayName;
 			FunctionId = functionId;
@@ -132,10 +138,15 @@ namespace Nodeplay.Engine
 					.Select(node => node.Funcdef)
 					.Where(def => def.FunctionId != functionId)
 					.Distinct();
+			InputExecutionNodes = execinputs;
+			OutputExecutionNodes = execoutputs;
+
+			Debug.Log("finished constructing new customnodefunction definition / description" + FunctionId.ToString() + "is the funcid");
 		}
 		
 		public static CustomNodeFunctionDescription MakeProxy(Guid functionId, string displayName)
 		{
+			Debug.Log("<color=orange>file load:</color>" + " building a proxy node, could not load "+ displayName);
 			Debug.Break();
 			var def = new CustomNodeFunctionDescription(functionId, displayName);
 			def.IsProxy = true;
@@ -235,7 +246,7 @@ namespace Nodeplay.Engine
 		public CustomNodeInfo(Guid functionId, string name, string category, string description, string path)
 		{
 			if (functionId == Guid.Empty)
-				throw new ArgumentException(@"FunctionId invalid.", "functionId");
+				Debug.LogException((new ArgumentException(@"FunctionId invalid.", "functionId")));
 			
 			FunctionId = functionId;
 			Name = name;

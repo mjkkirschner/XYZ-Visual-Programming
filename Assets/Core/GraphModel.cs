@@ -18,7 +18,7 @@ using UnityEditor;
 
 public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 {
-	private AppModel _appmodel;
+	protected AppModel _appmodel;
 	public List<NodeModel> Nodes { get; set; }
 	public List<ConnectorModel> Connectors { get; set; }
 	//TODO confusion with name, filename, etc
@@ -253,7 +253,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 	///sub routine for deserialzation that needs to be run 
 	///only after nodes are done being created
 	/// </summary>
-	private IEnumerator loadConnectors(XmlNode cNodesList, XmlNode ceNodesList)
+	protected IEnumerator loadConnectors(XmlNode cNodesList, XmlNode ceNodesList)
 	{
 		yield return null;
 		foreach (XmlNode connector in cNodesList.ChildNodes)
@@ -393,11 +393,12 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 			XmlNodeList elNodes = xmlDoc.GetElementsByTagName("Elements");
 			XmlNodeList cNodes = xmlDoc.GetElementsByTagName("Connectors");
 			XmlNodeList ceNodes = xmlDoc.GetElementsByTagName("ExecutionConnectors");
-			
+
 			XmlNode elNodesList = elNodes[0];
 			XmlNode cNodesList = cNodes[0];
 			XmlNode ceNodesList = ceNodes[0];
 			
+
 			foreach (XmlNode elNode in elNodesList.ChildNodes)
 			{
 				XmlAttribute typeAttrib = elNode.Attributes["type"];
@@ -442,6 +443,8 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 				//use a special instantiation logic
 			//TODO MAKE SURE THIS IS A VIABLE WAY OF DETERMINING WE ARE TRYING TO LOAD A CUSTOM NODE
 			if (ID != Guid.Empty){
+				//TODO make sure we're not recursively loading cusotm nodes.....
+				Debug.Log("<color=orange>file load:</color>" + "This graph contains a custom node, named" + nickname +" " );
 				try{
 				_appmodel.CollapsedCustomGraphNodeManager.CreateCustomNodeInstance(ID,guid,new Vector3(x,y,z),this,elNode,nickname);
 				}
@@ -543,7 +546,8 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 			}
 		}
 			Debug.Log("<color=orange>file load:</color>" + " done loading nodes");
-
+		Debug.Log("about to attempt to load connectors");
+		Debug.Log(_appmodel);
 		_appmodel.StartCoroutine(loadConnectors(cNodesList,ceNodesList));
 			
 			this.FileName = xmlpath;

@@ -107,7 +107,7 @@ namespace Nodeplay.Core
 		/// <summary>
 		///     The definition of this custom node, based on the current state of this workspace.
 		/// </summary>
-		public CustomNodeFunctionDescription CustomNodeFunctionDescription
+		public CustomNodeFunctionDescription CurrentCustomNodeFunctionDescription
 		{
 			get
 			{
@@ -235,7 +235,7 @@ namespace Nodeplay.Core
 			if (root == null)
 				return false;
 			
-			var guid = CustomNodeFunctionDescription != null ? CustomNodeFunctionDescription.FunctionId : Guid.NewGuid();
+			var guid = CurrentCustomNodeFunctionDescription != null ? CurrentCustomNodeFunctionDescription.FunctionId : Guid.NewGuid();
 			root.SetAttribute("ID", guid.ToString());
 			root.SetAttribute("Description", Description);
 			root.SetAttribute("Category", Category);

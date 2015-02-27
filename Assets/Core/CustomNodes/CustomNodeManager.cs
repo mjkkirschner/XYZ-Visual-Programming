@@ -27,7 +27,7 @@ namespace Nodeplay.Core
 
 		public CustomNodeManager(AppModel appmodel)
 		{
-			AppModel _appmodel = appmodel;
+			_appmodel = appmodel;
 		}
 
 		#region Fields and properties
@@ -112,7 +112,12 @@ namespace Nodeplay.Core
 			Type customnode = typebuilder.CreateType();
 			//set the static field functionid guid on the type, we'll use this at start of the type to lookup the correct function
 			//definition
-			var field = customnode.GetField("functiondefinitionID");
+			if (defintion == null){
+				Debug.Break();
+			}
+
+			var field = customnode.GetField("FunctiondefinitionID",BindingFlags.Public | BindingFlags.Static|BindingFlags.FlattenHierarchy);
+			Debug.Log(defintion.FunctionId);
 			field.SetValue(null, defintion.FunctionId);
 			return customnode;
 
@@ -147,10 +152,13 @@ namespace Nodeplay.Core
 			if (TryGetFunctionDefinition(functionid, isTestMode, out def))
 			{
 				// Got the definition, proceed as planned.
+
+				Debug.Log("<color=orange>file load:</color>" + " found the function definition, at:" + functionid.ToString());
 				info = NodeInfos[functionid];
 			}
 			else
-			{
+			{	Debug.Log("<color=orange>file load:</color>" + " could NOT find function definition, at:" + functionid.ToString());
+				Debug.Log("<color=orange>file load:</color>" + " will try info lookup, at:" + nickname);
 				// Couldn't get the workspace with the given ID, try a nickname lookup instead.
 				if (nickname != null && TryGetNodeInfo(nickname, out info))
 					return CreateCustomNodeInstance(info.FunctionId,nodeid,position, currentgraph, elementnode, nickname, isTestMode);
@@ -207,7 +215,7 @@ namespace Nodeplay.Core
 					CustomNodeGraphModel foundWorkspace;
 					if (TryGetFunctionWorkspace(newInfo.FunctionId, isTestMode, out foundWorkspace))
 					{
-						node.ResyncWithDefinition(foundWorkspace.CustomNodeFunctionDescription);
+						node.ResyncWithDefinition(foundWorkspace.CurrentCustomNodeFunctionDescription);
 						RegisterCustomNodeInstanceForUpdates(node, foundWorkspace);
 						InfoUpdated -= infoUpdatedHandler;
 						disposed = true;
@@ -226,7 +234,7 @@ namespace Nodeplay.Core
 		{
 			Action defUpdatedHandler = () =>
 			{
-				node.ResyncWithDefinition(workspace.CustomNodeFunctionDescription);
+				node.ResyncWithDefinition(workspace.CurrentCustomNodeFunctionDescription);
 			};
 			workspace.DefinitionUpdated += defUpdatedHandler;
 			
@@ -410,13 +418,19 @@ namespace Nodeplay.Core
 		{
 			if (Contains(id))
 			{
+				Debug.Log("<color=orange>file load:</color>" + " the manager contains this id, at:" + id.ToString());
+
 				CustomNodeGraphModel ws;
 				if (IsInitialized(id) || InitializeCustomNode(id, isTestMode, out ws))
 				{
 					definition = loadedCustomNodes[id];
+					Debug.Log("<color=orange>file load:</color>" + "the def was either initialized or we successfully initialized it now");
+					Debug.Log("<color=orange>file load:</color>" + "the defs func id is" + definition.FunctionId);
 					return true;
 				}
+				Debug.Log("<color=orange>file load:</color>" + "could not init id ");
 			}
+			Debug.Log("<color=orange>file load:</color>" + "manager has no record of this id ");
 			definition = null;
 			return false;
 		}
@@ -531,6 +545,7 @@ namespace Nodeplay.Core
 			Guid functionId, GraphHeader workspaceInfo,
 			string xmlpath, out CustomNodeGraphModel workspace)
 		{
+			Debug.Log("<color=orange>file load:</color>" + "initializing custom node at "+ functionId.ToString()+" named"+ workspaceInfo.Name);
 			// Add custom node definition firstly so that a recursive
 			// custom node won't recursively load itself.
 			SetPreloadFunctionDefinition(functionId);
@@ -543,7 +558,8 @@ namespace Nodeplay.Core
 				 workspaceInfo.FileName);
 
 			newWorkspace.LoadGraphModel(xmlpath);
-
+			Debug.Log("<color=orange>file load:</color>" + "just finished loading custom node graph during its initialization");
+			Debug.Log("<color=orange>file load:</color>" + "about to register the nodeworkspace");
 			RegisterCustomNodeWorkspace(newWorkspace);
 			
 			workspace = newWorkspace;
@@ -555,19 +571,21 @@ namespace Nodeplay.Core
 			RegisterCustomNodeWorkspace(
 				newWorkspace,
 				newWorkspace.CustomNodeInfo,
-				newWorkspace.CustomNodeFunctionDescription);
+				newWorkspace.CurrentCustomNodeFunctionDescription);
 		}
 		
 		private void RegisterCustomNodeWorkspace(
 			CustomNodeGraphModel newWorkspace, CustomNodeInfo info, CustomNodeFunctionDescription definition)
-		{
+		{	
+			Debug.Log("<color=orange>file load:</color>" + "adding customnode graph to dict of loadead graphs");
 			loadedWorkspaceModels[newWorkspace.CustomNodeId] = newWorkspace;
-			
+
+			Debug.Log("<color=orange>file load:</color>" + "about to register to set the function definition so it can be looked up");
 			SetFunctionDefinition(definition);
 			OnDefinitionUpdated(definition);
 			newWorkspace.DefinitionUpdated += () =>
 			{
-				var newDef = newWorkspace.CustomNodeFunctionDescription;
+				var newDef = newWorkspace.CurrentCustomNodeFunctionDescription;
 				SetFunctionDefinition(newDef);
 				OnDefinitionUpdated(newDef);
 			};

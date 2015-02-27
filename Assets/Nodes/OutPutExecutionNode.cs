@@ -42,9 +42,9 @@ namespace Nodeplay.Nodes
 			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator> ();
-			var evaldata = gatherExecutionData();
+			//var evaldata = gatherExecutionData();
 			//TODO what happens when two outputs have same name, what happens when name changes... does pointer update?
-			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();
+			//PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();
 		}
 
 		protected override Dictionary<string, object> CompiledNodeEval (Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)
@@ -57,7 +57,7 @@ namespace Nodeplay.Nodes
 
 		protected override void OnNodeModified ()
 		{
-			if (ExecutionOutputs.Count>0 && ExecutionInputs.Count>0){
+			if (ExecutionOutputs != null && ExecutionInputs != null){
 			base.OnNodeModified ();
 			var evaldata = gatherExecutionData();
 			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();

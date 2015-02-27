@@ -19,7 +19,7 @@ namespace Nodeplay.Nodes
 
 				public List<Tuple<string,Action>> Executiondata{ get; set; }
 				//this static property is injected by reflection.emit when this type is built on loading a custom node
-				public static Guid functiondefinitionID;	
+				public static Guid FunctiondefinitionID;	
 				//TODO
 				//it's possible we'll want to inject these as well so that they can be grabbed from the type for display in the library?
 				public string Description { get; set; }
@@ -37,7 +37,7 @@ namespace Nodeplay.Nodes
 						//on start go grab the correct information from the appmodel's customNodeManager dict of loadead custom nodes
 						
 						CustomNodeFunctionDescription _funcdef;
-			GameObject.FindObjectOfType<AppModel> ().CollapsedCustomGraphNodeManager.TryGetFunctionDefinition(functiondefinitionID,false,out _funcdef);
+			GameObject.FindObjectOfType<AppModel> ().CollapsedCustomGraphNodeManager.TryGetFunctionDefinition(FunctiondefinitionID,false,out _funcdef);
 			if(_funcdef != null){
 
 				Funcdef = _funcdef;		
@@ -67,7 +67,7 @@ namespace Nodeplay.Nodes
 						}
 						//add an execution trigger out for each outputexec node in the customnode graph
 						foreach (var outTrigger in Funcdef.OutputExecutionNodes) {
-								AddExecutionInputPort (outTrigger.Symbol);
+								AddExecutionOutPutPort (outTrigger.Symbol);
 						}
 
 						//we do not need an evaluator, there is nothing to evaluate...
@@ -81,7 +81,7 @@ namespace Nodeplay.Nodes
 
 				}
 
-		void OnNodeModified ()
+		protected override void OnNodeModified ()
 		{
 			throw new NotImplementedException ();
 		}
@@ -118,9 +118,23 @@ namespace Nodeplay.Nodes
 						Debug.Log ("about to call custom node graph:" + Funcdef.InputExecutionNodes [0].Symbol); 
 						//now call the method on the "start" execution trigger
 				//TODO make this a public method on the inputexecutionnode
-				Funcdef.InputExecutionNodes[0].CustomNodeWrapperCaller = callingInstance;
-				Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
+						Funcdef.InputExecutionNodes[0].CustomNodeWrapperCaller = callingInstance;
+						//I think instead of calling this pointer directly, we want to insert this as a task...lets try it
 
+					//int indexCopy = trigger.Index;
+					var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
+
+					//var currentVariablesOnModel = Evaluator.PollScopeForOutputs(Outputs.Select(x => x.NickName).ToList());
+					GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
+					new Task(currentTask, 
+			         	this,
+			         	0, 
+			         	new Action(() => Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke()),
+			         	new WaitForSeconds(.1f)));
+
+
+				//Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
+				
 				}				
 
 		#region customnode controller merged some methods into the wrapper

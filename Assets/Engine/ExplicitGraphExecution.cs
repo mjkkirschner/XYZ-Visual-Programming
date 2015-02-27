@@ -28,12 +28,13 @@ namespace Nodeplay.Engine
 		}
 
 		public List<NodeModel> FindEntryPoints()
-		{
+		{	//TODO anything where we using find objects of type on nodemodels or graph elements is going to break with custom nodes....
+			//need to only search in specific graph model... or use a flag...
 			//list of everything that inherits from nodemodel in the scene
 			var allnodes = GameObject.FindObjectsOfType<NodeModel>();
 			//list of nodemodels where the input list is empty, so
 			// this node has no input ports, or where all inputs are connected...think this does that :P
-			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable) || x is StartExecution).ToList();
+			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable ||x is InputExecutionNode) || x is StartExecution).ToList();
 			nodeps.ForEach(x=>Debug.Log(x.name));
 			return nodeps;
 			
