@@ -79,7 +79,7 @@ public class AppModel : MonoBehaviour
 	}
 
 	public void LoadGraph(){
-		var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","","*.xml;*.ccgn");
+			var path = EditorUtility.OpenFilePanel("Choose A Graph To Open","", "");
 		//create a new blank graphmodel
 		//then call load on it with path, which will deserialze an xml file into that model
 			GraphModel graph;

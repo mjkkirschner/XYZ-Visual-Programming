@@ -378,10 +378,16 @@ public class NodeModel : BaseModel
 			// this connector type will contain the type of yeildinstruction to use for the task
 			int indexCopy = trigger.Index;
             var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
+			var currentNode = this;
+
 			Action storeMethodOnStack = () => {
+				Debug.Log("we're currently executing a closure which points to some task insertion");
+				Debug.Log("index copy is" + indexCopy.ToString()); 
+				Debug.Log("currentTask is" + currentTask.ID); 
+				Debug.Log("currentNode is" + currentNode.name); 
                  var currentVariablesOnModel = Evaluator.PollScopeForOutputs(Outputs.Select(x => x.NickName).ToList());
                  GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
-                 new Task(currentTask, this, indexCopy, new Action(() => CallOutPut(indexCopy, currentVariablesOnModel)), new WaitForSeconds(.1f)));
+                 new Task(currentTask, currentNode, indexCopy, new Action(() => CallOutPut(indexCopy, currentVariablesOnModel)), new WaitForSeconds(.1f)));
             };
 			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);

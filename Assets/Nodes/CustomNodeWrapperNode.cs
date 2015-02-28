@@ -70,14 +70,15 @@ namespace Nodeplay.Nodes
 								AddExecutionOutPutPort (outTrigger.Symbol);
 						}
 
-						//we do not need an evaluator, there is nothing to evaluate...
+						//we do not need an evaluator, there is nothing to evaluate...but im going to try using the c# evaluator
+						//to push a task into the Q.
 						//instead we'll directly compose our scope for evaluation on this node
 						//gathering all inputs and storing them on the nodemodel (customnode)
 						//then triggering our pointer into the customnode graph
 						//the inputNodes in the graph will search the customnodeModel's inputdata
 						//I can't think of another way to provide the inputs to the nodes in a clean way
-
-						//Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
+						CodePointer = CompiledNodeEval;
+						Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
 
 				}
 
@@ -90,52 +91,58 @@ namespace Nodeplay.Nodes
 				{
 						Disposed ();
 				}
-		
-				internal override void Evaluate ()
-				{
-						OnEvaluation ();
-						//build packages for all data , and store them on this wrapper
-						Inputdata = gatherInputPortData ();
-						//grab the pointers for downstream execution after the custom node is done
-						Executiondata = gatherExecutionData ();
-						//here we use the codepointer instead of the code string
-						//and we'll just call it directly...instead of using an evaluator
-						CustomNodeEval (this);
-
-						//instead of returning something from the evaluation of this node
-						//we rely on the output nodes inside the customnode graph to write their output vals
-						//back to this storedvalueDict....ugly I know...an event based flow might be more reliable
-						//this.StoredValueDict = outvar;
-						OnEvaluated ();
-		
-				}
-
-		protected virtual void CustomNodeEval (CustomNodeWrapper callingInstance)
-				{
-
-						Debug.Log ("the calling instance is"+ callingInstance.name);
-						//for now only allow 1 execution input to simplify things
-						Debug.Log ("about to call custom node graph:" + Funcdef.InputExecutionNodes [0].Symbol); 
-						//now call the method on the "start" execution trigger
-				//TODO make this a public method on the inputexecutionnode
-						Funcdef.InputExecutionNodes[0].CustomNodeWrapperCaller = callingInstance;
-						//I think instead of calling this pointer directly, we want to insert this as a task...lets try it
-
-					//int indexCopy = trigger.Index;
-					var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
-
-					//var currentVariablesOnModel = Evaluator.PollScopeForOutputs(Outputs.Select(x => x.NickName).ToList());
-					GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
-					new Task(currentTask, 
-			         	this,
-			         	0, 
-			         	new Action(() => Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke()),
-			         	new WaitForSeconds(.1f)));
-
-
-				//Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
 				
-				}				
+				internal override void Evaluate()
+				{
+					OnEvaluation();
+					//build packages for all data 
+					Inputdata = gatherInputPortData();
+					if (CodePointer == null){
+						Debug.Break();
+					}
+					
+					
+					//on this node we actually want to gather execution data for the inputexecutionNode's output port
+					//this is so that upon the execution of this node, we insert a task which executes whatever node that inputrigger
+					//points to...
+					
+					//TODOneed to watch out for this, I believe the issue is that we need the invariant, that when the execution data is calculated
+					//we're executing, because we also gather the current task... we need to atleast make sure we update the current task
+					//at the time we do the insertion of the task.... 
+					//a fix for now is to at the minimum create a property publicly reexecutes gather execution data
+					//on the downstream node we really want to gather...
+					Funcdef.InputExecutionNodes.First().ForceGatherExecutionData();
+					Executiondata = Funcdef.InputExecutionNodes.First().Executiondata;
+					Debug.Log("we're grabbing execution pointers not from this node, but from downstream");
+					Executiondata.ForEach(x=>Debug.Log(x.First));
+					//here we use the codepointer instead of the code string
+					var evalpackage = new EvaluationPackage(CodePointer,
+					                                        Inputdata.Select(x => x.First).ToList(),
+					                                        Inputdata.Select(x => x.Second).ToList(),
+					                                        Outputs.Select(x=>x.NickName).ToList(),
+					                                        Executiondata);
+					var outvar = Evaluator.Evaluate(evalpackage);
+					this.StoredValueDict = outvar;
+					OnEvaluated();
+					
+				}
+				
+				
+		protected override  Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)
+		{
+			Debug.Log ("the calling instance is"+ this.name);
+			//for now only allow 1 execution input to simplify things
+			Debug.Log ("about to call custom node graph:" + Funcdef.InputExecutionNodes [0].Symbol); 
+			//now call the method on the "start" execution trigger
+			//TODO make this a public method on the inputexecutionnode
+			Funcdef.InputExecutionNodes[0].CustomNodeWrapperCaller = this;
+			//I think instead of calling this pointer directly, we want to insert this as a task...lets try it
+			//Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
+			var triggerName = Funcdef.InputExecutionNodes.First().Symbol;
+			(inputstate["done"] as Delegate).DynamicInvoke();
+			return intermediateOutVals;
+		}
+
 
 		#region customnode controller merged some methods into the wrapper
 				public virtual void SyncNodeWithDefinition (NodeModel model)

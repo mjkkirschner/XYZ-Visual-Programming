@@ -22,6 +22,20 @@ namespace Nodeplay.Nodes
 		{
 		public Delegate pointerToFirstNodeInGraph{get;set;}
 		public CustomNodeWrapper CustomNodeWrapperCaller {get;set;}
+		public List<Tuple<string,Action>> Executiondata{ get; set; } 
+
+		/// <summary>
+		/// this method is used to force a regathering of execution data for immediate execution
+		/// of a node, use case is a custom node wrapper about to execute a trigger on a node
+		/// like this inputExecNode, we must gather the correct state of the node triggers
+		/// and the currently executing tasks in the schedule, to correctly schedule any tasks
+		/// the execution of this node generates... this is ugly and will be refactored later TODO
+		/// </summary>
+		public void ForceGatherExecutionData()
+		{
+			Executiondata = gatherExecutionData();
+		}
+
 		private string symbol = "";
 		public string Symbol {
 			get { return symbol; }
@@ -42,8 +56,8 @@ namespace Nodeplay.Nodes
 				
 				CodePointer = CompiledNodeEval;
 				Evaluator = this.gameObject.AddComponent<CsharpEvaluator> ();
-				var evaldata = gatherExecutionData();
-				pointerToFirstNodeInGraph = evaldata.First().Second;
+				Executiondata = gatherExecutionData();
+				pointerToFirstNodeInGraph = Executiondata.First().Second;
 			}
 		
 		protected override void OnNodeModified ()
@@ -52,8 +66,8 @@ namespace Nodeplay.Nodes
 			//so dont try to lookup evaldata... will throw
 			if (ExecutionOutputs != null){
 			base.OnNodeModified ();
-			var evaldata = gatherExecutionData();
-			pointerToFirstNodeInGraph = evaldata.First().Second;
+			Executiondata = gatherExecutionData();
+				pointerToFirstNodeInGraph = Executiondata.First().Second;
 			}
 		}
 

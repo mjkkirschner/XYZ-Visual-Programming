@@ -38,8 +38,6 @@ namespace Nodeplay.Nodes
 		{
 			base.Start ();
 			AddExecutionInputPort ("start");
-			AddExecutionOutPutPort ("done");
-			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator> ();
 			//var evaldata = gatherExecutionData();
@@ -49,7 +47,14 @@ namespace Nodeplay.Nodes
 
 		protected override Dictionary<string, object> CompiledNodeEval (Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)
 		{
+			//get the cusotmnode wrapper that called into this node
+			//we do this so we can extract the output triggers
+			var caller = this.GraphOwner.Nodes.OfType<InputExecutionNode>().First().CustomNodeWrapperCaller;
+			CustomNodeWrapperCaller = caller;
+			//TODO make sure this doesnt have the same problem and supply the wrong current task in the scheduler
+			var evaldata = CustomNodeWrapperCaller.Executiondata;
 			var output = intermediateOutVals;
+			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();
 			PointerToAnOutputOnWrapper.DynamicInvoke ();
 			return output;
 			
@@ -59,7 +64,10 @@ namespace Nodeplay.Nodes
 		{
 			if (ExecutionOutputs != null && ExecutionInputs != null){
 			base.OnNodeModified ();
-			var evaldata = gatherExecutionData();
+			var caller = this.GraphOwner.Nodes.OfType<InputExecutionNode>().First().CustomNodeWrapperCaller;
+			CustomNodeWrapperCaller = caller;
+			//TODO make sure this doesnt have the same problem and supply the wrong current task in the scheduler
+			var evaldata = CustomNodeWrapperCaller.Executiondata;
 			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();
 			}
 		}
