@@ -1,0 +1,19 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="b6a148dd-464e-4872-885e-0eb0fbca5f2c" nickname="node StartExecutionb6a148dd-464e-4872-885e-0eb0fbca5f2c" x="2.093312" y="11.24273" z="-1.492886">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <custom.nestednode type="custom.nestednode" guid="c07f3b8f-6cb9-41fb-b7b0-e6140b7c75db" nickname="node nestednodec07f3b8f-6cb9-41fb-b7b0-e6140b7c75db" x="-5.406687" y="11.24273" z="-1.492886">
+      <nodeinputdict />
+      <ID value="6949e263-8676-4d4b-990c-81d8365b321b" />
+      <Name value="node nestednodec07f3b8f-6cb9-41fb-b7b0-e6140b7c75db" />
+      <Description value="" />
+      <Inputs />
+      <Outputs />
+    </custom.nestednode>
+  </Elements>
+  <Connectors />
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="b6a148dd-464e-4872-885e-0eb0fbca5f2c" start_index="0" end="c07f3b8f-6cb9-41fb-b7b0-e6140b7c75db" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

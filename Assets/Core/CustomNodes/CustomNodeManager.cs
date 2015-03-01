@@ -104,10 +104,10 @@ namespace Nodeplay.Core
 		{
 
 			AssemblyName asmName = new AssemblyName("CustomNodes");
-			string typename = defintion.FunctionName;
+			string typename = defintion.DisplayName;
 			AssemblyBuilder asmbuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
 			ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule(info.Category);
-			TypeBuilder typebuilder = modulebuilder.DefineType(typename + "Node");
+			TypeBuilder typebuilder = modulebuilder.DefineType(modulebuilder.Name+"."+typename);
 			typebuilder.SetParent(typeof(CustomNodeWrapper));
 			Type customnode = typebuilder.CreateType();
 			//set the static field functionid guid on the type, we'll use this at start of the type to lookup the correct function
@@ -545,7 +545,7 @@ namespace Nodeplay.Core
 			Guid functionId, GraphHeader workspaceInfo,
 			string xmlpath, out CustomNodeGraphModel workspace)
 		{
-			Debug.Log("<color=orange>file load:</color>" + "initializing custom node at "+ functionId.ToString()+" named"+ workspaceInfo.Name);
+			Debug.Log("<color=orange>file load:</color>" + "initializing custom node at "+ functionId.ToString()+" named "+ workspaceInfo.Name);
 			// Add custom node definition firstly so that a recursive
 			// custom node won't recursively load itself.
 			SetPreloadFunctionDefinition(functionId);

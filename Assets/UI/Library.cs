@@ -61,7 +61,9 @@ public class Library : MonoBehaviour
 		if (appmodel.CollapsedCustomGraphNodeManager != null){
 		foreach (var entry in appmodel.CollapsedCustomGraphNodeManager.NodeInfos)
 		{
-			if(buttons.Select(x=>x.GetComponent<LibraryButton>()).OfType<CustomNodeLibraryButton>().Any(x=>x.Info == entry.Value))
+			if(buttons.Select(x=>x.GetComponent<LibraryButton>()).
+				   OfType<CustomNodeLibraryButton>().
+				   	Any(x=>x.Info.FunctionId == entry.Value.FunctionId))
 			{
 				//if we already have this kind of button then dont create another one
 				continue;

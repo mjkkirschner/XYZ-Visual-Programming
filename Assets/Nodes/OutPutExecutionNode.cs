@@ -52,6 +52,9 @@ namespace Nodeplay.Nodes
 			var caller = this.GraphOwner.Nodes.OfType<InputExecutionNode>().First().CustomNodeWrapperCaller;
 			CustomNodeWrapperCaller = caller;
 			//TODO make sure this doesnt have the same problem and supply the wrong current task in the scheduler
+			//this suffers from the same exact problem, the execdata currently stored on the wrapper, is actually
+			//the data for the inputexecNode, these names are misleading and need to be fixed... the data could be concated...
+			CustomNodeWrapperCaller.ForceGatherExecutionData();
 			var evaldata = CustomNodeWrapperCaller.Executiondata;
 			var output = intermediateOutVals;
 			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();

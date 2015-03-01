@@ -117,12 +117,13 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 		}
 
-		else{
-		var nodetype = button.LoadedType;
-		MethodInfo method = this.GetType().GetMethod("InstantiateNode");
-		MethodInfo generic = method.MakeGenericMethod(nodetype);
-		//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
-		//this is a fully qualified type extracted from the libraryButton
+		else
+		{
+			var nodetype = button.LoadedType;
+			MethodInfo method = this.GetType().GetMethod("InstantiateNode");
+			MethodInfo generic = method.MakeGenericMethod(nodetype);
+			//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
+			//this is a fully qualified type extracted from the libraryButton
 		generic.Invoke(this, new object[]{new Vector3(0,0,0),new Guid()});
 		}
 	}
@@ -434,10 +435,18 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 				NodeModel el = null;
 				XmlElement dummyElement = null;
+				Guid ID = Guid.Empty;
+			//iterate the subnodes of this node, these would exist if this is a custom node...
+			foreach (XmlNode subNode in elNode.ChildNodes)
+			{
+				if (subNode.Name == "ID"){
+				XmlAttribute CustomNodeID = subNode.Attributes["value"];
+				ID =CustomNodeID == null ? Guid.Empty : new Guid(CustomNodeID.Value);
+					}
 
+			}
 
-				XmlAttribute CustomNodeID = elNode.Attributes["ID"];
-				Guid ID =CustomNodeID == null ? Guid.Empty : new Guid(CustomNodeID.Value);
+				
 				
 				//if the ID was set then we are trying to load a custom node and will
 				//use a special instantiation logic

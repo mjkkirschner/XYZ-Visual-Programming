@@ -85,7 +85,7 @@ public class AppModel : MonoBehaviour
 			GraphModel graph;
 
 		GraphModel regulargraph;
-		if (System.IO.Path.GetExtension(path) == "xml")
+		if (System.IO.Path.GetExtension(path) == ".xml")
 			{
 		regulargraph = new GraphModel("tempload",this);
 				regulargraph.LoadGraphModel(path);
