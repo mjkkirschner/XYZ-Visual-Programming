@@ -123,6 +123,20 @@ namespace Nodeplay.Core
 
 		}
 
+		Type tryfindLoadedNodeType (CustomNodeFunctionDescription def, CustomNodeInfo info)
+		{
+			string typename = info.Category+"."+def.DisplayName;
+			var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			Type nodetype = null;
+			foreach (var assembly in loadedAssemblies)
+			{
+				nodetype = assembly.GetType(typename, false);
+				if(nodetype != null){
+					return nodetype;
+				}
+			}
+			return null;
+		}
 
 		//this method is going to be called whenever we are actually trying to add a custom node
 		//to a graph, it sets the node instance to listen for updates on definitons etc....
@@ -176,13 +190,13 @@ namespace Nodeplay.Core
 			}
 
 			//var node = new CustomNodeWrapper(def, info.Name, info.Description, info.Category);
-
-			//we have 2 options, either we also store our customnode emited type, which is basically just
-			//a wrapper around a specific definition, and store that at load, OR we just emit it here
-			//a pass it to the initialization function, this lets us simplify loading of custom nodes,
-			//might be able to use regular methods on customnode manager
-			var nodetype = createCustomNodeType(def,info);
-
+			Type nodetype;
+			//if we couldnt find the nodetype previously emitted, then create it
+			nodetype = tryfindLoadedNodeType(def,info);
+			if (nodetype == null)
+			{
+			nodetype = createCustomNodeType(def,info);
+			}
 			MethodInfo method = currentgraph.GetType().GetMethod("InstantiateNode");
 			MethodInfo generic = method.MakeGenericMethod(nodetype);
 			CustomNodeWrapper node = null;
