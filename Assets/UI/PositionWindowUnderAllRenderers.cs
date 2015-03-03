@@ -19,17 +19,19 @@ namespace Nodeplay.UI
 			Model_GO = this.GetComponentInParent<NodeModel>().gameObject;
 			//subscribe to the model changes
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
+			//force a call to properychangehandelr
+			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
 		}
 
 		/// this handler is used to respond to changes on the node
 		// when the node is modified in some way we update the windows position
-		public void NodePropertyChangeEventHandler(object sender, EventArgs args)
+		public virtual void NodePropertyChangeEventHandler(object sender, EventArgs args)
 		{
 			GenerateBounds(Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList());
 
 		}
 
-		public void GenerateBounds(List<GameObject> toBound)
+		public virtual void GenerateBounds(List<GameObject> toBound)
 		{
 			Vector3 center = Vector3.zero;
 			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
@@ -45,7 +47,13 @@ namespace Nodeplay.UI
 			this.gameObject.transform.position = newPoint;
 			
 		}
+		
 
+		protected virtual void OnDestroy()
+		{
+			//Debug.Log("unsubscribing from nodemodel property changes");
+			Model_GO.GetComponent<NodeModel>().PropertyChanged -= NodePropertyChangeEventHandler;
+		}
 		
 	}
 }

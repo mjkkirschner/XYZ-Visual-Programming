@@ -19,7 +19,6 @@ namespace Nodeplay.UI
 			Model_GO = this.GetComponentInParent<NodeModel>().gameObject;
 			//subscribe to the model changes
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
-
 			//force a call to properychangehandelr
 			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
 		}
