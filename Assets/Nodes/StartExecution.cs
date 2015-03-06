@@ -22,7 +22,7 @@ namespace Nodeplay.Nodes
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();
-			tempUI.renderer.material.color = Color.cyan;
+			tempUI.GetComponent<Renderer>().material.color = Color.cyan;
 			return tempUI;
 			
 		}

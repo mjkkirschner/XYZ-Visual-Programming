@@ -275,7 +275,7 @@ public class NodeModel : BaseModel
 		togglepanel.transform.localPosition = new Vector3(
 			togglepanel.transform.localPosition.x,
 			//TODO something strange here
-			 UI.renderer.bounds.min.y*10,
+			 UI.GetComponent<Renderer>().bounds.min.y*10,
 			togglepanel.transform.localPosition.z);
 
 		togglepanel.AddComponent<TogglePanelButton>();

@@ -211,11 +211,11 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
           
-            UI.renderer.material.color = Color.Lerp(originalcolor, ToColor, f);
+            UI.GetComponent<Renderer>().material.color = Color.Lerp(originalcolor, ToColor, f);
             yield return null;
 
         }
-        UI.renderer.material.color = ToColor;
+        UI.GetComponent<Renderer>().material.color = ToColor;
     }
 
     protected virtual IEnumerator Blunk(Color FromColor, float duration)
@@ -223,11 +223,11 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
            
-            UI.renderer.material.color = Color.Lerp(FromColor, originalcolor, f);
+            UI.GetComponent<Renderer>().material.color = Color.Lerp(FromColor, originalcolor, f);
             yield return null;
           
         }
-        UI.renderer.material.color = originalcolor;
+        UI.GetComponent<Renderer>().material.color = originalcolor;
     }
 
    

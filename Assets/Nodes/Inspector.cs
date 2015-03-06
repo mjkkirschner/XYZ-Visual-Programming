@@ -65,7 +65,7 @@ namespace Nodeplay.Nodes
 			GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
 			UI.transform.localPosition = this.gameObject.transform.position;
 			UI.transform.parent = this.gameObject.transform;
-			UI.renderer.material.color = Color.yellow;
+			UI.GetComponent<Renderer>().material.color = Color.yellow;
 			UI.AddComponent<InspectorVisualization>();
 			//iterate all graphics casters and turn blocking on for 3d objects
 			var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();

@@ -38,7 +38,7 @@ class PortView : BaseView<PortModel>
 
         //might need to be owner model - this might work for now as NodeView and Model should be the common base classes
         var view = this.Model.Owner.GetComponent<NodeView>();
-        var boundingBox = view.UI.renderer.bounds;
+        var boundingBox = view.UI.GetComponent<Renderer>().bounds;
         port.transform.parent = Model.Owner.transform;
         port.transform.position = Model.Owner.transform.position;
         // move the port from the center to back or front depending on port type
