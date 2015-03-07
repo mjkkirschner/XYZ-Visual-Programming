@@ -5,6 +5,8 @@ using Nodeplay.Interfaces;
 using Nodeplay.Engine;
 using System;
 using Nodeplay.Core;
+using Nodeplay.UI;
+using UnityEngine.UI;
 
 namespace Nodeplay.Nodes
 {
@@ -24,6 +26,7 @@ namespace Nodeplay.Nodes
 
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
+			viewPrefab = "VariableNodeBaseView";
 		}
 
 		protected override Dictionary<string, object> CompiledNodeEval(Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)
@@ -38,6 +41,13 @@ namespace Nodeplay.Nodes
 			(inputstate["done"] as Delegate).DynamicInvoke();
 			return output;
 
+		}
+		public override GameObject BuildSceneElements()
+		{
+			var UI = base.BuildSceneElements();
+			UI.GetComponent<Renderer>().material.color = new Color(56.0f/256.0f,158.0f/256.0f,201.0f/256.0f);
+			return UI;
+			
 		}
 
 	}

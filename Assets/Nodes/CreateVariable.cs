@@ -42,6 +42,7 @@ namespace Nodeplay.Nodes
 			//create a handler that watches for name property changes on the 
 			PropertyChanged += updatevar;
 			NotifyPropertyChanged("VariableName");
+			viewPrefab = "VariableNodeBaseView";
 		}
 
 		private void updatevar(object sender, PropertyChangedEventArgs args){
@@ -56,9 +57,9 @@ namespace Nodeplay.Nodes
 		public override GameObject BuildSceneElements()
 		{
 			ExposeVariableInNodeUI("VariableName",VariableName);
-			return base.BuildSceneElements();
-
-
+			var UI = base.BuildSceneElements();
+			UI.GetComponent<Renderer>().material.color = new Color(56.0f/256.0f,158.0f/256.0f,201.0f/256.0f);
+			return UI;
 		}
 
 

@@ -16,7 +16,7 @@ using Nodeplay.Nodes;
 
 public class NodeModel : BaseModel
 {
-
+	protected string viewPrefab =  "NodeBaseView";
 	protected override void NotifyPropertyChanged (string info)
 	{
 		base.NotifyPropertyChanged (info);
@@ -251,7 +251,7 @@ public class NodeModel : BaseModel
         // root gameobject
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 		this.gameObject.AddComponent<PositionNodeRelativeToParents>();
-        GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
+        GameObject UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
         UI.transform.localPosition = this.gameObject.transform.position;
         UI.transform.parent = this.gameObject.transform;
 
