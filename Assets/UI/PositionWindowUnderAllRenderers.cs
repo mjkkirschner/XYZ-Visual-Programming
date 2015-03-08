@@ -43,7 +43,8 @@ namespace Nodeplay.UI
 
 			}
 			center = center / (allrenderers.Count);
-			var newPoint = center - new Vector3(0, totalBounds.size.y*1.5f, 0);
+			var newPoint = center - new Vector3(0, totalBounds.size.y*.5f, 0);
+			newPoint = newPoint + new Vector3(0,-3,0);
 			this.gameObject.transform.position = newPoint;
 			
 		}
