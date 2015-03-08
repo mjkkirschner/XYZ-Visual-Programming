@@ -13,7 +13,7 @@ namespace Nodeplay.UI.Utils
         public static string ToJSONstring(this object obj)
         {
 			var settings = new jsonfx.JsonWriterSettings();
-			settings.PrettyPrint = true;
+			//settings.PrettyPrint = true;
 					
 			System.Text.StringBuilder output = new System.Text.StringBuilder();
 			var writer = new jsonfx.JsonWriter (output,settings);
@@ -32,7 +32,7 @@ namespace Nodeplay.UI.Utils
         {
 
 			var settings = new jsonfx.JsonWriterSettings();
-			settings.PrettyPrint = true;
+			//settings.PrettyPrint = true;
 			
 			System.Text.StringBuilder output = new System.Text.StringBuilder();
 			var writer = new jsonfx.JsonWriter (output,settings);

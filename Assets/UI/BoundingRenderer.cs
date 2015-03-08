@@ -74,15 +74,21 @@ namespace Nodeplay.UI
 		void Update()
 		{
 
-			if (tempgeo != null)
-			{
-				GameObject.Destroy(tempgeo);
-			}
+
 			//generate the bounds of all gameobjects downstream from the first execution connector
 			//could also search for the port with the correct naming convention
 			if (Model.ExecutionOutputs[0].IsConnected)
 			{
-				tempgeo = GenerateBounds(BFS(Model.ExecutionOutputs[0].connectors[0].PEnd.Owner.gameObject));
+				var visited = BFS(Model.ExecutionOutputs[0].connectors[0].PEnd.Owner.gameObject);
+				if (visited.Any(x=>x.transform.hasChanged == true))
+				{
+					if (tempgeo != null)
+					{
+						GameObject.Destroy(tempgeo);
+					}
+					tempgeo = GenerateBounds(visited);
+				}
+
 			}
 		}
 	}

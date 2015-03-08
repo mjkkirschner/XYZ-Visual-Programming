@@ -318,10 +318,15 @@ namespace Nodeplay.UI
 							Debug.Log("this property is an indexed property, for now we won't reflect further");
 							continue;
 						}
-
+						try
+						{
 						var value = prop.GetValue(subTreeRoot, null);
 						InspectorVisualization.generateInspectableElementGameObject(value,wrapper,prop.Name);
-
+						}
+						catch(Exception e)
+						{
+							Debug.Log("could not get property" + prop.Name);
+						}
 						
 					}
 				}

@@ -108,13 +108,13 @@ namespace Nodeplay.UI
 
 
 			//if this node has no datainputs then just calculate the execution connector
-			if (dataParents.Count >0)
-			{
-				newpos = datacentroid + new Vector3(0.0f,(rendererbnds.size.y * 2)*-1.0f,(rendererbnds.size.z * 2));
-			}
+			//if (dataParents.Count >0)
+			//{
+			//	newpos = datacentroid + new Vector3(0.0f,(rendererbnds.size.y * 2)*-1.0f,(rendererbnds.size.z * 2));
+			//}
 			// now modify newpos by moving in the x vector towards the execution centroid
 
-			var vectoExec = newpos - (execcentroid + new Vector3(rendererbnds.size.x * 15,0,0));
+			var vectoExec = newpos - (execcentroid + new Vector3(rendererbnds.size.x * 15,0,rendererbnds.size.z * -5));
 			newpos = newpos + vectoExec/2;
 
 
