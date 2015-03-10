@@ -47,15 +47,15 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -2f;
+            direction = -3f;
         }
         else
         {
-            direction = 2f;
+            direction = 3f;
         }
 
 		if (port.GetComponent<ExecutionPortModel>() != null){
-			direction = direction *1.5f;
+			direction = direction *1f;
 
 			if (direction <1)
 			{
