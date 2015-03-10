@@ -165,7 +165,7 @@ public class PortModel :BaseModel
 		protected void AddPortLabel()
 		{
 			var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
-			var label = GameObject.Instantiate(labelprefab, this.transform.localPosition, Quaternion.identity) as GameObject;
+			var label = GameObject.Instantiate(labelprefab, Vector3.zero, Quaternion.identity) as GameObject;
 			label.GetComponent<RectTransform>().SetParent(this.transform, false);
 			label.AddComponent<UILabel>();
 		}

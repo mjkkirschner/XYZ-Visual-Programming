@@ -6,10 +6,10 @@ using System.Linq;
 
 public class FaceCamera : MonoBehaviour
 {
-	RectTransform m_transform = null;
+	Transform m_transform = null;
 	void Start ()
 	{	
-		m_transform = GetComponent<RectTransform> ();
+		m_transform = GetComponent<Transform> ();
 	}
 	
 	public void Update()

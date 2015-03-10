@@ -47,15 +47,26 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -1f;
+            direction = -2f;
         }
         else
         {
-            direction = 1f;
+            direction = 2f;
         }
 
 		if (port.GetComponent<ExecutionPortModel>() != null){
 			direction = direction *1.5f;
+
+			if (direction <1)
+			{
+				var index = Model.Owner.ExecutionInputs.IndexOf(port.GetComponent<ExecutionPortModel>()) + 1;
+				direction = direction * (index);
+			}
+			else{
+				var index = Model.Owner.ExecutionOutputs.IndexOf(port.GetComponent<ExecutionPortModel>()) + 1;
+				direction = direction * (index);
+			}
+
 		}
 
         port.transform.Translate(0, 0, boundingBox.size.z * direction);
@@ -79,13 +90,17 @@ class PortView : BaseView<PortModel>
         foreach (var currentport in ports)
         {
             var index = ports.IndexOf(currentport);
-            Debug.Log(boundingBox.size.y);
-            Debug.Log(index);
-            Debug.Log(ports.Count);
-            currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
-                ((boundingBox.size.y * 1.5f) * ((float)index / (float)ports.Count)) * 2 - boundingBox.size.y * 1.5f,
+			var portRenderer = port.gameObject.GetComponentInChildren<Renderer>();
+			//alternative algorithm, everytime we add a new port, we'll just iterate
+			//each one by the renderer size of the port * c, stepping down, then we'll just rescale the y axis
+			//of the nodeview UI so that it bounds all ports in the y axis...
+			var stepsize = 6f;
+           currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
+                (portRenderer.bounds.size.y * stepsize) * ((float)index*-1) +(boundingBox.size.y/2) ,
             currentport.gameObject.transform.localPosition.z);
         }
+		//now rescale the model owner UI to bound from 0 - bottom of all ports
+
         return port;
     }
     
