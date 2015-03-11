@@ -31,7 +31,7 @@ class PortView : BaseView<PortModel>
    /// </summary>
    /// <param name="port"></param>
    /// <returns></returns>
-    public GameObject PositionNewPort(GameObject port)
+    public virtual GameObject PositionNewPort(GameObject port)
     {
 
         //bb of go
@@ -47,27 +47,14 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -3f;
+            direction = -4f;
         }
         else
         {
-            direction = 3f;
+            direction = 4f;
         }
 
-		if (port.GetComponent<ExecutionPortModel>() != null){
-			direction = direction *1f;
-
-			if (direction <1)
-			{
-				var index = Model.Owner.ExecutionInputs.IndexOf(port.GetComponent<ExecutionPortModel>()) + 1;
-				direction = direction * (index);
-			}
-			else{
-				var index = Model.Owner.ExecutionOutputs.IndexOf(port.GetComponent<ExecutionPortModel>()) + 1;
-				direction = direction * (index);
-			}
-
-		}
+		
 
         port.transform.Translate(0, 0, boundingBox.size.z * direction);
         port.transform.localScale = new Vector3(.33f, .33f, .33f);
@@ -99,7 +86,6 @@ class PortView : BaseView<PortModel>
                 (portRenderer.bounds.size.y * stepsize) * ((float)index*-1) +(boundingBox.size.y/2) ,
             currentport.gameObject.transform.localPosition.z);
         }
-		//now rescale the model owner UI to bound from 0 - bottom of all ports
 
         return port;
     }
