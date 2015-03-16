@@ -19,7 +19,7 @@ public class dummyLayoutElement : MonoBehaviour
 			
 			if (toBound.GetComponentInParent<ExecutionPortModel>() != null)
 			{	//if we represent a execution port then dont expand the dummy
-			//	return;
+				return;
 			}
 			//on start calculate the renderbounds of go
 			bounds = toBound.GetComponentInChildren<Renderer>().bounds;

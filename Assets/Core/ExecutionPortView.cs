@@ -33,21 +33,21 @@ using Nodeplay.UI;
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -1f;
+            direction = -.33f;
         }
         else
         {
-            direction = 1f;
+            direction = .33f;
         }
 
 		
+		port.transform.localScale = new Vector3(.33f, .33f, .33f);
 
-        port.transform.Translate(0, 0, direction);
+        port.transform.Translate(0, 0, direction,Space.Self);
 		if (direction<0)
 		{
 			port.transform.Rotate(new Vector3(0,180,0));
 		}
-		port.transform.localScale = new Vector3(.33f, .33f, .33f);
         // now we need to move the port in relation up or down to all other execution ports,
         // and possibly adjust other ports as well
 
