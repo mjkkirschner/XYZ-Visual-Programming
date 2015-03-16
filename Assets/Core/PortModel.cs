@@ -162,7 +162,7 @@ public class PortModel :BaseModel
 
         }
 
-		protected void AddPortLabel()
+		protected virtual void AddPortLabel()
 		{
 			var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
 			var label = GameObject.Instantiate(labelprefab, Vector3.zero, Quaternion.identity) as GameObject;

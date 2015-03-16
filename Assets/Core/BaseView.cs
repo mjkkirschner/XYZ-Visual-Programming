@@ -23,7 +23,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     protected Color originalcolor;
 	protected Color highlightcolor = Color.green;
 	protected Vector3 NormalScale = new Vector3(1,1,1);
-	protected Vector3 HoverScale = new Vector3(1.5f,1.5f,1.5f);
+	protected Vector3 HoverScale = new Vector3(1.2f,1.2f,1.2f);
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected float dist_to_camera;

@@ -66,11 +66,11 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            ports = Model.Owner.Inputs.Concat(Model.Owner.ExecutionInputs.Cast<PortModel>()).ToList();
+			ports = Model.Owner.Inputs;
         }
         else
         {
-			ports = Model.Owner.Outputs.Concat(Model.Owner.ExecutionOutputs.Cast<PortModel>()).ToList();
+			ports = Model.Owner.Outputs;
         }
 
 

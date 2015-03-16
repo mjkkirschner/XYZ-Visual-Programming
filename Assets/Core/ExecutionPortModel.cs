@@ -30,8 +30,16 @@ using System.ComponentModel;
 
             return UI;
 
-
-
         }
+
+	protected override void AddPortLabel()
+	{
+		var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
+		var label = GameObject.Instantiate(labelprefab, Vector3.zero, Quaternion.identity) as GameObject;
+		var labelAttachment = this.transform.GetChild(0).Find("port");
+		label.GetComponent<RectTransform>().SetParent(this.transform, false);
+		label.transform.Translate (0,0,labelAttachment.transform.position.z*-15 + (label.GetComponent<RectTransform>().sizeDelta.x/200));
+		label.AddComponent<UILabel>();
+	}
     }
 
