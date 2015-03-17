@@ -30,13 +30,12 @@ public class ConnectorModel : BaseModel
 			ConnectorConnected (this, e);
 		}
 
-		protected virtual void OnEnable ()
+		protected override void OnEnable ()
 		{
 				//create a connector view
             View = this.gameObject.AddComponent<ConnectorView>();
 				View.Model = this;
-				
-
+			
 		}
 
 		

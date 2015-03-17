@@ -31,10 +31,7 @@ else:
 	ElseBranch();
 done()";
 		
-			
-			//Code = "for i in range(input1*2):" +Environment.NewLine +
-			//		"\t"+"onIteration()" + Environment.NewLine+
-			
+
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 		}
 		
@@ -43,6 +40,8 @@ done()";
 			var tempUI = base.BuildSceneElements();
 			tempUI.GetComponent<Renderer>().material.color = Color.cyan;
 			tempUI.AddComponent<BoundingRenderer>();
+			tempUI.GetComponent<BoundingRenderer> ().initialze (new List<int> (){0,1}, 
+			new List<Color>() {Color.cyan,new Color(.7f,.4f,.1f)});
 			return tempUI;
 			
 		}

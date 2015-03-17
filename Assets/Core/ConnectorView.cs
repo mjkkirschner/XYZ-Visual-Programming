@@ -74,7 +74,7 @@ public class ConnectorView:BaseView<ConnectorModel>
         {
             
         }
-        public List<GameObject> redraw()
+        public virtual List<GameObject> redraw()
         {
             var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position,geometryToRepeat);
             if (UI != null)
@@ -83,7 +83,7 @@ public class ConnectorView:BaseView<ConnectorModel>
             }
             return geo;
         }
-		public List<GameObject> redraw(GameObject explicitgeoToRepeat)
+		public virtual List<GameObject> redraw(GameObject explicitgeoToRepeat)
 		{
 			var geo = redraw(StartPort.gameObject.transform.position, EndPort.gameObject.transform.position, explicitgeoToRepeat);
 			if (UI != null)

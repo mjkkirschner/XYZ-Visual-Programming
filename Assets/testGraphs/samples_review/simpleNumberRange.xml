@@ -1,0 +1,25 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="9fadecaf-b13c-44e1-8aa0-0deacb055f7f" nickname="node StartExecution9fadecaf-b13c-44e1-8aa0-0deacb055f7f" x="-10.15901" y="16.39587" z="-22.03038">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="8d7520f9-76e5-4348-b764-91c9037da108" nickname="node Number8d7520f9-76e5-4348-b764-91c9037da108" x="-20.08171" y="11.50165" z="-13.39761">
+      <nodeinputdict Code="OUTPUT = 1;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.NumberRange type="Nodeplay.Nodes.NumberRange" guid="752b344c-c263-406d-b128-06f08230b7e8" nickname="node NumberRange752b344c-c263-406d-b128-06f08230b7e8" x="-36.27281" y="12.69971" z="-8.335169">
+      <nodeinputdict />
+    </Nodeplay.Nodes.NumberRange>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="8bfc09f5-269a-4872-99d0-19653f6394a0" nickname="node Number8bfc09f5-269a-4872-99d0-19653f6394a0" x="-22.47212" y="17.25194" z="-15.94299">
+      <nodeinputdict Code="OUTPUT = 15;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="8d7520f9-76e5-4348-b764-91c9037da108" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="0" portType="0" />
+    <ConnectorModel start="8bfc09f5-269a-4872-99d0-19653f6394a0" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="1" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="9fadecaf-b13c-44e1-8aa0-0deacb055f7f" start_index="0" end="8d7520f9-76e5-4348-b764-91c9037da108" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="8d7520f9-76e5-4348-b764-91c9037da108" start_index="0" end="8bfc09f5-269a-4872-99d0-19653f6394a0" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="8bfc09f5-269a-4872-99d0-19653f6394a0" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +19,14 @@ using System.Linq;
 			geo.ForEach(x => x.transform.parent = UI.transform);
 			return UI;
 		}
+
+	protected override void OnEnable ()
+	{
+		//create a connector view
+		View = this.gameObject.AddComponent<ExecutionConnectorView>();
+		View.Model = this;
+		
+	}
 
     }
 

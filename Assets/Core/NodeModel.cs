@@ -314,10 +314,10 @@ public class NodeModel : BaseModel
 		var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
 
-		UI.AddComponent<Light>().type = LightType.Point;
-		UI.GetComponent<Light>().range = 35;
-		UI.GetComponent<Light>().intensity = .15f;
-		UI.GetComponent<Light>().color = Color.white;
+		//UI.AddComponent<Light>().type = LightType.Point;
+		//UI.GetComponent<Light>().range = 40;
+		//UI.GetComponent<Light>().intensity = .4f;
+		//UI.GetComponent<Light>().color = Color.white;
 		return UI;
 
 

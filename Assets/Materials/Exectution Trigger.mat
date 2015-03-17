@@ -2,13 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Exectution Trigger
   m_Shader: {fileID: 6, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: []
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   m_SavedProperties:
     serializedVersion: 2
@@ -36,14 +37,14 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _Illum
+          name: _ParallaxMap
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _ParallaxMap
+          name: _Illum
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
@@ -80,14 +81,22 @@ Material:
       data:
         first:
           name: _Shininess
-        second: .241757885
+        second: .0199999996
       data:
         first:
-          name: _EmissionLM
-        second: 0
+          name: _Parallax
+        second: .0199999996
       data:
         first:
           name: _Stencil
+        second: 0
+      data:
+        first:
+          name: _StencilComp
+        second: 8
+      data:
+        first:
+          name: _StencilOp
         second: 0
       data:
         first:
@@ -99,20 +108,12 @@ Material:
         second: 255
       data:
         first:
-          name: _StencilComp
-        second: 8
-      data:
-        first:
-          name: _StencilOp
-        second: 0
-      data:
-        first:
           name: _ColorMask
         second: 15
       data:
         first:
-          name: _Parallax
-        second: .0199999996
+          name: _EmissionLM
+        second: 0
       data:
         first:
           name: _Outline
@@ -145,7 +146,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: .433823526, g: .433823526, b: .433823526, a: 1}
+        second: {r: .242647052, g: .242647052, b: .242647052, a: 1}
       data:
         first:
           name: _SpecColor

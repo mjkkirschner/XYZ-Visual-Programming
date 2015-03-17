@@ -10,14 +10,23 @@ namespace Nodeplay.UI
 	{
 
 		public NodeModel Model;
-
-		public GameObject tempgeo;
+		private bool initialzed = false;
+		private List<Color> branchColors;
+		private List<int> branchIndicies;
+		public List<GameObject> tempgeos = new List<GameObject>();
 		// Use this for initialization
 		void Start()
 		{
 			Model = this.GetComponentInParent<NodeModel>();
 		}
 
+
+		public void initialze (List<int>indicies, List<Color> colors)
+		{
+			branchIndicies = indicies;
+			branchColors = colors;
+			initialzed = true;
+		}
 
 		public static List<GameObject> BFS(GameObject root)
 		{
@@ -50,7 +59,7 @@ namespace Nodeplay.UI
 		}
 
 
-		public GameObject GenerateBounds(List<GameObject> toBound)
+		public GameObject GenerateBounds(List<GameObject> toBound,Color matColor)
 		{
 			Vector3 center = Vector3.zero;
 			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
@@ -67,28 +76,32 @@ namespace Nodeplay.UI
 			xx.transform.localPosition = totalBounds.center;
 			xx.GetComponent<Collider>().enabled = false;
 			xx.GetComponent<Renderer>().material = Resources.Load("NestingZone") as Material;
+			xx.GetComponent<Renderer> ().material.color = new Color(matColor.r,matColor.g,matColor.b,.28f);
 			return xx;
 		}
 
 		// Update is called once per frame
 		void Update()
 		{
+			if (initialzed) {
 
-
-			//generate the bounds of all gameobjects downstream from the first execution connector
-			//could also search for the port with the correct naming convention
-			if (Model.ExecutionOutputs[0].IsConnected)
-			{
-				var visited = BFS(Model.ExecutionOutputs[0].connectors[0].PEnd.Owner.gameObject);
-				if (visited.Any(x=>x.transform.hasChanged == true))
+				//LOOP over each index and color
+				foreach (var index in branchIndicies)
 				{
-					if (tempgeo != null)
-					{
-						GameObject.Destroy(tempgeo);
-					}
-					tempgeo = GenerateBounds(visited);
-				}
 
+				//generate the bounds of all gameobjects downstream from the first execution connector
+				//could also search for the port with the correct naming convention
+				if (Model.ExecutionOutputs [index].IsConnected) {
+					var visited = BFS (Model.ExecutionOutputs [index].connectors[0].PEnd.Owner.gameObject);
+					if (visited.Any (x => x.transform.hasChanged == true)) {
+							if (tempgeos != null) {
+								tempgeos.ForEach(x=>GameObject.DestroyImmediate(x));
+							}
+						tempgeos.Add(GenerateBounds (visited,branchColors[branchIndicies.IndexOf(index)]));
+						}
+					}
+				}
+			
 			}
 		}
 	}

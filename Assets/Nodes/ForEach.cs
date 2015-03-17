@@ -8,7 +8,7 @@ using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class ForLoopTest : NodeModel
+	public class ForEach : NodeModel
 	{
 		
 		
@@ -17,22 +17,22 @@ namespace Nodeplay.Nodes
 			base.Start();
 			AddOutPutPort("OUTPUT");
 			AddInputPort("input1");
-
+			
 			AddExecutionInputPort("start");
-
+			
 			AddExecutionOutPutPort("onIteration");
 			AddExecutionOutPutPort("onIterated");
-
-            Code = @"for i in range(input1):
+			
+			Code = @"for i in input1:
 	OUTPUT = i
 	onIteration()
 	print('iterated',i)
 onIterated()
 print('finished')";
-
+			
 			//Code = "for i in range(input1*2):" +Environment.NewLine +
 			//		"\t"+"onIteration()" + Environment.NewLine+
-
+			
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 		}
 		
