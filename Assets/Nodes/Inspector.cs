@@ -51,7 +51,7 @@ namespace Nodeplay.Nodes
 
 			output["passThrough"] = tempx;
 			//this just calls the execution trigger
-			(inputstate["EndInspector"] as Delegate).DynamicInvoke();
+			(inputstate["EndInspector"] as Action).Invoke();
 			return output;
 
 		}

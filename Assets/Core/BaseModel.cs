@@ -34,7 +34,7 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected virtual void NotifyPropertyChanged(String info)
     {
-        Debug.Log("sending " + info + " change notification");
+        //Debug.Log("sending " + info + " change notification");
         if (PropertyChanged != null)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(info));

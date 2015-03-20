@@ -121,6 +121,11 @@ public class NodeModel : BaseModel
 		}
 	}
 
+	ExplicitGraphExecution explicitGraphExecution {
+		get;
+		set;
+	}
+
     protected override void Start()
     {
 		base.Start();
@@ -133,7 +138,7 @@ public class NodeModel : BaseModel
         Outputs = new List<PortModel>();
 		ExecutionInputs = new List<ExecutionPortModel>();
 		ExecutionOutputs = new List<ExecutionPortModel>();
-
+		explicitGraphExecution = GameObject.FindObjectOfType<ExplicitGraphExecution> ();
 		//this dictionary might be loaded when the node is laoded 
 		//and we dont want to erase it
 		if (UIInputValueDict == null){
@@ -348,7 +353,7 @@ public class NodeModel : BaseModel
         var inputdata = new List<Tuple<string, System.Object>>();
         foreach (var port in Inputs)
         {
-            Debug.Log("gathering input port data on node" + name);
+            //Debug.Log("gathering input port data on node" + name);
             //TODO instead of looking for the owners stored value we either need to look at the stored value of
             // at the port, or storedValue will be a dictionray of output port values where we can index in using 
             // some index, not sure what index we'll have... we need to support multiple outs from one port
@@ -358,7 +363,7 @@ public class NodeModel : BaseModel
             //TODO add a check for the storedvaluedict returning key exception 
             var outputConnectedToThisInput = port.connectors[0].PStart;
             var portInputPackage = Tuple.New(port.NickName, outputConnectedToThisInput.Owner.StoredValueDict[outputConnectedToThisInput.NickName]);
-            Debug.Log("created a port package " + portInputPackage.First + " : " + portInputPackage.Second.ToString());
+            //Debug.Log("created a port package " + portInputPackage.First + " : " + portInputPackage.Second.ToString());
             inputdata.Add(portInputPackage);
         }
         return inputdata;
@@ -377,21 +382,22 @@ public class NodeModel : BaseModel
 			//TODO somehow when creating this execution package we'll look at the connector at the index,
 			// this connector type will contain the type of yeildinstruction to use for the task
 			int indexCopy = trigger.Index;
-            var currentTask = GameObject.FindObjectOfType<ExplicitGraphExecution>().CurrentTask;
+
+			var currentTask = explicitGraphExecution.CurrentTask;
 			var currentNode = this;
 
 			Action storeMethodOnStack = () => {
-				Debug.Log("we're currently executing a closure which points to some task insertion");
-				Debug.Log("index copy is" + indexCopy.ToString()); 
-				Debug.Log("currentTask is" + currentTask.ID); 
-				Debug.Log("currentNode is" + currentNode.name); 
+				//Debug.Log("we're currently executing a closure which points to some task insertion");
+				//Debug.Log("index copy is" + indexCopy.ToString()); 
+				//Debug.Log("currentTask is" + currentTask.ID); 
+				//Debug.Log("currentNode is" + currentNode.name); 
                  var currentVariablesOnModel = Evaluator.PollScopeForOutputs(Outputs.Select(x => x.NickName).ToList());
-                 GameObject.FindObjectOfType<ExplicitGraphExecution>().TaskSchedule.InsertTask(
-                 new Task(currentTask, currentNode, indexCopy, new Action(() => CallOutPut(indexCopy, currentVariablesOnModel)), new WaitForSeconds(.1f)));
+                 explicitGraphExecution.TaskSchedule.InsertTask(
+                 new Task(currentTask, currentNode, indexCopy, new Action(() => CallOutPut(indexCopy, currentVariablesOnModel)), new WaitForEndOfFrame()));
             };
 			var outputPackage = Tuple.New<string,System.Action>(trigger.NickName,storeMethodOnStack);
 			outputTriggers.Add(outputPackage);
-			Debug.Log("gathering trigger delegate on node " + name +", this will call method named " +trigger.NickName+ "at: " + trigger.Index);
+			//Debug.Log("gathering trigger delegate on node " + name +", this will call method named " +trigger.NickName+ "at: " + trigger.Index);
 
 		}
 		return outputTriggers;
@@ -402,16 +408,16 @@ public class NodeModel : BaseModel
 	public void CallOutPut(int index, Dictionary<string,object> intermediateVariableModelValues)
 	{
 
-		Debug.Log("trying to get the output on " + this + "at index " + index);
+		//Debug.Log("trying to get the output on " + this + "at index " + index);
 		var trigger = this.ExecutionOutputs[index];
-		Debug.Log(ExecutionOutputs[index].NickName +  " is the output we found at that index");
+		//Debug.Log(ExecutionOutputs[index].NickName +  " is the output we found at that index");
 		if (trigger.IsConnected){
-		Debug.Log("this trigger was connected");
-        Debug.Log("about to trigger execution on downstream node, gathering existing output variables from the saved scope");
+		//Debug.Log("this trigger was connected");
+       // Debug.Log("about to trigger execution on downstream node, gathering existing output variables from the saved scope");
         this.StoredValueDict = intermediateVariableModelValues;
 
 		var nextNode = trigger.connectors[0].PEnd.Owner;
-		Debug.Log("about to evaluate " + nextNode);
+		//Debug.Log("about to evaluate " + nextNode);
 
 			nextNode.Evaluate();
 
@@ -429,7 +435,7 @@ public class NodeModel : BaseModel
 */
     protected virtual void OnEvaluation()
     {
-        Debug.Log("sending a evaluation state change");
+        //Debug.Log("sending a evaluation state change");
         if (Evaluation != null)
         {
             Evaluation(this, EventArgs.Empty);
@@ -438,7 +444,7 @@ public class NodeModel : BaseModel
 
     protected virtual void OnEvaluated()
     {
-        Debug.Log("sending a evaluation state change");
+        //Debug.Log("sending a evaluation state change");
         if (Evaluated != null)
         {
             Evaluated(this, EventArgs.Empty);

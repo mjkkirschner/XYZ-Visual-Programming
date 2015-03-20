@@ -1,0 +1,80 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="9fadecaf-b13c-44e1-8aa0-0deacb055f7f" nickname="node StartExecution9fadecaf-b13c-44e1-8aa0-0deacb055f7f" x="24.5" y="32" z="-45.9">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="8d7520f9-76e5-4348-b764-91c9037da108" nickname="node Number8d7520f9-76e5-4348-b764-91c9037da108" x="17" y="32" z="-31.55881">
+      <nodeinputdict Code="OUTPUT = 1;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.NumberRange type="Nodeplay.Nodes.NumberRange" guid="752b344c-c263-406d-b128-06f08230b7e8" nickname="node NumberRange752b344c-c263-406d-b128-06f08230b7e8" x="2" y="32" z="3.60738">
+      <nodeinputdict />
+    </Nodeplay.Nodes.NumberRange>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="8bfc09f5-269a-4872-99d0-19653f6394a0" nickname="node Number8bfc09f5-269a-4872-99d0-19653f6394a0" x="9.5" y="32" z="-17.21762">
+      <nodeinputdict Code="OUTPUT = 7;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.ForEach type="Nodeplay.Nodes.ForEach" guid="5baa8e62-02c1-4546-aa22-d3290997f819" nickname="node ForEach5baa8e62-02c1-4546-aa22-d3290997f819" x="-11.81293" y="44.87502" z="28.55088">
+      <nodeinputdict />
+    </Nodeplay.Nodes.ForEach>
+    <Nodeplay.Nodes.ForEach type="Nodeplay.Nodes.ForEach" guid="d85acaaf-0645-4d26-8900-951211deed7d" nickname="node ForEachd85acaaf-0645-4d26-8900-951211deed7d" x="-18.26697" y="39.50179" z="43.4763">
+      <nodeinputdict />
+    </Nodeplay.Nodes.ForEach>
+    <UnityEngineNodes.GameobjectCreateCubeNode type="UnityEngineNodes.GameobjectCreateCubeNode" guid="bab94979-209b-4be6-9892-8f9906e62e6b" nickname="node GameobjectCreateCubeNodebab94979-209b-4be6-9892-8f9906e62e6b" x="-69.08648" y="54.63958" z="164.3089">
+      <nodeinputdict />
+    </UnityEngineNodes.GameobjectCreateCubeNode>
+    <Nodeplay.Nodes.ForEach type="Nodeplay.Nodes.ForEach" guid="4df5004c-95f6-4c33-9064-ed1d8cb76017" nickname="node ForEach4df5004c-95f6-4c33-9064-ed1d8cb76017" x="-22.06422" y="49.40496" z="52.85938">
+      <nodeinputdict />
+    </Nodeplay.Nodes.ForEach>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="066e1388-ce0e-466f-89a2-409d8fdb31d5" nickname="node Number066e1388-ce0e-466f-89a2-409d8fdb31d5" x="0.09955692" y="14.97784" z="14.83068">
+      <nodeinputdict Code="OUTPUT = unity.Vector3(3,3,3);VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <UnityEngineNodes.Vector3DistanceNode type="UnityEngineNodes.Vector3DistanceNode" guid="205cfd8a-f157-49bc-af7a-a70822415752" nickname="node Vector3DistanceNode205cfd8a-f157-49bc-af7a-a70822415752" x="-37.06422" y="49.40496" z="94.50942">
+      <nodeinputdict />
+    </UnityEngineNodes.Vector3DistanceNode>
+    <UnityEngineNodes.Vector3byXYZNode type="UnityEngineNodes.Vector3byXYZNode" guid="f768aa19-7fae-4946-842f-a9d2e79006c6" nickname="node Vector3byXYZNodef768aa19-7fae-4946-842f-a9d2e79006c6" x="-29.56422" y="49.40496" z="73.68438">
+      <nodeinputdict />
+    </UnityEngineNodes.Vector3byXYZNode>
+    <Nodeplay.Nodes.Comparison type="Nodeplay.Nodes.Comparison" guid="b36ab1de-866a-422f-88a4-1d7ef3519988" nickname="node Comparisonb36ab1de-866a-422f-88a4-1d7ef3519988" x="-53.51368" y="50.70079" z="129.71">
+      <nodeinputdict Code="boolean = x&lt;y;compared()" />
+    </Nodeplay.Nodes.Comparison>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="80f0ce8a-9746-4222-bf7f-fdf3e4377eb4" nickname="node Number80f0ce8a-9746-4222-bf7f-fdf3e4377eb4" x="-46.01368" y="50.70079" z="108.885">
+      <nodeinputdict Code="OUTPUT = 2;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.IF type="Nodeplay.Nodes.IF" guid="e9f4962f-112d-4ea0-91e0-76b31547d224" nickname="node IFe9f4962f-112d-4ea0-91e0-76b31547d224" x="-60.19274" y="47.73032" z="144.7157">
+      <nodeinputdict />
+    </Nodeplay.Nodes.IF>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="8d7520f9-76e5-4348-b764-91c9037da108" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="0" portType="0" />
+    <ConnectorModel start="752b344c-c263-406d-b128-06f08230b7e8" start_index="0" end="5baa8e62-02c1-4546-aa22-d3290997f819" end_index="0" portType="0" />
+    <ConnectorModel start="752b344c-c263-406d-b128-06f08230b7e8" start_index="0" end="d85acaaf-0645-4d26-8900-951211deed7d" end_index="0" portType="0" />
+    <ConnectorModel start="752b344c-c263-406d-b128-06f08230b7e8" start_index="0" end="4df5004c-95f6-4c33-9064-ed1d8cb76017" end_index="0" portType="0" />
+    <ConnectorModel start="8bfc09f5-269a-4872-99d0-19653f6394a0" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="1" portType="0" />
+    <ConnectorModel start="8bfc09f5-269a-4872-99d0-19653f6394a0" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="1" portType="0" />
+    <ConnectorModel start="5baa8e62-02c1-4546-aa22-d3290997f819" start_index="0" end="bab94979-209b-4be6-9892-8f9906e62e6b" end_index="0" portType="0" />
+    <ConnectorModel start="5baa8e62-02c1-4546-aa22-d3290997f819" start_index="0" end="f768aa19-7fae-4946-842f-a9d2e79006c6" end_index="0" portType="0" />
+    <ConnectorModel start="d85acaaf-0645-4d26-8900-951211deed7d" start_index="0" end="bab94979-209b-4be6-9892-8f9906e62e6b" end_index="1" portType="0" />
+    <ConnectorModel start="d85acaaf-0645-4d26-8900-951211deed7d" start_index="0" end="f768aa19-7fae-4946-842f-a9d2e79006c6" end_index="1" portType="0" />
+    <ConnectorModel start="4df5004c-95f6-4c33-9064-ed1d8cb76017" start_index="0" end="bab94979-209b-4be6-9892-8f9906e62e6b" end_index="2" portType="0" />
+    <ConnectorModel start="4df5004c-95f6-4c33-9064-ed1d8cb76017" start_index="0" end="f768aa19-7fae-4946-842f-a9d2e79006c6" end_index="2" portType="0" />
+    <ConnectorModel start="066e1388-ce0e-466f-89a2-409d8fdb31d5" start_index="0" end="205cfd8a-f157-49bc-af7a-a70822415752" end_index="1" portType="0" />
+    <ConnectorModel start="205cfd8a-f157-49bc-af7a-a70822415752" start_index="0" end="b36ab1de-866a-422f-88a4-1d7ef3519988" end_index="0" portType="0" />
+    <ConnectorModel start="f768aa19-7fae-4946-842f-a9d2e79006c6" start_index="0" end="205cfd8a-f157-49bc-af7a-a70822415752" end_index="0" portType="0" />
+    <ConnectorModel start="b36ab1de-866a-422f-88a4-1d7ef3519988" start_index="0" end="e9f4962f-112d-4ea0-91e0-76b31547d224" end_index="0" portType="0" />
+    <ConnectorModel start="80f0ce8a-9746-4222-bf7f-fdf3e4377eb4" start_index="0" end="b36ab1de-866a-422f-88a4-1d7ef3519988" end_index="1" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="9fadecaf-b13c-44e1-8aa0-0deacb055f7f" start_index="0" end="8d7520f9-76e5-4348-b764-91c9037da108" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="8d7520f9-76e5-4348-b764-91c9037da108" start_index="0" end="8bfc09f5-269a-4872-99d0-19653f6394a0" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="752b344c-c263-406d-b128-06f08230b7e8" start_index="0" end="066e1388-ce0e-466f-89a2-409d8fdb31d5" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="8bfc09f5-269a-4872-99d0-19653f6394a0" start_index="0" end="752b344c-c263-406d-b128-06f08230b7e8" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="5baa8e62-02c1-4546-aa22-d3290997f819" start_index="0" end="d85acaaf-0645-4d26-8900-951211deed7d" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="d85acaaf-0645-4d26-8900-951211deed7d" start_index="0" end="4df5004c-95f6-4c33-9064-ed1d8cb76017" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="4df5004c-95f6-4c33-9064-ed1d8cb76017" start_index="0" end="f768aa19-7fae-4946-842f-a9d2e79006c6" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="066e1388-ce0e-466f-89a2-409d8fdb31d5" start_index="0" end="5baa8e62-02c1-4546-aa22-d3290997f819" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="205cfd8a-f157-49bc-af7a-a70822415752" start_index="0" end="80f0ce8a-9746-4222-bf7f-fdf3e4377eb4" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="f768aa19-7fae-4946-842f-a9d2e79006c6" start_index="0" end="205cfd8a-f157-49bc-af7a-a70822415752" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="b36ab1de-866a-422f-88a4-1d7ef3519988" start_index="0" end="e9f4962f-112d-4ea0-91e0-76b31547d224" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="80f0ce8a-9746-4222-bf7f-fdf3e4377eb4" start_index="0" end="b36ab1de-866a-422f-88a4-1d7ef3519988" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="e9f4962f-112d-4ea0-91e0-76b31547d224" start_index="0" end="bab94979-209b-4be6-9892-8f9906e62e6b" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

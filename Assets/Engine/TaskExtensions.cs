@@ -20,9 +20,9 @@ namespace Nodeplay.Engine
         {
             //scan the current task list
             //looking for the index of the caller
-            Debug.Log("<color=green>Task insertion:</color>I am a Task of type" + task.NodeCalled + " my caller task was " + task.Caller.NodeRunningOn);
+            //Debug.Log("<color=green>Task insertion:</color>I am a Task of type" + task.NodeCalled + " my caller task was " + task.Caller.NodeRunningOn);
             var callerindex = taskSchedule.FindLastIndex(x => x == task.Caller || x.Caller == task.Caller);
-            Debug.Log("inserting at index " + callerindex);
+            //Debug.Log("inserting at index " + callerindex);
 
 
             taskSchedule.Insert(callerindex + 1, task);

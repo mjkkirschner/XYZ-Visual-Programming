@@ -12,6 +12,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using System.ComponentModel;
 
 public class ConnectorView:BaseView<ConnectorModel>
 {
@@ -115,10 +116,12 @@ public class ConnectorView:BaseView<ConnectorModel>
 		}
 
 
-		public void HandlePortChanges (object sender, EventArgs args)
+		public void HandlePortChanges (object sender, PropertyChangedEventArgs args)
 		{
-				Debug.Log (sender + " just sent event that port was modified and we should update the connector view");
-				redraw ();
+				//only redraw if we're forwarding a location change
+		if (args.PropertyName == "OwnerPropertiesLocation") {
+			redraw ();
+		}
 		}
 
 

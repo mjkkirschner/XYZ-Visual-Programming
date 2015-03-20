@@ -35,7 +35,7 @@ namespace Nodeplay.Nodes
 			var x = ((VariableReference)variable).Get();
 
 			output["variable_value"] = x;
-			(inputstate["done"] as Delegate).DynamicInvoke();
+			(inputstate["done"] as Action).Invoke();
 			return output;
 
 		}

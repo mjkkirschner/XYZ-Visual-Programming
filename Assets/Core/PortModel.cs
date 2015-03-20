@@ -124,9 +124,10 @@ public class PortModel :BaseModel
 
 		/// this handler is used to respond to changes on the node owner of this port
 		// right now it just forwards the notification
-		public void NodePropertyChangeEventHandler (object sender, EventArgs args)
+		public void NodePropertyChangeEventHandler (object sender, PropertyChangedEventArgs args)
 		{
-				NotifyPropertyChanged ("OwnerProperties");
+				//forward the event args from the owner
+				NotifyPropertyChanged ("OwnerProperties" + args.PropertyName);
 
 		}
 

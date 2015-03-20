@@ -64,6 +64,7 @@ namespace Nodeplay.Engine
 				if (IntermediateOutValues.ContainsKey(outname))
 				{
 					outdict[outname] = IntermediateOutValues[outname];
+					//Debug.Log(outname + " was currently equal to" + outdict[outname]);
 				}
 				else
 				{
@@ -81,7 +82,7 @@ namespace Nodeplay.Engine
 			var executionPointers = evalpackage.ExecutionPointers;
 
 			Code = evalpackage.CodePointer;
-			Debug.Log("CODE is of type" + Code.GetType().ToString());
+			//Debug.Log("CODE is of type" + Code.GetType().ToString());
 			using (var memoryStream = new MemoryStream())
 			{
 
@@ -97,7 +98,7 @@ namespace Nodeplay.Engine
 					}
 					else
 					{
-						Debug.Log("added a space in the outdict in the csharp evaluator with name " + outname);
+						//Debug.Log("added a space in the outdict in the csharp evaluator with name " + outname);
 						outdict[outname] = null;
 					}
 				}
@@ -109,13 +110,13 @@ namespace Nodeplay.Engine
 				{
 					var index = variableNames.IndexOf(variable);
 					inputdict[variable] =  variableValues[index];
-					Debug.Log("setting" + variable + "to" + variableValues[index].ToString());
+					//Debug.Log("setting" + variable + "to" + variableValues[index].ToString());
 				}
 
 				foreach (var pointer in executionPointers)
 				{
 					inputdict[pointer.First] = pointer.Second;
-					Debug.Log("setting " + pointer.First + " to " + pointer.Second.ToString() + " in csharp context");
+					//Debug.Log("setting " + pointer.First + " to " + pointer.Second.ToString() + " in csharp context");
 				}
 
 				//redirect the output for this delegate

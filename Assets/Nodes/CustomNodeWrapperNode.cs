@@ -162,7 +162,7 @@ namespace Nodeplay.Nodes
 						//I think instead of calling this pointer directly, we want to insert this as a task...lets try it
 						//Funcdef.InputExecutionNodes[0].pointerToFirstNodeInGraph.DynamicInvoke();
 						var triggerName = Funcdef.InputExecutionNodes.First ().Symbol;
-						(inputstate ["done"] as Delegate).DynamicInvoke ();
+						(inputstate ["done"] as Action).Invoke ();
 						return intermediateOutVals;
 				}
 

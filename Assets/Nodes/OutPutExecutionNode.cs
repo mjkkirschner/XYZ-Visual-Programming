@@ -20,7 +20,7 @@ namespace Nodeplay.Nodes
 	/// </summary>
 	public class OutPutExecutionNode : DelegateNodeModel
 	{
-		public Delegate PointerToAnOutputOnWrapper{get;set;}
+		public Action PointerToAnOutputOnWrapper{get;set;}
 		public CustomNodeWrapper CustomNodeWrapperCaller {get;set;}
 		private string symbol = "";
 		public string Symbol {
@@ -58,7 +58,7 @@ namespace Nodeplay.Nodes
 			var evaldata = CustomNodeWrapperCaller.Executiondata;
 			var output = intermediateOutVals;
 			PointerToAnOutputOnWrapper = evaldata.Where(x=>x.First==Symbol).Select(y=>y.Second).First();
-			PointerToAnOutputOnWrapper.DynamicInvoke ();
+			PointerToAnOutputOnWrapper.Invoke ();
 			return output;
 			
 		}

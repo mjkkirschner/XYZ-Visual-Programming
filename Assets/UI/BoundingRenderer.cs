@@ -76,7 +76,7 @@ namespace Nodeplay.UI
 			xx.transform.localPosition = totalBounds.center;
 			xx.GetComponent<Collider>().enabled = false;
 			xx.GetComponent<Renderer>().material = Resources.Load("NestingZone") as Material;
-			xx.GetComponent<Renderer> ().material.color = new Color(matColor.r,matColor.g,matColor.b,.28f);
+			xx.GetComponent<Renderer> ().material.color = new Color(matColor.r,matColor.g,matColor.b,.25f);
 			return xx;
 		}
 
@@ -84,7 +84,9 @@ namespace Nodeplay.UI
 		void Update()
 		{
 			if (initialzed) {
-
+				if (tempgeos != null) {
+					tempgeos.ForEach(x=>GameObject.DestroyImmediate(x));
+				}
 				//LOOP over each index and color
 				foreach (var index in branchIndicies)
 				{
@@ -94,9 +96,7 @@ namespace Nodeplay.UI
 				if (Model.ExecutionOutputs [index].IsConnected) {
 					var visited = BFS (Model.ExecutionOutputs [index].connectors[0].PEnd.Owner.gameObject);
 					if (visited.Any (x => x.transform.hasChanged == true)) {
-							if (tempgeos != null) {
-								tempgeos.ForEach(x=>GameObject.DestroyImmediate(x));
-							}
+
 						tempgeos.Add(GenerateBounds (visited,branchColors[branchIndicies.IndexOf(index)]));
 						}
 					}

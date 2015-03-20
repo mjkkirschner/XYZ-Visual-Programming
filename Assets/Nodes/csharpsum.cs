@@ -35,7 +35,7 @@ namespace Nodeplay.Nodes
 			Debug.Log(tempy);
 			var sum = (int)tempx + (int)tempy;
 			output["OUTPUT"] = sum;
-			(inputstate["done"] as Delegate).DynamicInvoke();
+			(inputstate["done"] as Action).Invoke();
 			return output;
 
 		}

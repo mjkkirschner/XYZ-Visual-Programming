@@ -4,13 +4,13 @@ using System.Linq;
 using Nodeplay.Interfaces;
 using Nodeplay.Engine;
 using System;
+using System.Collections;
 using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class ForEach : NodeModel
+	public class xForEach : DelegateNodeModel
 	{
-		
 		
 		protected override void Start()
 		{
@@ -23,17 +23,27 @@ namespace Nodeplay.Nodes
 			AddExecutionOutPutPort("onIteration");
 			AddExecutionOutPutPort("onIterated");
 			
-			Code = @"for i in input1:
-	OUTPUT = i
-	onIteration()
-onIterated()";
 			
-			//Code = "for i in range(input1*2):" +Environment.NewLine +
-			//		"\t"+"onIteration()" + Environment.NewLine+
-			
-			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+			CodePointer = CompiledNodeEval;
+			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
 		}
 		
+		protected override Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)
+		{
+			var output = intermediateOutVals;
+			var tempinput1 = inputstate["input1"] as IEnumerable;
+			
+			foreach (var i in tempinput1) 
+			{
+				output["OUTPUT"] = i;
+				(inputstate["onIteration"] as Action).Invoke();
+			}
+
+			(inputstate["onIterated"] as Action).Invoke();
+			return output;
+			
+		}
+
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();
@@ -43,8 +53,6 @@ onIterated()";
 			return tempUI;
 			
 		}
-		
-		
 		
 	}
 }
