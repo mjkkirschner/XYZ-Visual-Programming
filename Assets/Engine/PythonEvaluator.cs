@@ -38,23 +38,23 @@ namespace Nodeplay.Engine
 
              scope = engine.CreateScope();
 			//http://techartsurvival.blogspot.com/2013/12/techartists-doin-it-for-themselves.html#gpluscomments
-			engine.Runtime.LoadAssembly (typeof(PythonIOModule).Assembly);  
-			engine.Runtime.LoadAssembly (typeof(GameObject).Assembly);  
-			engine.Runtime.LoadAssembly (typeof(Editor).Assembly);  
-			string dllpath = System.IO.Path.GetDirectoryName (  
-			                                                  (typeof(ScriptEngine)).Assembly.Location).Replace (  
-			                                                   "\\", "/");  
+			//engine.Runtime.LoadAssembly (typeof(PythonIOModule).Assembly);  
+			//engine.Runtime.LoadAssembly (typeof(GameObject).Assembly);  
+			//engine.Runtime.LoadAssembly (typeof(Editor).Assembly);  
+			//string dllpath = System.IO.Path.GetDirectoryName (  
+			//                                                  (typeof(ScriptEngine)).Assembly.Location).Replace (  
+			//                                                   "\\", "/");  
 
 
 			// load needed modules and paths  
-			StringBuilder init = new StringBuilder ();  
-			init.AppendLine ("import sys");  
-			init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/Lib");  
-			init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/DLLs");  
-			init.AppendLine ("import UnityEngine as unity");  
-			init.AppendLine ("import UnityEditor as editor");  
-			init.AppendLine ("import StringIO");  
-			init.AppendLine ("unity.Debug.Log(\"Python console initialized\")");  
+			//StringBuilder init = new StringBuilder ();  
+			//init.AppendLine ("import sys");  
+			//init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/Lib");  
+			//init.AppendFormat ("sys.path.append(\"{0}\")\n", dllpath + "/DLLs");  
+			//init.AppendLine ("import UnityEngine as unity");  
+			//init.AppendLine ("import UnityEditor as editor");  
+			//init.AppendLine ("import StringIO");  
+			//init.AppendLine ("unity.Debug.Log(\"Python console initialized\")");  
 
 
 			var OutputNames = evalpackage.OutputNames;
@@ -68,14 +68,14 @@ namespace Nodeplay.Engine
                 var index = variableNames.IndexOf(variable);
                 // do we need to do some conversion of this type...TODO
                 scope.SetVariable(variable, variableValues[index]);
-                Debug.Log("setting" + variable + "to" + variableValues[index].ToString());
+                //Debug.Log("setting" + variable + "to" + variableValues[index].ToString());
             }
 
 			foreach (var pointer in ExecutionPointers)
 			{
 
 				scope.SetVariable(pointer.First, pointer.Second);
-				Debug.Log("setting " + pointer.First + " to " + pointer.Second.ToString() + " in python context");
+				//Debug.Log("setting " + pointer.First + " to " + pointer.Second.ToString() + " in python context");
 				//TODO if this list is empty or if the script never exposes these triggers then we need
 				//complain at compile time, throw an exception, or just inject one at the end of the 
 				//script or after this eval returns
@@ -88,7 +88,7 @@ namespace Nodeplay.Engine
                 try
                 {
 
-                    engine.CreateScriptSourceFromString(init.ToString()+script).Execute(scope);
+                    engine.CreateScriptSourceFromString(/*init.ToString()+*/script).Execute(scope);
                 }
                 catch (Exception e)
                 {

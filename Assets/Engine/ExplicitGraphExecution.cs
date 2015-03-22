@@ -35,7 +35,7 @@ namespace Nodeplay.Engine
 			//list of nodemodels where the input list is empty, so
 			// this node has no input ports, or where all inputs are connected...think this does that :P
 			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable ||x is InputExecutionNode) || x is StartExecution).ToList();
-			nodeps.ForEach(x=>Debug.Log(x.name));
+			//nodeps.ForEach(x=>Debug.Log(x.name));
 			return nodeps;
 			
 		}
@@ -85,28 +85,23 @@ namespace Nodeplay.Engine
 			List<Task> actions = entrypoints.Select(x=> new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForSeconds(1))).ToList();
 			TaskSchedule = new List<Task>(actions);
 			
-			
+			Task headOfQueue = null;
 			while (TaskSchedule.Count > 0)
 			{
 				//Debug.Log(S.ToJSONstring());
-				Debug.Log("stack count is "+ TaskSchedule.Count);
-				TaskSchedule.ToList().ForEach(x=>Debug.Log(x.NodeRunningOn.GetType().Name));
-                var headOfQueue = TaskSchedule.First();
-				//TODO this convience method might live on the nodeModel
-				//if (ReadyForEval(topofstack))
-				//{
-					Debug.Log(headOfQueue + " is ready for eval");
-					// then evaluate that sucker
-					//value will be cached on the node for now
-					//TODO what if this node is a data node and requires no evaluation and has no evaluator?
-					
+				//Debug.Log("stack count is "+ TaskSchedule.Count);
+				//TaskSchedule.ToList().ForEach(x=>Debug.Log(x.NodeRunningOn.GetType().Name));
+				foreach (var i in Enumerable.Range(0,100).ToList())
+				{
+					 headOfQueue = TaskSchedule.First();
+
+				
 					//pop the node we are about to evaluate, otherwise we'll never be able to 
-					//
                     
-                   
+
                     CurrentTask = headOfQueue;
 					headOfQueue.MethodCall.Invoke();
-                    TaskSchedule.RemoveAt(0);
+					TaskSchedule.RemoveAt(0);
 					//we can now add the nodes that are attached to this nodes outputs
 					//add Distinct to eliminate adding a node twice , for instance [] = [] (thats 2 connectors, not equals)
 					
@@ -114,7 +109,7 @@ namespace Nodeplay.Engine
 					//childnodes = childnodes.Except(S).ToList();
 					//childnodes.ForEach(x => S.Push(x));
 			//	}
-
+				}
 				if (headOfQueue.Yieldbehavior != null ){
 					yield return headOfQueue.Yieldbehavior;
 					}
