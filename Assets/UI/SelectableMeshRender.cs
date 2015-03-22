@@ -22,7 +22,7 @@ namespace Nodeplay.UI
 
         protected override void OnEnable()
         {
-            obUI = this.GetComponentsInChildren<Renderer>().ToList();
+            obUI = this.GetComponentsInChildren<Renderer>().Where(x=>x.CompareTag("selectable")).ToList();
             base.OnEnable();
 
 

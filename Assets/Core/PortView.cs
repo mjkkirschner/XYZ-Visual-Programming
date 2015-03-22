@@ -174,18 +174,34 @@ class PortView : BaseView<PortModel>
     {
 		if (pointerdata.button == PointerEventData.InputButton.Left){
             Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
+			Vector3 start_point = this.gameObject.transform.position;
 
             if (tempconnector != null)
             {
                 DestroyImmediate(tempconnector);
                 tempconnector = null;
             }
+
+			tempconnector = new GameObject("TempConnectorView");
+			tempconnector.AddComponent<TempConnectorView>();
+
+			//if this port that we're dragging is already connected
+			//should disconnect it from the first connector, 
+			//and then create a temporary connector from the port we were originally attached to, 
+			//can use the connector to get the other side
+
+			if (pointerdata.pointerDrag.GetComponent<PortModel>().IsConnected && 
+			    pointerdata.pointerDrag.GetComponent<PortModel>().PortType == PortModel.porttype.input)
+			{
+				//remove the old connection
+				Model.Owner.GraphOwner.RemoveConnection(this.Model);
+
+			}
+
             // since this is a port, we need to instantiate a new 
             //ConnectorView ( this is a temporary connector that we drag around in the UI)
 
-            tempconnector = new GameObject("TempConnectorView");
-            tempconnector.AddComponent<TempConnectorView>();
-            tempconnector.GetComponent<TempConnectorView>().init(this.gameObject.transform.position, to_point);
+            tempconnector.GetComponent<TempConnectorView>().init(start_point, to_point);
 
         }
 

@@ -192,7 +192,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 	public void RemoveConnection(PortModel connectionEnd)
 	{
-		//do a null check to make sure the port actually has a connector  here
+		//do a null check to make sure the port actually has a connector here
 		//before attemtping to remove it
 		if (connectionEnd.connectors.Count > 0 && connectionEnd.connectors[0]!=null)
 		{

@@ -78,6 +78,7 @@ public class PortModel :BaseModel
 				if (connectors.Remove (connector) == false)
 				{
 					Debug.Log("could not disconnect connect, could not find it in connector list");
+			return;
 				}
 				if (connectors.Count == 0) {
 					IsConnected = false;
@@ -105,7 +106,7 @@ public class PortModel :BaseModel
 		public void ConnectorDisconnectEventHandler(object sender, EventArgs e){
 		//a connector is about to be destroyed and needs to be removed and diconnected so if it's still connected remove it
 		if (connectors.Contains(sender as ConnectorModel)){
-			//if not, then connect
+
 			this.Disconnect(sender as ConnectorModel);
 		}
 		}
