@@ -19,5 +19,20 @@ namespace Nodeplay.UI
             Debug.Log("just started TempViewConnector");
             started = true;
         }
+
+		public void init (Vector3 startpoint, Vector3 endpoint, GameObject geoToRepeat = null)
+		{
+			if (!started)
+			{
+				Start();
+			}
+
+			if (geoToRepeat != null){
+				geometryToRepeat = geoToRepeat;
+			}
+			redraw (startpoint, endpoint,geometryToRepeat);
+			TemporaryGeometry.Select(x => x.transform.parent = this.gameObject.transform);
+			
+		}
     }
 }

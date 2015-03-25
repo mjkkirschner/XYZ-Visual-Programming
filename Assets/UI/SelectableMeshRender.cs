@@ -62,7 +62,9 @@ namespace Nodeplay.UI
                 yield return null;
 
             }
+			if (obUI != null){
             obUI.ForEach(x => x.material.color = ToColor);
+			}
         }
 
 		public override void OnPointerEnter (PointerEventData eventData)

@@ -23,7 +23,7 @@ public class ConnectorView:BaseView<ConnectorModel>
 		public List<GameObject> TemporaryGeometry;
 		protected GameObject geometryToRepeat;
 
-		public void init (Vector3 startpoint, Vector3 endpoint)
+		public virtual void init (Vector3 startpoint, Vector3 endpoint)
 		{
 			if (!started)
 			{

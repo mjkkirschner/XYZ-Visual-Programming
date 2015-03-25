@@ -175,7 +175,7 @@ class PortView : BaseView<PortModel>
 		if (pointerdata.button == PointerEventData.InputButton.Left){
             Vector3 to_point = ProjectCurrentDrag(dist_to_camera);
 			Vector3 start_point = this.gameObject.transform.position;
-
+			GameObject tempConGeo = null;
             if (tempconnector != null)
             {
                 DestroyImmediate(tempconnector);
@@ -200,8 +200,15 @@ class PortView : BaseView<PortModel>
 
             // since this is a port, we need to instantiate a new 
             //ConnectorView ( this is a temporary connector that we drag around in the UI)
-
-            tempconnector.GetComponent<TempConnectorView>().init(start_point, to_point);
+			if (pointerdata.pointerDrag.GetComponent<PortModel>().GetType() == typeof(ExecutionPortModel))
+			{
+				tempConGeo = Resources.Load<GameObject>("exec_connector");
+			}
+			else
+			{
+				tempConGeo = Resources.Load<GameObject>("connector_sub");
+			}
+            tempconnector.GetComponent<TempConnectorView>().init(start_point, to_point,tempConGeo);
 
         }
 
