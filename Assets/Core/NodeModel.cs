@@ -315,6 +315,12 @@ public class NodeModel : BaseModel
 		input.transform.localPosition = Vector3.zero;
 		this.PropertyChanged+= input.AddComponent<InputDisplay>().HandleModelChanges;                
 
+		//add a coordinate system object
+		var CSgumball = Resources.Load("CoordinateSystem") as GameObject;
+		var csgo = GameObject.Instantiate(CSgumball);
+		csgo.transform.SetParent(this.transform,false);
+
+
         //iterate all graphics casters and turn blocking on for 3d objects
 		var allcasters = this.GetComponentsInChildren<GraphicRaycaster>().ToList();
 		allcasters.ForEach(x=>x.blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD);
