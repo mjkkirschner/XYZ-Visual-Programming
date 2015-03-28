@@ -33,11 +33,11 @@ using Nodeplay.UI;
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -.33f;
+            direction = -1* boundingBox.size.z/2;
         }
         else
         {
-            direction = .33f;
+			direction = boundingBox.size.z/2;
         }
 
 		

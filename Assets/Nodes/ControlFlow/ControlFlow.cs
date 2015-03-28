@@ -6,19 +6,9 @@ using Nodeplay.Engine;
 
 namespace Nodeplay.Nodes
 {
-	public class StartExecution : NodeModel
+	public abstract class ControlFlowNodeModel : NodeModel
 	{
-		
-		
-		protected override void Start()
-		{
-			base.Start();
-			Code = "Start()";
-			AddExecutionOutPutPort("Start");
-			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 
-		}
-		
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();

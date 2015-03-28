@@ -47,16 +47,16 @@ class PortView : BaseView<PortModel>
 
         if (port.GetComponent<PortModel>().PortType == PortModel.porttype.input)
         {
-            direction = -4f;
+			direction = -4+(-1* boundingBox.size.z/2);
         }
         else
         {
-            direction = 4f;
+			direction =4 + boundingBox.size.z/2;
         }
 
 		
 
-        port.transform.Translate(0, 0, boundingBox.size.z * direction);
+        port.transform.Translate(0, 0, direction,Space.Self);
         port.transform.localScale = new Vector3(.33f, .33f, .33f);
 
         // now we need to move the port in relation up or down to all other ports,

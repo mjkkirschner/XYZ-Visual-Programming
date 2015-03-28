@@ -8,7 +8,7 @@ using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class ForLoopTest : NodeModel
+	public class ForLoopTest : ControlFlowNodeModel
 	{
 		
 		
@@ -39,7 +39,6 @@ print('finished')";
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();
-			tempUI.GetComponent<Renderer>().material.color = Color.cyan;
 			tempUI.AddComponent<BoundingRenderer>();
 			tempUI.GetComponent<BoundingRenderer> ().initialze (new List<int> (){0}, new List<Color>() {Color.cyan});
 			return tempUI;

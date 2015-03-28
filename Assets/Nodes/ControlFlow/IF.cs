@@ -8,7 +8,7 @@ using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class IF : NodeModel
+	public class IF : ControlFlowNodeModel
 	{
 		
 		
@@ -38,7 +38,6 @@ done()";
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();
-			tempUI.GetComponent<Renderer>().material.color = Color.cyan;
 			tempUI.AddComponent<BoundingRenderer>();
 			tempUI.GetComponent<BoundingRenderer> ().initialze (new List<int> (){0,1}, 
 			new List<Color>() {Color.cyan,new Color(.7f,.4f,.1f)});

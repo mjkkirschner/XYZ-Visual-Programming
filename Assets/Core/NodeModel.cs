@@ -319,6 +319,7 @@ public class NodeModel : BaseModel
 		var CSgumball = Resources.Load("CoordinateSystem") as GameObject;
 		var csgo = GameObject.Instantiate(CSgumball);
 		csgo.transform.SetParent(this.transform,false);
+		csgo.transform.Translate(0,2,0);
 
 
         //iterate all graphics casters and turn blocking on for 3d objects
