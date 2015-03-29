@@ -126,6 +126,15 @@ public class NodeModel : BaseModel
 		set;
 	}
 
+	protected override void OnEnable ()
+	{
+		base.OnEnable ();
+		Inputs = new List<PortModel>();
+		Outputs = new List<PortModel>();
+		ExecutionInputs = new List<ExecutionPortModel>();
+		ExecutionOutputs = new List<ExecutionPortModel>();
+	}
+
     protected override void Start()
     {
 		base.Start();
@@ -134,10 +143,7 @@ public class NodeModel : BaseModel
         Evaluated += view.OnEvaluated;
         Evaluation += view.OnEvaluation;
         StoredValueDict = null;
-        Inputs = new List<PortModel>();
-        Outputs = new List<PortModel>();
-		ExecutionInputs = new List<ExecutionPortModel>();
-		ExecutionOutputs = new List<ExecutionPortModel>();
+        
 		explicitGraphExecution = GameObject.FindObjectOfType<ExplicitGraphExecution> ();
 		//this dictionary might be loaded when the node is laoded 
 		//and we dont want to erase it

@@ -135,7 +135,7 @@ public class PortModel :BaseModel
 		public virtual void init (NodeModel owner, int index, porttype type, string nickname = null)
 		{
 
-
+		//TODO need to make sure we dont have any repeated port names in the different sets {inputs,outputs,execin,execout}
 				this.Owner = owner;
 				this.Index = index;
 				this.PortType = type;

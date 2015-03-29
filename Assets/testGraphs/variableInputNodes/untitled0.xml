@@ -1,0 +1,22 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="62d7a12e-affd-4a66-bb0b-51d900db3a91" nickname="node StartExecution62d7a12e-affd-4a66-bb0b-51d900db3a91" x="0" y="0" z="0">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.InstantiateCube type="Nodeplay.Nodes.InstantiateCube" guid="fef62909-61a8-4cf0-8c5e-b94e54c01618" nickname="node InstantiateCubefef62909-61a8-4cf0-8c5e-b94e54c01618" x="0" y="0" z="0">
+      <nodeinputdict Code="OUTPUT = unity.GameObject.CreatePrimitive(unity.PrimitiveType.Cube);OUTPUT.transform.Translate(input1,input2,0);VariableCreated()" />
+    </Nodeplay.Nodes.InstantiateCube>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="1dfe541b-1586-4693-81db-27fd1153b29a" nickname="node Number1dfe541b-1586-4693-81db-27fd1153b29a" x="-3.581551" y="12.45867" z="-7.498991">
+      <nodeinputdict Code="OUTPUT = 5;VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.VariableInputNodeModel type="Nodeplay.Nodes.VariableInputNodeModel" guid="2582b6f9-36e7-4fb8-b6ee-2471b787e61d" nickname="node VariableInputNodeModel2582b6f9-36e7-4fb8-b6ee-2471b787e61d" x="11.88306" y="14.37774" z="2.860315">
+      <nodeinputdict />
+      <variablePorts port0="some port name0" port1="some port name1" port2="some port name2" />
+    </Nodeplay.Nodes.VariableInputNodeModel>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="1dfe541b-1586-4693-81db-27fd1153b29a" start_index="0" end="2582b6f9-36e7-4fb8-b6ee-2471b787e61d" end_index="0" portType="0" />
+    <ConnectorModel start="1dfe541b-1586-4693-81db-27fd1153b29a" start_index="0" end="2582b6f9-36e7-4fb8-b6ee-2471b787e61d" end_index="2" portType="0" />
+  </Connectors>
+  <ExecutionConnectors />
+</Graph>
