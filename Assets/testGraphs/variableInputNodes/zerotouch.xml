@@ -1,0 +1,25 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="untitled0">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="d213a4ff-b670-4c6e-9eae-04bed729f0e7" nickname="node StartExecutiond213a4ff-b670-4c6e-9eae-04bed729f0e7" x="-9.347684" y="25.69888" z="-12.04356">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" nickname="node Number42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" x="-16.70442" y="29.99401" z="1.959723">
+      <nodeinputdict Code="OUTPUT = range(5);VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <DSCore.ListJoinNode type="DSCore.ListJoinNode" guid="a27cf173-934b-42f1-911a-5aff887be9d5" nickname="node ListJoinNodea27cf173-934b-42f1-911a-5aff887be9d5" x="-35.9066" y="29.01645" z="13.54982">
+      <nodeinputdict />
+      <variablePorts port0="some port name0" port1="some port name1" port2="some port name2" port3="some port name3" port4="some port name4" />
+    </DSCore.ListJoinNode>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="0" portType="0" />
+    <ConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="1" portType="0" />
+    <ConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="2" portType="0" />
+    <ConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="4" portType="0" />
+    <ConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="3" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="d213a4ff-b670-4c6e-9eae-04bed729f0e7" start_index="0" end="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="42333b3a-0f25-45f2-97b3-bb8ccd8fff2c" start_index="0" end="a27cf173-934b-42f1-911a-5aff887be9d5" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

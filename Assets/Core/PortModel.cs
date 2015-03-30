@@ -21,9 +21,9 @@ public class PortModel :BaseModel
 
 		public List<ConnectorModel> connectors = new List<ConnectorModel> ();
 
-		public delegate void PortConnectedHandler (object sender,EventArgs e);
+		public delegate void PortConnectedHandler (object sender,ConnectorModel e);
 
-		public delegate void PortDisconnectedHandler (object sender,EventArgs e);
+		public delegate void PortDisconnectedHandler (object sender,ConnectorModel e);
 
 		public event PortConnectedHandler PortConnected;
 		public event PortConnectedHandler PortDisconnected;
@@ -35,13 +35,13 @@ public class PortModel :BaseModel
                
 		}
     
-		protected virtual void OnPortConnected (EventArgs e)
+		protected virtual void OnPortConnected (ConnectorModel e)
 		{
 				if (PortConnected != null)
 						PortConnected (this, e);
 		}
 
-		protected virtual void OnPortDisconnected (EventArgs e)
+		protected virtual void OnPortDisconnected (ConnectorModel e)
 		{
 				if (PortDisconnected != null)
 						PortDisconnected (this, e);
@@ -64,7 +64,7 @@ public class PortModel :BaseModel
 				connectors.Add (connector);
 				IsConnected = true;
 				//throw the event for a connection
-				OnPortConnected (EventArgs.Empty);
+				OnPortConnected (connector);
 
 				
 		}
@@ -84,7 +84,7 @@ public class PortModel :BaseModel
 					IsConnected = false;
 					}
 				//throw the event for a connection
-				OnPortDisconnected (EventArgs.Empty);
+				OnPortDisconnected (connector);
 				
 				
 				

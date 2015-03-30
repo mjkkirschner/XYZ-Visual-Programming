@@ -51,7 +51,7 @@ public class ConnectorModel : BaseModel
 	
 	// Handles a port connect event, which in turn will tell the other port to connect to this connector
 	
-	protected void OnPortConnect(object sender, EventArgs e){
+	protected void OnPortConnect(object sender, ConnectorModel e){
 
 		OnConnectorConnected(EventArgs.Empty);
 
@@ -59,9 +59,11 @@ public class ConnectorModel : BaseModel
 	}
 	// Handles a port disconnect event
 
-		protected void OnPortDisconnect(object sender, EventArgs e){
+		protected void OnPortDisconnect(object sender, ConnectorModel e){
 
-
+		if (e != this){
+			return;
+		}
 		var p = sender as PortModel;
 		//unregister all listeners
 		p.PropertyChanged -= View.HandlePortChanges;

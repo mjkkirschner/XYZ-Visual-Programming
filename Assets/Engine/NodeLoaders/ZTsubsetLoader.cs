@@ -79,7 +79,17 @@ public class ZTsubsetLoader : NodeModelLoader
 					AssemblyBuilder asmbuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.Run);
 					ModuleBuilder modulebuilder = asmbuilder.DefineDynamicModule("loadedlib");
 					TypeBuilder typebuilder = modulebuilder.DefineType(typename +method.Name + "Node");
-					typebuilder.SetParent(typeof(ZTwrapperNode));
+
+					var @params = method.GetParameters();
+
+					if(@params.Any(x=>x.IsDefined(typeof(ParamArrayAttribute), false)))
+					{
+						typebuilder.SetParent(typeof(VariableInputZTwrapperNode));
+					}
+					else
+					{
+						typebuilder.SetParent(typeof(ZTwrapperNode));
+					}
 					Type ztnode = typebuilder.CreateType();
 					nodeModelTypes.Add(ztnode);
 					//define a function descriptor that wraps the needed parameters, type, and method for a specific node

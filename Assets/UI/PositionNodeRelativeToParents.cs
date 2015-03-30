@@ -33,7 +33,7 @@ namespace Nodeplay.UI
 
 		}
 
-		protected void OnPortConnect(object sender, EventArgs e)
+		protected void OnPortConnect(object sender, ConnectorModel e)
 		{
 			if (Model.Inputs.Count>0 && Model.Inputs.Any(x=>x.IsConnected) || Model.ExecutionInputs.Count>0 && Model.ExecutionInputs.Any(x=>x.IsConnected) )
 			    {
