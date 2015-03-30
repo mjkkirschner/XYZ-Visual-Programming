@@ -10,7 +10,7 @@ public abstract class ControlFlowDelegateNodeModel : DelegateNodeModel
 	protected override void Start()
 	{
 		base.Start();
-		viewPrefab = "ControlFlowNodeBaseView";
+		viewPrefabs = new List<string>(){"ControlFlowNodeBaseView"};
 	}
 
 	public override GameObject BuildSceneElements()

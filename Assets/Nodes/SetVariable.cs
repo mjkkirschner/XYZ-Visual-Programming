@@ -26,7 +26,7 @@ namespace Nodeplay.Nodes
 
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
-			viewPrefab = "VariableNodeBaseView";
+			viewPrefabs = new List<string>(){ "VariableNodeBaseView"};
 		}
 
 		protected override Dictionary<string, object> CompiledNodeEval(Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)

@@ -26,6 +26,8 @@ namespace Nodeplay.Nodes
 			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
+			viewPrefabs.Add("looptop");
+
 		}
 		
 		protected override Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)

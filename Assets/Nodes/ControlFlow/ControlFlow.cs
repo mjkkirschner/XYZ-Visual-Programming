@@ -9,6 +9,13 @@ namespace Nodeplay.Nodes
 	public abstract class ControlFlowNodeModel : NodeModel
 	{
 
+		protected override void Start()
+		{
+			base.Start();
+			viewPrefabs = new List<string>(){"ControlFlowNodeBaseView"};
+		}
+
+
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();

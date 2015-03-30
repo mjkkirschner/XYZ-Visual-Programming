@@ -42,7 +42,7 @@ namespace Nodeplay.Nodes
 			//create a handler that watches for name property changes on the 
 			PropertyChanged += updatevar;
 			NotifyPropertyChanged("VariableName");
-			viewPrefab = "VariableNodeBaseView";
+			viewPrefabs = new List<string>(){"VariableNodeBaseView"};
 		}
 
 		private void updatevar(object sender, PropertyChangedEventArgs args){

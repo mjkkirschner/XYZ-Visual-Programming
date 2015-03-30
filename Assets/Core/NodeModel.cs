@@ -16,7 +16,7 @@ using Nodeplay.Nodes;
 
 public class NodeModel : BaseModel
 {
-	protected string viewPrefab =  "NodeBaseView";
+	protected List<string> viewPrefabs =  new List<string>(){"NodeBaseView"};
 	protected override void NotifyPropertyChanged (string info)
 	{
 		base.NotifyPropertyChanged (info);
@@ -290,9 +290,27 @@ public class NodeModel : BaseModel
         // root gameobject
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 		this.gameObject.AddComponent<PositionNodeRelativeToParents>();
-        GameObject UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
-        UI.transform.localPosition = this.gameObject.transform.position;
-        UI.transform.parent = this.gameObject.transform;
+
+		GameObject UI = null;
+		foreach (var viewPrefab in viewPrefabs){
+
+			//if this is first prefab
+			if (viewPrefabs.IndexOf(viewPrefab) == 0)
+			{	UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				UI.transform.localPosition = this.gameObject.transform.position;
+				UI.transform.parent = this.gameObject.transform;
+			}
+			else
+			{
+				GameObject subui = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				var offset = subui.transform.position - UI.transform.localPosition;
+				subui.transform.localPosition = this.gameObject.transform.position;
+				subui.transform.parent = (UI.transform);
+				subui.transform.Translate(offset);
+			}
+        		
+      
+		}
 
 		//add a new toggleDisplay that will contain both the output and input panel
 		// now load the outputview

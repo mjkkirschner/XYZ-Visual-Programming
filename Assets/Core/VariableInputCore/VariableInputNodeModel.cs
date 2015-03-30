@@ -24,10 +24,19 @@ namespace Nodeplay.Nodes
 			var tempUI = base.BuildSceneElements();
 			var inputdisplay = tempUI.transform.root.GetComponentInChildren<InputDisplay>().gameObject;
 			var buttonPrefab = Resources.Load("LibraryButton") as GameObject;
-			var button = GameObject.Instantiate(buttonPrefab);
-			button.GetComponentInChildren<Text>().text = "Add Input";
-			button.GetComponent<Button>().onClick.AddListener(() => { this.AddInputPort(GetPortName());});
-			button.transform.SetParent(inputdisplay.transform,false);
+			
+			var addbutton = GameObject.Instantiate(buttonPrefab);
+			var rembutton = GameObject.Instantiate(buttonPrefab);
+			
+			addbutton.GetComponentInChildren<Text>().text = "Add Input";
+			rembutton.GetComponentInChildren<Text>().text = "Remove Input";
+			
+			addbutton.GetComponent<Button>().onClick.AddListener(() => { this.AddInputPort(GetPortName());});
+			rembutton.GetComponent<Button>().onClick.AddListener(() => {
+				this.RemoveInputPort(Inputs.Select(x=>x.NickName).ToList().Last());});
+			
+			addbutton.transform.SetParent(inputdisplay.transform,false);
+			rembutton.transform.SetParent(inputdisplay.transform,false);
 			return tempUI;
 		}
 

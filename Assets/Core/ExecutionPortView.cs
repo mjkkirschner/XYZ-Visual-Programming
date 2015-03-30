@@ -24,7 +24,17 @@ using Nodeplay.UI;
 
       
         var view = this.Model.Owner.GetComponent<NodeView>();
-        var boundingBox = view.UI.GetComponent<Renderer>().bounds;
+		var allrenderers = view.UI.GetComponentsInChildren<Renderer>().ToList();
+		
+		var totalBounds = allrenderers[0].bounds;
+		foreach (Renderer ren in allrenderers)
+		{
+			
+			totalBounds.Encapsulate(ren.bounds);
+			
+		}
+		var boundingBox = totalBounds;
+        
         port.transform.parent = Model.Owner.transform;
         port.transform.position = Model.Owner.transform.position;
         // move the port from the center to back or front depending on port type

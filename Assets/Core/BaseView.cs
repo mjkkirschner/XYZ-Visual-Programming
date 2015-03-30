@@ -167,7 +167,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     {
         Debug.Log("drag called");
 
-		if (pointerdata.rawPointerPress == this.UI && pointerdata.button == PointerEventData.InputButton.Left ||
+		if (this.UI.GetComponentsInChildren<Transform>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)&& pointerdata.button == PointerEventData.InputButton.Left ||
 			this.GetComponentsInChildren<CanvasRenderer>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)  && pointerdata.button == PointerEventData.InputButton.Left)
         {
 			Ray ray = Camera.main.ScreenPointToRay(pointerdata.position - pointerdata.delta);
@@ -187,7 +187,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //handler for clicks
     public override void OnPointerClick(PointerEventData pointerdata)
     {
-		if (pointerdata.pointerCurrentRaycast.gameObject == this.UI && pointerdata.button == PointerEventData.InputButton.Left)
+		if (this.UI.GetComponentsInChildren<Transform>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)&& pointerdata.button == PointerEventData.InputButton.Left)
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
@@ -211,11 +211,11 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
           
-            UI.GetComponent<Renderer>().material.color = Color.Lerp(originalcolor, ToColor, f);
+            UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(originalcolor, ToColor, f));
             yield return null;
 
         }
-        UI.GetComponent<Renderer>().material.color = ToColor;
+		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = ToColor);
     }
 
     protected virtual IEnumerator Blunk(Color FromColor, float duration)
@@ -223,11 +223,11 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
            
-            UI.GetComponent<Renderer>().material.color = Color.Lerp(FromColor, originalcolor, f);
+			UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(FromColor, originalcolor, f));
             yield return null;
           
         }
-        UI.GetComponent<Renderer>().material.color = originalcolor;
+		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = originalcolor);
     }
 
    
