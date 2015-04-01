@@ -16,6 +16,12 @@ namespace Nodeplay.Engine
 		public List<Task> TaskSchedule;
 		public Task CurrentTask;
 		public float ExecutionsPerFrame {get;set;}
+
+		protected virtual void Start()
+		{
+			ExecutionsPerFrame =1;
+		}
+
 		public List<NodeModel> FindNodesWithNoDependencies()
 		{
 			//list of everything that inherits from nodemodel in the scene
