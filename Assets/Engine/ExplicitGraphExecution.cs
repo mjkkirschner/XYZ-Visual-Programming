@@ -15,6 +15,7 @@ namespace Nodeplay.Engine
 	{
 		public List<Task> TaskSchedule;
 		public Task CurrentTask;
+		public float ExecutionsPerFrame {get;set;}
 		public List<NodeModel> FindNodesWithNoDependencies()
 		{
 			//list of everything that inherits from nodemodel in the scene
@@ -40,7 +41,7 @@ namespace Nodeplay.Engine
 			
 		}
 		
-		
+
 		/// <summary>
 		/// method that triggers evaluation on nodes and validates inputs before triggering 
 		/// walks from entry points of computation graph to downstream nodes 
@@ -91,7 +92,7 @@ namespace Nodeplay.Engine
 				//Debug.Log(S.ToJSONstring());
 				//Debug.Log("stack count is "+ TaskSchedule.Count);
 				//TaskSchedule.ToList().ForEach(x=>Debug.Log(x.NodeRunningOn.GetType().Name));
-				foreach (var i in Enumerable.Range(0,100).ToList())
+				foreach (var i in Enumerable.Range(0,(int)ExecutionsPerFrame).ToList())
 				{
 					headOfQueue = TaskSchedule.First();
 					
