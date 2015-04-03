@@ -110,10 +110,12 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 
 		//TODO for both of these methods instantiation points should just be in front of the camera by x units
 
+		var creationPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 30f));
+
 		if(button.GetType() == typeof(CustomNodeLibraryButton))
 		{
 			var nodeinfo = (button as CustomNodeLibraryButton).Info;
-			_appmodel.CollapsedCustomGraphNodeManager.CreateCustomNodeInstance(nodeinfo.FunctionId,new Guid(),new Vector3(0,0,0),this,null,nodeinfo.Name);
+			_appmodel.CollapsedCustomGraphNodeManager.CreateCustomNodeInstance(nodeinfo.FunctionId,new Guid(),creationPoint,this,null,nodeinfo.Name);
 
 		}
 
@@ -124,7 +126,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 			MethodInfo generic = method.MakeGenericMethod(nodetype);
 			//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
 			//this is a fully qualified type extracted from the libraryButton
-		generic.Invoke(this, new object[]{new Vector3(0,0,0),new Guid()});
+		generic.Invoke(this, new object[]{creationPoint,new Guid()});
 		}
 	}
 	
