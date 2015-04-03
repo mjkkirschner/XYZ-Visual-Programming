@@ -80,7 +80,7 @@ using Nodeplay.UI;
 			
 			var stepsize = 1f;
            currentport.gameObject.transform.localPosition = new Vector3(currentport.gameObject.transform.localPosition.x,
-				(portRenderer.bounds.size.y * stepsize*5) * ((float)index * -1) - (boundingBox.size.y / 2),
+				(portRenderer.bounds.size.y * stepsize*5) * ((float)index * -1)-.5f, //- (boundingBox.size.y / ),
             currentport.gameObject.transform.localPosition.z);
 			//TODO use the index to set something on the portview that stretches part of the compoenent...
 			//---
