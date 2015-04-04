@@ -8,6 +8,7 @@ using Nodeplay.Interfaces;
 using System.ComponentModel;
 using Nodeplay.UI.Utils;
 using Nodeplay.Nodes;
+using System;
 
 namespace Nodeplay.Engine
 {
@@ -16,10 +17,13 @@ namespace Nodeplay.Engine
 		public List<Task> TaskSchedule;
 		public Task CurrentTask;
 		public float ExecutionsPerFrame {get;set;}
+		public Boolean  ButtonPressed {get;set;}
+		public UnityEngine.UI.Toggle DebugModeToggle;
 
 		protected virtual void Start()
 		{
 			ExecutionsPerFrame =1;
+			DebugModeToggle = GameObject.Find("DebugToggle").GetComponent<UnityEngine.UI.Toggle>();
 		}
 
 		public List<NodeModel> FindNodesWithNoDependencies()
@@ -77,7 +81,17 @@ namespace Nodeplay.Engine
 			return true;
 		}
 		
-		
+		IEnumerator WaitForButtonPress(UnityEngine.UI.Button button)
+		{
+			ButtonPressed = false;
+			Debug.Log("setting button pressed to false");
+			while(ButtonPressed != true)
+				{
+				//don't do anything...
+				yield return null;
+				}
+			}
+
 		
 		/// <summary>
 		/// generator that evals a new node each frame
@@ -109,13 +123,22 @@ namespace Nodeplay.Engine
 					CurrentTask = headOfQueue;
 					headOfQueue.MethodCall.Invoke();
 					TaskSchedule.RemoveAt(0);
-					//we can now add the nodes that are attached to this nodes outputs
-					//add Distinct to eliminate adding a node twice , for instance [] = [] (thats 2 connectors, not equals)
-					
-					//var childnodes = popped.Outputs.SelectMany(x => x.connectors.Select(y => y.PEnd.Owner)).Distinct().ToList();
-					//childnodes = childnodes.Except(S).ToList();
-					//childnodes.ForEach(x => S.Push(x));
-					//	}
+
+					//now check state of debug mode, if it's enabled move the camera to the location of the executing node
+					//and simply poll the state of the continue button, do not continue until button pressed.
+					if (DebugModeToggle.isOn)
+					{
+						var nodepos = headOfQueue.NodeRunningOn.transform.position;
+						var offsettpos = nodepos + (headOfQueue.NodeRunningOn.transform.right * 20f);
+						//var offsettopos = Camera.main.transform.position + (vectorFromCamToNode * .5f);
+
+						StartCoroutine(slowmove(Camera.main.transform.position,offsettpos,1f,Camera.main.gameObject,nodepos));
+						//will need to subclass button so that it holds state or use a toggle...
+						//for now just hold state on this execution class, //TODO fix this
+						yield return StartCoroutine(WaitForButtonPress(null));
+					}
+
+
 				}
 				if (headOfQueue.Yieldbehavior != null ){
 					yield return headOfQueue.Yieldbehavior;
@@ -124,6 +147,22 @@ namespace Nodeplay.Engine
 			
 			
 		}
+		//TODO this does not belong here
+		private IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration,GameObject goToMove,Vector3 lookat)
+		{
+			Debug.Log("moving camera");
+
+			for (float f = 0; f <= duration; f = f + Time.deltaTime)
+			{
+
+				goToMove.transform.position = Vector3.Lerp(frompos, topos, f);
+				goToMove.transform.LookAt(lookat);
+				yield return null;
+				
+			}
+			//goToMove.transform.position = topos;
+		}
+
 		
 	}
 	

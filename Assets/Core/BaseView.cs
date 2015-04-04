@@ -20,7 +20,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     protected Boolean started = false;
     
 
-    protected Color originalcolor;
+    protected Dictionary<GameObject,Color> originalcolors;
 	protected Color highlightcolor = Color.green;
 	protected Vector3 NormalScale = new Vector3(1,1,1);
 	protected Vector3 HoverScale = new Vector3(1.2f,1.2f,1.2f);
@@ -41,12 +41,12 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         }
     }
     //overide this method to setup the transition colors for this view
-    protected ColorBlock setupColorBlock(Color ogc, Color hlc)
+    protected ColorBlock setupColorBlock(Dictionary<GameObject,Color> ogcDict, Color hlc)
     {
         var output = new ColorBlock();
         output.colorMultiplier = 1;
         output.disabledColor = Color.grey;
-		output.normalColor = ogc;
+		output.normalColor = ogcDict.First().Value;
 		output.highlightedColor = hlc;
 		output.pressedColor = new Color(hlc.r, hlc.g - .2f, hlc.b + .2f);
         output.fadeDuration = .1f;
@@ -54,7 +54,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     }
 	protected ColorBlock setupColorBlock()
 	{
-		return setupColorBlock(originalcolor, highlightcolor);
+		return setupColorBlock(originalcolors, highlightcolor);
 	}
 
     protected virtual void Start()
@@ -67,9 +67,9 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         // nodemanager manages nodes - like a workspacemodel
 
         UI = Model.BuildSceneElements();
-        var firstRenderer = UI.GetComponentInChildren<Renderer>();
+        var renderers = UI.GetComponentsInChildren<Renderer>();
 
-        originalcolor = firstRenderer.material.color;
+		originalcolors = renderers.ToDictionary(x=>x.gameObject,x=>x.material.color);
 
         //add our selectable mesh render component here to nodes since these are selectable and 3d objects
         this.gameObject.AddComponent<SelectableMeshRender>();
@@ -211,7 +211,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
           
-            UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(originalcolor, ToColor, f));
+            UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(this.originalcolors[x.gameObject], ToColor, f));
             yield return null;
 
         }
@@ -223,11 +223,11 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
            
-			UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(FromColor, originalcolor, f));
+			UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(FromColor, this.originalcolors[x.gameObject], f));
             yield return null;
           
         }
-		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = originalcolor);
+		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = this.originalcolors[x.gameObject]);
     }
 
    
