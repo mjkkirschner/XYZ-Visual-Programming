@@ -70,16 +70,15 @@ namespace Nodeplay.UI
 			//wrapper.transform.position = parent.transform.position;
 			wrapper.transform.SetParent(parent.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-			//wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
 			//wrapper.transform.Rotate(0,90,0);
-
+			wrapper.tag = "visualization";
 			//TODO replace with call to specific item type depending on item system.type
 			var element = Resources.Load<GameObject>("listele");
 
 			var instantiatedelement = GameObject.Instantiate(element) as GameObject;
 			instantiatedelement.name = (someObject.GetType().ToString());
-			//instantiatedelement.transform.position = wrapper.transform.position;
 
+			instantiatedelement.tag = "visualization";
 			instantiatedelement.transform.SetParent(wrapper.transform, false);
 
 			var inspectable = instantiatedelement.AddComponent<InspectableElement>();
@@ -92,11 +91,16 @@ namespace Nodeplay.UI
 
 
 			//TODO extract constants, fix this mess, possibly recalc based on distance to camera
-			if (parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize == 14)
+			var levelwrapperText = parent.transform.parent.GetChild(0).GetComponentInChildren<Text>();
+
+
+			if (levelwrapperText == null || levelwrapperText.fontSize == 14)
 			{
 				//we are still creating the root visualization, so just set the size to 500
-				parent.transform.parent.GetChild(0).GetComponentInChildren<Text>().fontSize = 500;
+				var root = parent.transform.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.name == "root_wrapper");
+				root.GetComponentInChildren<Text>().fontSize = 500;
 			}
+
 			else
 			{
 				//in all other cases halve it
@@ -134,6 +138,7 @@ namespace Nodeplay.UI
 		{
 
 			var wrapper = new GameObject("root_wrapper");
+			wrapper.tag = "visualization";
 			wrapper.AddComponent<PositionWindowUnderPorts>();
 			wrapper.transform.position = new Vector3(0,0,0);
 			wrapper.transform.SetParent(this.transform,false);
@@ -142,6 +147,7 @@ namespace Nodeplay.UI
 			wrapper.AddComponent<Canvas>();
 			wrapper.GetComponent<Canvas>().worldCamera = Camera.main;
 			wrapper.AddComponent<GraphicRaycaster>();
+			wrapper.GetComponent<GraphicRaycaster>().blockingObjects = GraphicRaycaster.BlockingObjects.ThreeD;
 			wrapper.GetComponent<RectTransform>().localScale = new Vector3(.0003f,.0003f,.0003f);
 			var fitter = wrapper.AddComponent<ContentSizeFitter>();
 			fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;

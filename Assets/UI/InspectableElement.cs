@@ -47,6 +47,7 @@ namespace Nodeplay.UI
 				{
 					this.location = value;
 					NotifyPropertyChanged("Location");
+
 				}
 			}
 		}
@@ -64,8 +65,20 @@ namespace Nodeplay.UI
 		private void handleRectChanges(object sender, PropertyChangedEventArgs info)
 		{
 			if (info.PropertyName == "Location"){
+				cleanupVisualization();
 				UpdateVisualization();
 			}
+		}
+
+		void cleanupVisualization ()
+		{
+			var childrenofVisualization = GetComponentInChildren<InspectableElement>().transform.Cast<Transform>().ToList();
+
+			childrenofVisualization.AddRange(transform.FindChild("visualizationParent").transform.Cast<Transform>().ToList());
+			if (childrenofVisualization.Count > 0){
+				childrenofVisualization.Where(x=>x.CompareTag("visualization")).ToList().ForEach(x=>DestroyImmediate(x.gameObject));
+			}
+
 		}
 		
 		protected override void Start()
@@ -89,13 +102,27 @@ namespace Nodeplay.UI
 
 
 			var visualization = searchforvisualization(this.Reference);
-			//visualization.transform.position = this.transform.position;
+			visualization.tag = "visualization";
+
 			
-			//TODO move the 3d visualization down or something, another possibility
-			//is to feed it to a custom button that places the renderer next to text
-			visualization.transform.SetParent(this.transform);
-			//disable all colliders on these visualizations
-			visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
+			//find the visualization parent
+			var fontsize = GetComponentInChildren<Text>().fontSize;
+			var depth = (int)(500/fontsize);
+
+			var viszparent = this.transform.FindChild("visualizationParent");
+			visualization.transform.SetParent(viszparent.transform,false);
+
+			visualization.transform.localScale = visualization.transform.localScale * (1000/depth);
+			if (visualization.GetComponentInChildren<Renderer>()!=null)
+			{
+			viszparent.GetComponent<LayoutElement>().preferredWidth = visualization.GetComponentInChildren<Renderer>().bounds.size.x * (4000);
+			viszparent.GetComponent<LayoutElement>().preferredHeight = visualization.GetComponentInChildren<Renderer>().bounds.size.y* (4000);
+			}
+				//disable all colliders on these visualizations
+			//visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
+			visualization.AddComponent<Button>().onClick.AddListener(()=>{toggleWorldSpaceVisualization(this.Reference);});
+
+			//now calculate the 
 		}
 
 		private Vector3 calculateCentroid (List<Vector3>points)
@@ -109,13 +136,32 @@ namespace Nodeplay.UI
 			return center;
 		}
 
+		//also need to destroy whatever is created by searching for visualization...
+		//should parent this as before so that it's cleaned up correctly
+		private void toggleWorldSpaceVisualization(object objectToDrawLineTo)
+			{
+				if(transform.FindChild("viz line") == null)
+				{
+				var visualization = searchforvisualization(objectToDrawLineTo);
+				visualization.tag = "visualization";
+				drawlineToVisualization(visualization.transform.position);
+				visualization.transform.SetParent(this.transform);
+
+				}
+				else{
+				GameObject.Destroy(transform.FindChild("viz line").gameObject);
+					}
+			}
+
+
 		private void drawlineToVisualization(Vector3 To)
 		{
 
 			Debug.Log("current drawing a line that represents:" + this.gameObject.name + Name);
 
 			var line = new GameObject("viz line");
-			line.transform.SetParent(this.transform.parent);
+			line.transform.SetParent(this.transform);
+			line.tag = "visualization";
 			line.AddComponent<LineRenderer>();
 			var linerenderer = line.GetComponent<LineRenderer>();
 			linerenderer.useWorldSpace = true;
@@ -169,7 +215,7 @@ namespace Nodeplay.UI
 					var point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 					point.transform.position = (Vector3)objectToVisualize;
 
-					drawlineToVisualization(point.transform.position);
+					//drawlineToVisualization(point.transform.position);
 					return point;
 				}
 
@@ -215,7 +261,7 @@ namespace Nodeplay.UI
 			if (exposesubElements == false){
 				exposesubElements = true;
 				populateNextLevel(this.Reference);
-				this.GetComponent<Image>().color = Color.green;
+				this.GetComponentsInChildren<Image>().ToList().ForEach(x=>x.color = Color.green);
 
 			}
 			else{
@@ -223,7 +269,7 @@ namespace Nodeplay.UI
 				var childrenRoot = transform.parent.GetChild(1);
 				GameObject.DestroyImmediate(childrenRoot.gameObject);
 				exposesubElements = false;
-				this.GetComponent<Image>().color = Color.white;
+				this.GetComponentsInChildren<Image>().ToList().ForEach(x=>x.color = Color.white);
 			}
 		}
 
@@ -232,7 +278,7 @@ namespace Nodeplay.UI
 		{
 			//build a new wrapper for this next level
 			var wrapper = new GameObject("sub_tree_wrapper");
-			//wrapper.transform.position = this.transform.position;
+			wrapper.tag = "visualization";
 			wrapper.transform.SetParent(this.transform.parent,false);
 			wrapper.AddComponent<HorizontalLayoutGroup>();
 			wrapper.GetComponent<HorizontalLayoutGroup>().spacing = 5;
@@ -291,7 +337,6 @@ namespace Nodeplay.UI
 						{
 							 InspectorVisualization.generateInspectableElementGameObject(value,wrapper);
 
-							
 						}
 						
 						

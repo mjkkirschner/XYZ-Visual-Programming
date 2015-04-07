@@ -37,12 +37,16 @@ namespace Nodeplay.Nodes
 		{
 			base.Start();
 
+			explicitGraphExecution.Evaluating += updateVisualization;
+
 			AddOutPutPort("OUTPUT");
 			StoredValueDict = new Dictionary<string, object>();
 			//create a handler that watches for name property changes on the 
 			PropertyChanged += updatevar;
 			NotifyPropertyChanged("VariableName");
 			viewPrefabs = new List<string>(){"VariableNodeBaseView"};
+
+
 		}
 
 		private void updatevar(object sender, PropertyChangedEventArgs args){
@@ -59,10 +63,19 @@ namespace Nodeplay.Nodes
 			ExposeVariableInNodeUI("VariableName",VariableName);
 			var UI = base.BuildSceneElements();
 			UI.GetComponent<Renderer>().material.color = new Color(56.0f/256.0f,158.0f/256.0f,201.0f/256.0f);
+			UI.AddComponent<InspectorVisualization>();
 			return UI;
 		}
 
 
-
+		private void updateVisualization(){
+		//this is deleting everything everyframe, and also deleting the node visualization
+		var childrenofVisualization = GetComponentInChildren<InspectorVisualization>().transform.Cast<Transform>().ToList();
+		if (childrenofVisualization.Count > 0){
+				childrenofVisualization.Where(x=>x.CompareTag("visualization")).ToList().ForEach(x=>DestroyImmediate(x.gameObject));
+		}
+		transform.root.GetComponentInChildren<InspectorVisualization>().PopulateTopLevel(
+				(StoredValueDict["OUTPUT"] as VariableReference).Get() );
+		}
 	}
 }

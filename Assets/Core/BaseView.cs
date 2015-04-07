@@ -211,11 +211,13 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
           
-            UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(this.originalcolors[x.gameObject], ToColor, f));
+            UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+				.ForEach(x=>x.material.color = Color.Lerp(this.originalcolors[x.gameObject], ToColor, f));
             yield return null;
 
         }
-		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = ToColor);
+		UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+			.ForEach(x=>x.material.color = ToColor);
     }
 
     protected virtual IEnumerator Blunk(Color FromColor, float duration)
@@ -223,11 +225,13 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         for (float f = 0; f <= duration; f = f + Time.deltaTime)
         {
            
-			UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = Color.Lerp(FromColor, this.originalcolors[x.gameObject], f));
+			UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+				.ForEach(x=>x.material.color = Color.Lerp(FromColor, this.originalcolors[x.gameObject], f));
             yield return null;
           
         }
-		UI.GetComponentsInChildren<Renderer>().ToList().ForEach(x=>x.material.color = this.originalcolors[x.gameObject]);
+		UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+			.ForEach(x=>x.material.color = this.originalcolors[x.gameObject]);
     }
 
    

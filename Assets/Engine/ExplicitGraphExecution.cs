@@ -12,13 +12,24 @@ using System;
 
 namespace Nodeplay.Engine
 {
-	class ExplicitGraphExecution:MonoBehaviour
+	public class ExplicitGraphExecution:MonoBehaviour
 	{
 		public List<Task> TaskSchedule;
 		public Task CurrentTask;
 		public float ExecutionsPerFrame {get;set;}
 		public Boolean  ButtonPressed {get;set;}
 		public UnityEngine.UI.Toggle DebugModeToggle;
+
+
+		public event Action Evaluating; 
+
+		protected void OnEvaluating()
+		{
+			if (Evaluating != null){
+
+			Evaluating();
+			}
+		} 
 
 		protected virtual void Start()
 		{
@@ -119,7 +130,7 @@ namespace Nodeplay.Engine
 					
 					//pop the node we are about to evaluate, otherwise we'll never be able to 
 					
-					
+					OnEvaluating();
 					CurrentTask = headOfQueue;
 					headOfQueue.MethodCall.Invoke();
 					TaskSchedule.RemoveAt(0);
@@ -130,9 +141,11 @@ namespace Nodeplay.Engine
 					{
 						var nodepos = headOfQueue.NodeRunningOn.transform.position;
 						var offsettpos = nodepos + (headOfQueue.NodeRunningOn.transform.right * 20f);
-						//var offsettopos = Camera.main.transform.position + (vectorFromCamToNode * .5f);
 
-						StartCoroutine(slowmove(Camera.main.transform.position,offsettpos,1f,Camera.main.gameObject,nodepos));
+						//now calculate where the camera is currently looking
+						var cameraviewpoint = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 30f));
+
+						StartCoroutine(slowmove(Camera.main.transform.position,offsettpos,cameraviewpoint,nodepos,1f,Camera.main.gameObject));
 						//will need to subclass button so that it holds state or use a toggle...
 						//for now just hold state on this execution class, //TODO fix this
 						yield return StartCoroutine(WaitForButtonPress(null));
@@ -148,15 +161,17 @@ namespace Nodeplay.Engine
 			
 		}
 		//TODO this does not belong here
-		private IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration,GameObject goToMove,Vector3 lookat)
+		private IEnumerator slowmove(Vector3 frompos,Vector3 topos,Vector3 lookFrom,Vector3 lookat, float duration,GameObject goToMove)
 		{
 			Debug.Log("moving camera");
 
 			for (float f = 0; f <= duration; f = f + Time.deltaTime)
 			{
-
+				//move the camera towards the new node
 				goToMove.transform.position = Vector3.Lerp(frompos, topos, f);
-				goToMove.transform.LookAt(lookat);
+
+				goToMove.transform.LookAt(Vector3.Lerp(lookFrom,lookat,f));
+
 				yield return null;
 				
 			}

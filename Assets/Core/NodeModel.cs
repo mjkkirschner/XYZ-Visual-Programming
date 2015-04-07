@@ -121,7 +121,7 @@ public class NodeModel : BaseModel
 		}
 	}
 
-	ExplicitGraphExecution explicitGraphExecution {
+	protected ExplicitGraphExecution explicitGraphExecution {
 		get;
 		set;
 	}
@@ -317,7 +317,7 @@ public class NodeModel : BaseModel
 		var nodedisplay = new GameObject();
 		nodedisplay.transform.localPosition = this.gameObject.transform.position;
 		nodedisplay.transform.parent = UI.transform.parent;
-		//nodedisplay.AddComponent<UIWindowBase>();
+
 		nodedisplay.AddComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
 		nodedisplay.AddComponent<HorizontalLayoutGroup>();
 		nodedisplay.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;

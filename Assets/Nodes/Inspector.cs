@@ -34,7 +34,7 @@ namespace Nodeplay.Nodes
 			//destroy them on next execution
 			var childrenofVisualization = GetComponentInChildren<InspectorVisualization>().transform.Cast<Transform>().ToList();
 			if (childrenofVisualization.Count > 0){
-				childrenofVisualization.ForEach(x=>DestroyImmediate(x.gameObject));
+				childrenofVisualization.Where(x=>x.CompareTag("visualization")).ToList().ForEach(x=>DestroyImmediate(x.gameObject));
 			}
 			var output = intermediateOutVals;
 			var tempx = inputstate["inputData"];
@@ -61,7 +61,7 @@ namespace Nodeplay.Nodes
 		{
 			//for this node UI will add we'll add a InspectorVisualization component and call methods on it
 			//when the node is evaluated
-
+			this.gameObject.AddComponent<PositionNodeRelativeToParents>();
 			GameObject UI = Instantiate(Resources.Load("NodeBaseView")) as GameObject;
 			UI.transform.localPosition = this.gameObject.transform.position;
 			UI.transform.parent = this.gameObject.transform;

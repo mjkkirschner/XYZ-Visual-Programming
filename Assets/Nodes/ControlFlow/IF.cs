@@ -33,6 +33,7 @@ done()";
 		
 
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+			viewPrefabs.Add("conditional");
 		}
 		
 		public override GameObject BuildSceneElements()
