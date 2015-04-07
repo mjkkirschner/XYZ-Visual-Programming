@@ -148,7 +148,7 @@ namespace Nodeplay.UI
 			return totalBounds;
 		}
 
-		protected virtual IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration)
+		internal virtual IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration)
 		{
 			for (float f = 0; f <= duration; f = f + Time.deltaTime)
 			{

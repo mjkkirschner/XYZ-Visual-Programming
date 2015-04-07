@@ -17,15 +17,31 @@ using UnityEngine.EventSystems;
 /// </summary>
 using Nodeplay.UI;
 
-
+[RequireComponent(typeof(Rigidbody))]
 public class NodeView : BaseView<NodeModel>{
 	    
     protected override void Start()
     {
         base.Start();
         Debug.Log("just started NodeView");
-        
+		this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+		this.gameObject.AddComponent<SphereCollider>().radius = 4;
+		this.gameObject.GetComponent<SphereCollider>().isTrigger = true;
     }
+
+	protected virtual void OnTriggerEnter(Collider other) {
+		var otherNodesConnectors =  other.gameObject.GetComponent<NodeModel>().ExecutionOutputs.SelectMany(x=>x.connectors).ToList();
+		if (otherNodesConnectors.Intersect(this.GetComponent<NodeModel>().ExecutionInputs.SelectMany(x=>x.connectors.ToList())).Count()>0)
+		{
+			// we found a connector these nodes share, so align us to other along it (we're the input)
+			var connectorToAlignAlong = otherNodesConnectors.Intersect(this.GetComponent<NodeModel>().ExecutionInputs.SelectMany(x=>x.connectors.ToList())).First();
+			var from = this.transform.position;
+			var offset = from - connectorToAlignAlong.PEnd.transform.position;
+			var to = connectorToAlignAlong.PStart.transform.position + (offset*2);
+			StartCoroutine(this.GetComponent<PositionNodeRelativeToParents>().slowmove(from,to,.4f));
+		
+		}
+	}
 
     public void OnEvaluated(object sender, EventArgs e)
     {
