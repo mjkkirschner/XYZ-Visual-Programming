@@ -11,11 +11,15 @@ using System.Xml;
 namespace Nodeplay.Nodes
 {
 	
-	public class VariableInputDelegateNodeModel : DelegateNodeModel
+	public class VariableInputOutputNodeModel : VariableInputNodeModel
 	{
-		protected virtual string GetPortName()
+		protected override string GetPortName()
 		{
 			return "some port name" + Inputs.Count.ToString();
+		}
+		protected virtual string GetOutPortName()
+		{
+			return "OUTPUT" + Outputs.Count.ToString();
 		}
 		
 		//instantiate and setup buttons for adding and removing ports
@@ -24,23 +28,21 @@ namespace Nodeplay.Nodes
 			var tempUI = base.BuildSceneElements();
 			var inputdisplay = tempUI.transform.root.GetComponentInChildren<InputDisplay>().gameObject;
 			var buttonPrefab = Resources.Load("LibraryButton") as GameObject;
-
+			
 			var addbutton = GameObject.Instantiate(buttonPrefab);
 			var rembutton = GameObject.Instantiate(buttonPrefab);
-
-			addbutton.GetComponentInChildren<Text>().text = "Add Input";
-			rembutton.GetComponentInChildren<Text>().text = "Remove Input";
-
-			addbutton.GetComponent<Button>().onClick.AddListener(() => { this.AddInputPort(GetPortName());});
+			
+			addbutton.GetComponentInChildren<Text>().text = "Add Output";
+			rembutton.GetComponentInChildren<Text>().text = "Remove Output";
+			
+			addbutton.GetComponent<Button>().onClick.AddListener(() => { this.AddOutPutPort(GetOutPortName());});
 			rembutton.GetComponent<Button>().onClick.AddListener(() => {
-				this.RemoveInputPort(Inputs.Select(x=>x.NickName).ToList().Last());});
-
+				this.RemoveOutputPort(Outputs.Select(x=>x.NickName).ToList().Last());});
+			
 			addbutton.transform.SetParent(inputdisplay.transform,false);
 			rembutton.transform.SetParent(inputdisplay.transform,false);
 			return tempUI;
 		}
-
-
 		
 		//save and load are overidden to save ports created at runtime
 		
@@ -49,14 +51,13 @@ namespace Nodeplay.Nodes
 		{
 			base.Save(doc,element);
 			
-			var portData = doc.CreateElement("variablePorts");
+			var portData = doc.CreateElement("variableOutPorts");
 			element.AppendChild(portData);
-			//add an attribute foreach input port, can load this later to create ports in correct order
-			if (Inputs != null){
+			//add an attribute foreach output port, can load this later to create ports in correct order
+			if (Outputs != null){
 				
-				foreach(var port in Inputs)
-				{
-					
+				foreach(var port in Outputs)
+				{	
 					portData.SetAttribute("port"+ port.Index.ToString(),port.NickName);
 				}
 				
@@ -71,12 +72,11 @@ namespace Nodeplay.Nodes
 			
 			foreach(XmlNode subnode in node.ChildNodes)
 			{
-				if (subnode.Name == "variablePorts")
+				if (subnode.Name == "variableOutPorts")
 				{
 					portdata = subnode;
 					
 				}
-				
 			}
 			
 			if (portdata != null)
@@ -85,7 +85,7 @@ namespace Nodeplay.Nodes
 				foreach (XmlAttribute attribute in portdata.Attributes)
 				{
 					Debug.Log("loading a port named " + attribute.Value +" at index "+ attribute.Name.ToString());
-					this.AddInputPort(attribute.Value);
+					this.AddOutPutPort(attribute.Value);
 				}
 			}
 			

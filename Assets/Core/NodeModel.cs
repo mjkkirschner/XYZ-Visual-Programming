@@ -230,8 +230,33 @@ public class NodeModel : BaseModel
 		}
 		toRemove.ForEach(x=>Inputs.Remove(x));
 		//actually need to update the gameobjects representing these or send events that take care of this
+	}
 
-
+	/// <summary>
+	/// Removes the output port named name.
+	/// </summary>
+	/// <param name="name">Name.</param>
+	protected virtual void RemoveOutputPort (string name)
+	{
+		if (Outputs.Where(x=>x.NickName == name).ToList().Count>1)
+		{
+			throw new Exception("more than two outputs ports with name we want to remove");
+		}
+		var toRemove = new List<PortModel>();
+		foreach(var port in Outputs)
+		{
+			if (port.NickName == name)
+			{
+				if (port.IsConnected)
+				{
+					port.Owner.GraphOwner.RemoveConnection(port);
+				}
+				toRemove.Add(port);
+				Destroy(port.gameObject);
+			}
+		}
+		toRemove.ForEach(x=>Inputs.Remove(x));
+		//actually need to update the gameobjects representing these or send events that take care of this
 	}
     /// <summary>
     /// Adds an output portmodel and geometry to the node.

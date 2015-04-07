@@ -64,6 +64,7 @@ namespace Nodeplay.Nodes
 		
 		public override void Load(XmlNode node)
 		{
+			base.Load(node);
 			XmlNode portdata = null ;
 			
 			foreach(XmlNode subnode in node.ChildNodes)
