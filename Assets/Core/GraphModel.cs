@@ -163,9 +163,9 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		Nodes.Remove(node.GetComponent<NodeModel>());
 		//TODO need to check if the connections exist before trying to remove them
 		node.GetComponent<NodeModel>().Inputs.ForEach(x => RemoveConnection(x));
-		node.GetComponent<NodeModel>().Outputs.ForEach(x => RemoveConnection(x));
+		node.GetComponent<NodeModel>().Outputs.SelectMany(x => x.connectors).ToList().ForEach(y=>RemoveConnection(y.PEnd));
 		node.GetComponent<NodeModel>().ExecutionInputs.ForEach(x => RemoveConnection(x));
-		node.GetComponent<NodeModel>().ExecutionOutputs.ForEach(x => RemoveConnection(x));
+		node.GetComponent<NodeModel>().ExecutionOutputs.SelectMany(x => x.connectors).ToList().ForEach(y=>RemoveConnection(y.PEnd));
 
 		//then destory gameobject
 		GameObject.Destroy(node);

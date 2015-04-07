@@ -21,7 +21,10 @@ namespace Nodeplay.UI
 				var currentGraph = appmodel.WorkModels.Where(x => x.Current == true).First();
 				//send a delete element command to the current graph model
 				//it's possible currently selected go is not in the current graph model
+				if (currently_selected != null){
+
 				currentGraph.DeleteNode(currently_selected);
+				}
 
 			}
 		}
