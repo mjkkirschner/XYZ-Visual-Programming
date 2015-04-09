@@ -185,6 +185,14 @@ namespace Nodeplay.UI
 
 				if (((GameObject)objectToVisualize).GetComponent<Renderer>() != null)
 					{
+					//if this object is a line renderer we need to set the worldspace property to false before returning
+					if (((GameObject)objectToVisualize).GetComponent<LineRenderer>() != null)
+					{
+						var localSpaceLine = Instantiate(((GameObject)objectToVisualize)) as GameObject;
+						localSpaceLine.GetComponent<LineRenderer>().useWorldSpace = false;
+						return localSpaceLine;
+					}
+
 					//just return the actual object and we'll just move it.
 					return Instantiate(((GameObject)objectToVisualize)) as GameObject ;
 					}
@@ -215,7 +223,7 @@ namespace Nodeplay.UI
 					var point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 					point.transform.position = (Vector3)objectToVisualize;
 
-					//drawlineToVisualization(point.transform.position);
+
 					return point;
 				}
 
