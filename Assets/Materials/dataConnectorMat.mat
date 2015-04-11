@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: dataConnectorMat
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 10755, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
@@ -84,6 +84,10 @@ Material:
         second: .5
       data:
         first:
+          name: _Shininess
+        second: .00999999978
+      data:
+        first:
           name: _SrcBlend
         second: 1
       data:
@@ -139,6 +143,14 @@ Material:
         first:
           name: _Color
         second: {r: .984313726, g: .479323924, b: 0, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _Emission
+        second: {r: 0, g: 0, b: 0, a: 0}
       data:
         first:
           name: _EmissionColorUI

@@ -168,7 +168,7 @@ public class NodeModel : BaseModel
 		newport.GetComponent<ExecutionPortModel>().PortConnected += PortConnected;
 		newport.GetComponent<ExecutionPortModel>().PortDisconnected += PortDisconnected;
 		ExecutionInputs.Add(newport.GetComponent<ExecutionPortModel>());
-		
+
 		
 	}
 
@@ -281,12 +281,13 @@ public class NodeModel : BaseModel
     public void PortConnected(object sender, ConnectorModel e)
     {
         Debug.Log("I " + this.GetType().Name+  " just got a port connected event on " + (sender as PortModel).NickName );
-
+		NotifyPropertyChanged("Ports");
     }
 
     public void PortDisconnected(object sender, ConnectorModel e)
     {
 		Debug.Log("I " + this.GetType().Name+  " just got a port DISconnected event on " + (sender as PortModel).NickName);
+		NotifyPropertyChanged("Ports");
     }
 
 
@@ -315,7 +316,7 @@ public class NodeModel : BaseModel
         // root gameobject
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 		this.gameObject.AddComponent<PositionNodeRelativeToParents>();
-
+		this.gameObject.AddComponent<ResizeNodeByDependence>();
 		GameObject UI = null;
 		foreach (var viewPrefab in viewPrefabs){
 

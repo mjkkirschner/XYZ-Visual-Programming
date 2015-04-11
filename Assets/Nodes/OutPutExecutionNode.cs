@@ -65,7 +65,7 @@ namespace Nodeplay.Nodes
 
 		protected override void OnNodeModified ()
 		{
-			if (ExecutionOutputs != null && ExecutionInputs != null){
+			if (ExecutionOutputs != null && ExecutionInputs != null && ExecutionOutputs.Count>1){
 			base.OnNodeModified ();
 			var caller = this.GraphOwner.Nodes.OfType<InputExecutionNode>().First().CustomNodeWrapperCaller;
 			CustomNodeWrapperCaller = caller;

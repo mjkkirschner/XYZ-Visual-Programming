@@ -57,6 +57,15 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 		return setupColorBlock(originalcolors, highlightcolor);
 	}
 
+	public void ModifySelectable(Vector3 normalScale, Vector3 hoverScale)
+	{
+		selectable.enabled = false;
+		selectable.colors = setupColorBlock();
+		((SelectableMeshRender)selectable).NormalScale = normalScale;
+		((SelectableMeshRender)selectable).HoverScale = hoverScale;
+		selectable.enabled = true;
+	}
+
     protected virtual void Start()
     {   //TODO contract for hierarchy
         // we always search the root gameobject of this view for the model,
@@ -91,6 +100,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 		selectable.NormalScale = NormalScale;
 		selectable.HoverScale = HoverScale;
 		selectable.enabled = true;
+		this.selectable = selectable;
 	}
 
     protected virtual void OnDestroy()

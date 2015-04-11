@@ -64,7 +64,7 @@ namespace Nodeplay.Nodes
 		{
 			//if start hasnt run yet we wont have any outputs on this node yet,
 			//so dont try to lookup evaldata... will throw
-			if (ExecutionOutputs != null){
+			if (ExecutionOutputs != null && ExecutionOutputs.Count>1 ){
 			base.OnNodeModified ();
 			Executiondata = gatherExecutionData();
 				pointerToFirstNodeInGraph = Executiondata.First().Second;

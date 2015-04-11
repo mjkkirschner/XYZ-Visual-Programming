@@ -99,12 +99,20 @@ public class ConnectorView:BaseView<ConnectorModel>
 				if (TemporaryGeometry != null) {
 						TemporaryGeometry.ForEach (x => UnityEngine.GameObject.DestroyImmediate (x));
 				}
+		var dist = Mathf.CeilToInt( Vector3.Distance(startPoint,endpoint));
+				var range = Enumerable.Range (0, dist*5).Select (i => i / (dist*5F)).ToList ();
+				//var points = range.Select (x => Vector3.Slerp (startPoint, endpoint, x)).ToList ();
+		//var ctrlpoints = generateBezierControlPoints(startPoint,endpoint);
 
-				var range = Enumerable.Range (0, 100).Select (i => i / 100F).ToList ();
-				var points = range.Select (x => Vector3.Slerp (startPoint, endpoint, x)).ToList ();
-		
-		
-				var geos = points.Select (x => {
+		//var points1 = range.Select(x=>evaluateBezierAtParameter(ctrlpoints[0],ctrlpoints[2],ctrlpoints[1],x)).ToList();
+		//var points2 = range.Select(x=>evaluateBezierAtParameter(ctrlpoints[3],ctrlpoints[5],ctrlpoints[4],x)).ToList();
+
+		//var points3 = points1.Concat(points2).ToList();
+
+		var points1 = generateHermitePointsandTangents(startPoint,endpoint);
+		var points3 = range.Select(x=> evaluateCubicHermiteAtParamter(points1[0],points1[2],points1[1],points1[3],x)).ToList();
+
+		var geos = points3.Select (x => {
 					var y = GameObject.Instantiate(geoToRepeat) as GameObject;
 						GameObject.DestroyImmediate (y.GetComponent<Collider>());
 						y.transform.position = x;
@@ -114,7 +122,62 @@ public class ConnectorView:BaseView<ConnectorModel>
 				TemporaryGeometry = geos;
 				return geos;
 		}
+		
 
+	private List<Vector3> generateHermitePointsandTangents(Vector3 start, Vector3 end)
+	{
+
+		var tan1 = new Vector3(0,0,Math.Abs((start - end).z*2));
+		var tan2 = new Vector3(0,0,Math.Abs((end - start).z*2));
+
+		var output = new List<Vector3>();
+		output.Add(start);
+		output.Add(tan1);
+		output.Add(end);
+		output.Add(tan2);
+		return output;
+
+	}
+
+	private List<Vector3> generateBezierControlPoints(Vector3 start, Vector3 end)
+	{
+		//first quadratic curve points
+		var start1 = start;
+		var end1 = ((end-start)/2)+start;
+		//var perp = Vector3.Cross(new Vector3(0,(end1-start1).y,0),end-start);
+		var control1 = end1 + new Vector3(0,(end1-start1).y*2,0);
+
+
+		var start2 = end1;
+		var end2 = end;
+		//var perp2 = Vector3.Cross(new Vector3(0,(end2-end1).y,0),end-start);
+		var control2 = end1 - new Vector3(0,(end2-end1).y*2,0);
+
+		var output = new List<Vector3>();
+		output.Add(start1);
+		output.Add(end1);
+		output.Add(control1);
+		output.Add(start2);
+		output.Add(end2);
+		output.Add(control2);
+		return output;
+	}
+
+		private Vector3 evaluateBezierAtParameter(Vector3 p0, Vector3 p1, Vector3 p2, float parameter)
+	{
+		 return (1.0f - parameter) * (1.0f - parameter) * p0
+			+ 2.0f * (1.0f - parameter) * parameter * p1
+				+parameter * parameter * p2;
+
+	}
+
+	private Vector3 evaluateCubicHermiteAtParamter(Vector3 p0, Vector3 p1, Vector3 tan1, Vector3 tan2, float parameter)
+	{
+		return   ((((2*(Mathf.Pow(parameter,3))) - (3*Mathf.Pow(parameter,2)) + 1 ))*p0) + 
+			(((parameter*parameter*parameter) - (2*(parameter*parameter)) + parameter ) *tan1) +
+				(((-2*(Mathf.Pow(parameter,3))) + (3*Mathf.Pow(parameter,2))) *p1) + 
+				((parameter*parameter*parameter) - ((parameter*parameter)))*tan2;
+	}
 
 		public void HandlePortChanges (object sender, PropertyChangedEventArgs args)
 		{
