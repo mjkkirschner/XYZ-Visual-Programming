@@ -62,15 +62,15 @@ namespace Nodeplay.UI
 		public static GameObject generateInspectableElementGameObject(object someObject, GameObject parent, string name = null)
 		{
 			if (someObject == null){
-				//GameObject.Destroy(parent);
+
 				return null;
 			}
 
 			var wrapper = new GameObject("subelement_wrapper");
-			//wrapper.transform.position = parent.transform.position;
+
 			wrapper.transform.SetParent(parent.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-			//wrapper.transform.Rotate(0,90,0);
+
 			wrapper.tag = "visualization";
 			//TODO replace with call to specific item type depending on item system.type
 			var element = Resources.Load<GameObject>("listele");
@@ -85,7 +85,7 @@ namespace Nodeplay.UI
 			inspectable.ElementType = someObject.GetType();
 			inspectable.Reference = someObject;
 			inspectable.Name = name;
-			Debug.Log("building inspectable element representing: " + someObject.ToString());
+			//Debug.Log("building inspectable element representing: " + someObject.ToString());
 
 			
 
@@ -111,7 +111,7 @@ namespace Nodeplay.UI
 			
 			if (someObject == null || ReferenceEquals(someObject,null) ||someObject.ToString() == "null" )
 			{
-				Debug.Log("in here mofo");
+				Debug.Log("if something is null");
 				inspectable.GetComponentInChildren<Text>().fontSize /= 2;
 				instantiatedelement.GetComponent<Image>().color = Color.red;
 			}
@@ -143,7 +143,7 @@ namespace Nodeplay.UI
 			wrapper.transform.position = new Vector3(0,0,0);
 			wrapper.transform.SetParent(this.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-			//wrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
+
 			wrapper.AddComponent<Canvas>();
 			wrapper.GetComponent<Canvas>().worldCamera = Camera.main;
 			wrapper.AddComponent<GraphicRaycaster>();
@@ -152,7 +152,7 @@ namespace Nodeplay.UI
 			var fitter = wrapper.AddComponent<ContentSizeFitter>();
 			fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 			fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; 
-			//wrapper.transform.Rotate(0,90,0);
+
 			TopLevelElement = inputObject;
 			/*if (IsList(inputObject))
 			{

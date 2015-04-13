@@ -55,7 +55,7 @@ namespace Nodeplay.UI
 		public event PropertyChangedEventHandler PropertyChanged;
 		protected virtual void NotifyPropertyChanged(String info)
 		{
-			Debug.Log("sending " + info + " change notification");
+			//Debug.Log("sending " + info + " change notification");
 			if (PropertyChanged != null)
 			{
 				PropertyChanged(this, new PropertyChangedEventArgs(info));
@@ -70,7 +70,7 @@ namespace Nodeplay.UI
 			}
 		}
 
-		void cleanupVisualization ()
+		private void cleanupVisualization ()
 		{
 			var childrenofVisualization = GetComponentInChildren<InspectableElement>().transform.Cast<Transform>().ToList();
 
@@ -80,6 +80,24 @@ namespace Nodeplay.UI
 			}
 
 		}
+
+		private static void SortChildrenByBaseTypeName(GameObject parent) {
+
+				List<Transform> children = new List<Transform>();
+
+				for (int i = parent.transform.childCount - 1; i >= 0; i--) {
+					Transform child = parent.transform.GetChild(i);
+					children.Add(child);
+					child.SetParent(null,false);
+				}
+			children.Sort((Transform t1, Transform t2) => { return t1.GetComponentInChildren<InspectableElement>().Reference.GetType().Name.CompareTo
+				(t2.GetComponentInChildren<InspectableElement>().Reference.GetType().Name);});
+				foreach (Transform child in children) 
+				{
+					child.SetParent(parent.transform,false);
+				}
+
+			}
 		
 		protected override void Start()
 		{
@@ -113,10 +131,25 @@ namespace Nodeplay.UI
 			visualization.transform.SetParent(viszparent.transform,false);
 
 			visualization.transform.localScale = visualization.transform.localScale * (1000/depth);
+
+			//visualization.transform.localScale = Vector3.ClampMagnitude(visualization.transform.localScale,1000);
 			if (visualization.GetComponentInChildren<Renderer>()!=null)
 			{
-			viszparent.GetComponent<LayoutElement>().preferredWidth = visualization.GetComponentInChildren<Renderer>().bounds.size.x * (4000);
-			viszparent.GetComponent<LayoutElement>().preferredHeight = visualization.GetComponentInChildren<Renderer>().bounds.size.y* (4000);
+
+				var allrenderers = visualization.GetComponentsInChildren<Renderer>().ToList();
+				
+				var totalBounds = allrenderers[0].bounds;
+				foreach (Renderer ren in allrenderers)
+				{
+
+					totalBounds.Encapsulate(ren.bounds);
+					
+				}
+				var boundingBox = totalBounds;
+
+
+			viszparent.GetComponent<LayoutElement>().preferredWidth = boundingBox.size.x * (4000)*2;
+				viszparent.GetComponent<LayoutElement>().preferredHeight = boundingBox.size.y* (4000)*2;
 			}
 				//disable all colliders on these visualizations
 			//visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
@@ -140,12 +173,37 @@ namespace Nodeplay.UI
 		//should parent this as before so that it's cleaned up correctly
 		private void toggleWorldSpaceVisualization(object objectToDrawLineTo)
 			{
+
 				if(transform.FindChild("viz line") == null)
 				{
-				var visualization = searchforvisualization(objectToDrawLineTo);
-				visualization.tag = "visualization";
-				drawlineToVisualization(visualization.transform.position);
-				visualization.transform.SetParent(this.transform);
+						var visualizations = new List<GameObject>();
+						var visualization = searchforvisualization(objectToDrawLineTo,VisualizationContext.Worldspace);
+						
+						//if the visualization returned is a proper visualization
+						// then just draw a line to it
+						if (!visualization.CompareTag("visualization"))
+						    {
+
+						foreach (Transform child in visualization.GetComponentsInChildren<Transform>())
+						{
+							child.parent = null;
+							if (child.gameObject.CompareTag("visualization"))
+							{
+								visualizations.Add(child.gameObject);
+							}
+							else{
+								Destroy(child.gameObject);
+							}
+						}
+						Destroy(visualization);
+						}
+						else
+						{
+							visualizations.Add(visualization);
+						}
+
+						drawlineToVisualization(visualizations.First().transform.position);
+						visualizations.First().transform.SetParent(this.transform);
 
 				}
 				else{
@@ -174,9 +232,14 @@ namespace Nodeplay.UI
 			linerenderer.SetWidth(.05f,.05f);
 		}
 
+		enum VisualizationContext
+		{
+			List,
+			Worldspace
+		};
 		//tentatively return a new gameobject that renders some representation of this object
 		//probably based on its type, so we'll need a mapping from type to visualization
-		private GameObject searchforvisualization(object objectToVisualize)
+		private GameObject searchforvisualization(object objectToVisualize, VisualizationContext context = VisualizationContext.List)
 		{
 			//if a gameobject then just copy the gameobject which will use its
 			//renderer if it has one
@@ -190,11 +253,15 @@ namespace Nodeplay.UI
 					{
 						var localSpaceLine = Instantiate(((GameObject)objectToVisualize)) as GameObject;
 						localSpaceLine.GetComponent<LineRenderer>().useWorldSpace = false;
+						localSpaceLine.tag = "visualization";
 						return localSpaceLine;
 					}
 
 					//just return the actual object and we'll just move it.
-					return Instantiate(((GameObject)objectToVisualize)) as GameObject ;
+					 var taggedGO = Instantiate(((GameObject)objectToVisualize)) as GameObject; 
+						taggedGO.tag = "visualization"; 
+					return taggedGO;
+						
 					}
 
 				else{
@@ -213,18 +280,28 @@ namespace Nodeplay.UI
 				if (objectToVisualize is Vector2 || objectToVisualize is Vector3)
 				{
 					//first load the grid object
-					//var gridprefab = Resources.Load<GameObject>("Grid");
-					//var grid = GameObject.Instantiate(gridprefab);
+					var gridprefab = Resources.Load<GameObject>("Grid");
+					var grid = GameObject.Instantiate(gridprefab);
+					grid.transform.localScale = new Vector3(1,1,1);
 					//then place a point into the grid
-
-					//if we get a point or vector, lets visualize it as a point, and draw
-					// a line between the point and the inspectable element button
+					//grid.tag = "listonlyVisualization";
+					//if we get a point or vector, lets visualize it as a point,
+					//insert it as a child of the grid
 
 					var point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-					point.transform.position = (Vector3)objectToVisualize;
+					point.transform.parent = grid.transform;
+					//if we're generating a list element visualization then clamp the scale...
+					if (context == VisualizationContext.List)
+					{
+						point.transform.localPosition = Vector3.ClampMagnitude(((Vector3)objectToVisualize),3);
+					} 
+					else
+					{
+						point.transform.localPosition = ((Vector3)objectToVisualize);
+					}
 
-
-					return point;
+					point.tag = "visualization";
+					return grid;
 				}
 
 
@@ -268,8 +345,9 @@ namespace Nodeplay.UI
 		{
 			if (exposesubElements == false){
 				exposesubElements = true;
-				populateNextLevel(this.Reference);
+				var wrapper = populateNextLevel(this.Reference);
 				this.GetComponentsInChildren<Image>().ToList().ForEach(x=>x.color = Color.green);
+				SortChildrenByBaseTypeName(wrapper);
 
 			}
 			else{
@@ -282,7 +360,7 @@ namespace Nodeplay.UI
 		}
 
 
-		private void populateNextLevel(System.Object subTreeRoot)
+		private GameObject populateNextLevel(System.Object subTreeRoot)
 		{
 			//build a new wrapper for this next level
 			var wrapper = new GameObject("sub_tree_wrapper");
@@ -388,7 +466,7 @@ namespace Nodeplay.UI
 				
 			}
 
-
+			return wrapper;
 
 		}
 

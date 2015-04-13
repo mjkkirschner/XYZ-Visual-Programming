@@ -264,7 +264,11 @@ public class NodeModel : BaseModel
     /// </summary>
     public void AddOutPutPort(string portName)
     {
-
+		//if we're trying to add a port with the same name, breakout
+		if (Outputs.Any(x=>x.NickName == portName))
+		{
+			return;
+		}
         var newport = new GameObject();
         newport.AddComponent<PortModel>();
         // initialze the port

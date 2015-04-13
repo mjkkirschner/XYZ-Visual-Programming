@@ -1,0 +1,48 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="bcdaf771-670f-48f4-ac54-4a8832972def" nickname="node StartExecutionbcdaf771-670f-48f4-ac54-4a8832972def" x="-4.24186" y="24.48637" z="-12.71316">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="f75e99e6-5684-4e2d-a4ec-482b1d69b655" nickname="node Numberf75e99e6-5684-4e2d-a4ec-482b1d69b655" x="-13.94036" y="39.24663" z="-6.214684">
+      <nodeinputdict Code="OUTPUT = range(15);VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.xForEach type="Nodeplay.Nodes.xForEach" guid="ffbc5763-6e65-4b91-b08b-78f0bfe34819" nickname="node xForEachffbc5763-6e65-4b91-b08b-78f0bfe34819" x="-58.89529" y="50.52503" z="51.30816">
+      <nodeinputdict />
+    </Nodeplay.Nodes.xForEach>
+    <Nodeplay.Nodes.xForEach type="Nodeplay.Nodes.xForEach" guid="2d9c6432-6d59-480d-9eba-c9c929107408" nickname="node xForEach2d9c6432-6d59-480d-9eba-c9c929107408" x="-89.63246" y="55.95469" z="81.62488">
+      <nodeinputdict />
+    </Nodeplay.Nodes.xForEach>
+    <Nodeplay.Nodes.PythonNode type="Nodeplay.Nodes.PythonNode" guid="79a04ff3-a856-42de-a799-53b21e671705" nickname="node PythonNode79a04ff3-a856-42de-a799-53b21e671705" x="-37.62397" y="35.5303" z="14.73635">
+      <nodeinputdict Code="import sys; sys.path.append(&quot;/Users/michaelkirschner/nodeply/Assets/Resources/Lib/&quot;)&#xA;&#xA;import random;&#xA;size = (input0)&#xA;def sample(point):&#xA;	samp1 = random.randrange(-1,1) + point*.5&#xA;	samp1 += random.randrange(-1,1)/2 + point *.08&#xA;	samp1+= random.randrange(-1,1)*1.96&#xA;	return samp1&#xA;OUTPUT0 = [[sample(x)  for x in size] for z in size]&#xA;&#xA;&#xA;run()" />
+      <variablePorts port0="input0" />
+      <variableOutPorts port0="OUTPUT0" />
+    </Nodeplay.Nodes.PythonNode>
+    <Nodeplay.Nodes.PythonNode type="Nodeplay.Nodes.PythonNode" guid="986be67b-d8d1-4c71-a834-6505c20a930a" nickname="node PythonNode986be67b-d8d1-4c71-a834-6505c20a930a" x="-92.12943" y="36.01453" z="84.52904">
+      <nodeinputdict Code="import clr &#xA;import System&#xA;&#xA;OUTPUT0 = (System.Single)(input0[input1][input2]);&#xA;run()" />
+      <variablePorts port0="input0" port1="input1" port2="input2" />
+      <variableOutPorts port0="OUTPUT0" />
+    </Nodeplay.Nodes.PythonNode>
+    <UnityEngineNodes.GameobjectCreateCubeNode type="UnityEngineNodes.GameobjectCreateCubeNode" guid="17a7339b-a51f-4006-8ef8-3391f8c51183" nickname="node GameobjectCreateCubeNode17a7339b-a51f-4006-8ef8-3391f8c51183" x="-122.0676" y="44.76848" z="78.30654">
+      <nodeinputdict />
+    </UnityEngineNodes.GameobjectCreateCubeNode>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="f75e99e6-5684-4e2d-a4ec-482b1d69b655" start_index="0" end="ffbc5763-6e65-4b91-b08b-78f0bfe34819" end_index="0" portType="0" />
+    <ConnectorModel start="f75e99e6-5684-4e2d-a4ec-482b1d69b655" start_index="0" end="2d9c6432-6d59-480d-9eba-c9c929107408" end_index="0" portType="0" />
+    <ConnectorModel start="f75e99e6-5684-4e2d-a4ec-482b1d69b655" start_index="0" end="79a04ff3-a856-42de-a799-53b21e671705" end_index="0" portType="0" />
+    <ConnectorModel start="ffbc5763-6e65-4b91-b08b-78f0bfe34819" start_index="0" end="986be67b-d8d1-4c71-a834-6505c20a930a" end_index="1" portType="0" />
+    <ConnectorModel start="ffbc5763-6e65-4b91-b08b-78f0bfe34819" start_index="0" end="17a7339b-a51f-4006-8ef8-3391f8c51183" end_index="0" portType="0" />
+    <ConnectorModel start="2d9c6432-6d59-480d-9eba-c9c929107408" start_index="0" end="986be67b-d8d1-4c71-a834-6505c20a930a" end_index="2" portType="0" />
+    <ConnectorModel start="2d9c6432-6d59-480d-9eba-c9c929107408" start_index="0" end="17a7339b-a51f-4006-8ef8-3391f8c51183" end_index="2" portType="0" />
+    <ConnectorModel start="79a04ff3-a856-42de-a799-53b21e671705" start_index="0" end="986be67b-d8d1-4c71-a834-6505c20a930a" end_index="0" portType="0" />
+    <ConnectorModel start="986be67b-d8d1-4c71-a834-6505c20a930a" start_index="0" end="17a7339b-a51f-4006-8ef8-3391f8c51183" end_index="1" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="bcdaf771-670f-48f4-ac54-4a8832972def" start_index="0" end="f75e99e6-5684-4e2d-a4ec-482b1d69b655" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="f75e99e6-5684-4e2d-a4ec-482b1d69b655" start_index="0" end="79a04ff3-a856-42de-a799-53b21e671705" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="ffbc5763-6e65-4b91-b08b-78f0bfe34819" start_index="0" end="2d9c6432-6d59-480d-9eba-c9c929107408" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="2d9c6432-6d59-480d-9eba-c9c929107408" start_index="0" end="986be67b-d8d1-4c71-a834-6505c20a930a" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="79a04ff3-a856-42de-a799-53b21e671705" start_index="0" end="ffbc5763-6e65-4b91-b08b-78f0bfe34819" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="986be67b-d8d1-4c71-a834-6505c20a930a" start_index="0" end="17a7339b-a51f-4006-8ef8-3391f8c51183" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

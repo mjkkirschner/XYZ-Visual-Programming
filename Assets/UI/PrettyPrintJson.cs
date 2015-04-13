@@ -12,6 +12,8 @@ namespace Nodeplay.UI.Utils
     {
         public static string ToJSONstring(this object obj)
         {
+			if (obj != null){
+
 			var settings = new jsonfx.JsonWriterSettings();
 			//settings.PrettyPrint = true;
 					
@@ -19,12 +21,17 @@ namespace Nodeplay.UI.Utils
 			var writer = new jsonfx.JsonWriter (output,settings);
 
 			//writer.Settings.HandleCyclicReferences = true;
-			if (obj.GetType() == typeof(VariableReference))
-			{
-				Debug.Log( ((VariableReference)obj).VariableName);
-			}
+			//if (obj.GetType() == typeof(VariableReference))
+			//{
+			//	Debug.Log( ((VariableReference)obj).VariableName);
+			//}
             writer.Write(obj);
             return output.ToString();
+			}
+			else
+			{
+				return "object was null";
+			}
         }
 
 

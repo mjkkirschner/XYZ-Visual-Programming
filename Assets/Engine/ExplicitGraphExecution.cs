@@ -19,7 +19,7 @@ namespace Nodeplay.Engine
 		public float ExecutionsPerFrame {get;set;}
 		public Boolean  ButtonPressed {get;set;}
 		public UnityEngine.UI.Toggle DebugModeToggle;
-
+		private List<GameObject> SceneState;
 
 		public event Action Evaluating; 
 
@@ -69,6 +69,7 @@ namespace Nodeplay.Engine
 		/// </summary>
 		public void EvaluateNodes()
 		{
+
 			StartCoroutine("ObservableEval");
 		}
 		/// <summary>
@@ -102,8 +103,19 @@ namespace Nodeplay.Engine
 				yield return null;
 				}
 			}
-
+		private List<GameObject> FindRootGameobjects(){
 		
+		List<GameObject> rootObjects = new List<GameObject>();
+			foreach (Transform xform in UnityEngine.Object.FindObjectsOfType<Transform>())
+			{
+				if (xform.parent == null)
+				{
+					rootObjects.Add(xform.gameObject);
+				}
+			}
+			return rootObjects;
+		}
+
 		/// <summary>
 		/// generator that evals a new node each frame
 		/// issue here is that we are actually slowing evaluation 
@@ -113,6 +125,16 @@ namespace Nodeplay.Engine
 		/// <returns></returns>
 		IEnumerator ObservableEval()
 		{
+			if (SceneState != null)
+			{
+			//delete everything from the last run
+				var CreatedGameObjects =  FindRootGameobjects().Except(FindRootGameobjects().Where(x=>x.GetComponentInChildren<BaseModel>() != null));
+			CreatedGameObjects = CreatedGameObjects.Except(SceneState);
+			CreatedGameObjects.ToList().ForEach(x=>Destroy(x));
+			}
+			//on run get the current state of the scene
+			SceneState = FindRootGameobjects();
+
 			var entrypoints = FindEntryPoints();
 			List<Task> actions = entrypoints.Select(x=> new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForSeconds(1))).ToList();
 			TaskSchedule = new List<Task>(actions);
@@ -120,14 +142,11 @@ namespace Nodeplay.Engine
 			Task headOfQueue = null;
 			while (TaskSchedule.Count > 0)
 			{
-				//Debug.Log(S.ToJSONstring());
-				//Debug.Log("stack count is "+ TaskSchedule.Count);
-				//TaskSchedule.ToList().ForEach(x=>Debug.Log(x.NodeRunningOn.GetType().Name));
-				foreach (var i in Enumerable.Range(0,(int)ExecutionsPerFrame).ToList())
+
+				foreach (var i in Enumerable.Range(0,Math.Min((int)ExecutionsPerFrame,TaskSchedule.Count)).ToList())
 				{
 					headOfQueue = TaskSchedule.First();
-					
-					
+
 					//pop the node we are about to evaluate, otherwise we'll never be able to 
 					
 					OnEvaluating();
@@ -157,8 +176,6 @@ namespace Nodeplay.Engine
 					yield return headOfQueue.Yieldbehavior;
 				}
 			}
-			
-			
 		}
 		//TODO this does not belong here
 		private IEnumerator slowmove(Vector3 frompos,Vector3 topos,Vector3 lookFrom,Vector3 lookat, float duration,GameObject goToMove)

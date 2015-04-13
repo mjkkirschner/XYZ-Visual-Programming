@@ -51,8 +51,10 @@ namespace Nodeplay.UI
 		}
 
 		void OnDestroy()
-		{	// if the gameobject hosting this window is destroyed we need to unsubscribe to this event
+		{	if (Model_GO){
+			// if the gameobject hosting this window is destroyed we need to unsubscribe to this event
 			Model_GO.GetComponent<NodeModel>().PropertyChanged -= NodePropertyChangeEventHandler;
+			}
 		}
 		
 	}
