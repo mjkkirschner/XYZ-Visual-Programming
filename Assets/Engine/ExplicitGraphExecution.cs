@@ -31,6 +31,16 @@ namespace Nodeplay.Engine
 			}
 		} 
 
+		public event Action GraphEvaluationStarted;
+		protected void OnGraphEvaluatonStart()
+		{
+			if (GraphEvaluationStarted != null){
+				
+				GraphEvaluationStarted();
+			}
+		} 
+
+
 		protected virtual void Start()
 		{
 			ExecutionsPerFrame =1;
@@ -125,6 +135,7 @@ namespace Nodeplay.Engine
 		/// <returns></returns>
 		IEnumerator ObservableEval()
 		{
+			OnGraphEvaluatonStart();
 			if (SceneState != null)
 			{
 			//delete everything from the last run

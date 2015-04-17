@@ -134,7 +134,7 @@ namespace Nodeplay.UI
 
 
 
-		public void PopulateTopLevel(object inputObject)
+		public void PopulateTopLevel(object inputObject,float rotationDegrees = 0)
 		{
 
 			var wrapper = new GameObject("root_wrapper");
@@ -143,7 +143,7 @@ namespace Nodeplay.UI
 			wrapper.transform.position = new Vector3(0,0,0);
 			wrapper.transform.SetParent(this.transform,false);
 			wrapper.AddComponent<VerticalLayoutGroup>();
-
+			wrapper.transform.Rotate(Vector3.up,rotationDegrees);
 			wrapper.AddComponent<Canvas>();
 			wrapper.GetComponent<Canvas>().worldCamera = Camera.main;
 			wrapper.AddComponent<GraphicRaycaster>();

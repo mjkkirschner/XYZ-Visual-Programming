@@ -13,12 +13,13 @@ namespace Nodeplay.UI
 	{
 		
 		public GameObject Model_GO;
-		
+		public List<GameObject> allchildren = new List<GameObject>();
+
 		void Start()
 		{
-			Model_GO = this.GetComponentInParent<NodeModel>().gameObject;
+			Model_GO = this.GetComponentInParent<BaseModel>().gameObject;
 			//subscribe to the model changes
-			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
+			Model_GO.GetComponent<BaseModel>().PropertyChanged += NodePropertyChangeEventHandler;
 			//force a call to properychangehandelr
 			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
 		}
@@ -27,8 +28,19 @@ namespace Nodeplay.UI
 		// when the node is modified in some way we update the windows position
 		public void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
-			var allchildren = Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList();
-			allchildren.Remove(Model_GO.transform.GetChild(0).gameObject);
+			 allchildren = Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList();
+
+			//check what kind of children these are, we want to find the node object or it's ports
+			//not visualizations
+			var baseModels = allchildren.SelectMany(x => x.GetComponentsInChildren<BaseModel>()).ToList();
+			//we have a bunch of basemodels, we can remove the first
+			if (baseModels.Count >1){
+
+				allchildren.Remove(Model_GO.transform.GetChild(0).gameObject);
+			}
+			else{
+				allchildren.Add(Model_GO);
+			}
 			GenerateBounds(allchildren);
 		}
 
@@ -53,7 +65,7 @@ namespace Nodeplay.UI
 		void OnDestroy()
 		{	if (Model_GO){
 			// if the gameobject hosting this window is destroyed we need to unsubscribe to this event
-			Model_GO.GetComponent<NodeModel>().PropertyChanged -= NodePropertyChangeEventHandler;
+			Model_GO.GetComponent<BaseModel>().PropertyChanged -= NodePropertyChangeEventHandler;
 			}
 		}
 		

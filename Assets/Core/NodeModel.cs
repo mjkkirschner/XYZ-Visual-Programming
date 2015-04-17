@@ -121,9 +121,9 @@ public class NodeModel : BaseModel
 		}
 	}
 
-	protected ExplicitGraphExecution explicitGraphExecution {
+	public ExplicitGraphExecution explicitGraphExecution {
 		get;
-		set;
+		private set;
 	}
 
 	protected override void OnEnable ()
@@ -321,6 +321,7 @@ public class NodeModel : BaseModel
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 		this.gameObject.AddComponent<PositionNodeRelativeToParents>();
 		this.gameObject.AddComponent<ResizeNodeByDependence>();
+		this.gameObject.AddComponent<EvaluationResultsRenderer>();
 		GameObject UI = null;
 		foreach (var viewPrefab in viewPrefabs){
 
