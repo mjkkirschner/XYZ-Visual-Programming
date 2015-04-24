@@ -40,6 +40,32 @@ public class NodeView : BaseView<NodeModel>{
         StartCoroutine(Blink(Color.red,.1f));
     }
 
+	public override void  OnPointerClick(PointerEventData pointerdata)
+	{
+		//base handles single click left selection events
+		base.OnPointerClick(pointerdata);
+
+		//handle right click by creatng a context menu that disappears
+		//when the mouse button goes up
+
+		//if right clicking on node
+		if (this.UI.GetComponentsInChildren<Transform>().Select(x=>x.gameObject).ToList()
+		    .Contains(pointerdata.rawPointerPress)&& pointerdata.button == PointerEventData.InputButton.Right)
+		{
+			Debug.Log("I" + this.name + " was just RIGHT clicked");
+			dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
+		//now open the context menu for this node and populate it with options set at runtime by the components it contains
+		//of type that implement IContextable
+		
+			var contextMenuProviders = GetComponentsInChildren<IContextable>().AsEnumerable();
+			var contextMenubuttons = contextMenuProviders.SelectMany(x=>x.RequestContextButtons());
+
+			//now finally create the the window, passing the buttons
+			createNodeContextMenuWindow(contextMenubuttons.ToList());
+		}
+	}
+
+
     public override void OnPointerUp(PointerEventData pointerdata)
     {
         // if we're connecting to this node, then add this node
@@ -116,6 +142,15 @@ public class NodeView : BaseView<NodeModel>{
 		portWindow.transform.localPosition = Vector3.zero;
 		portWindow.transform.SetParent(this.transform);
 		portWindow.GetComponent<PortSelectionManager>().init(orginalpress,startport,applicableports);
+	}
+
+	private void createNodeContextMenuWindow(List<Button> contextButtons)
+	{
+		var prefab = Resources.Load<GameObject>("NodeContextMenu");
+		var portWindow = GameObject.Instantiate(prefab) as GameObject;
+		portWindow.transform.localPosition = Vector3.zero;
+		portWindow.transform.SetParent(this.transform);
+		portWindow.GetComponent<NodeContextMenu>().init(contextButtons);
 	}
 
 }
