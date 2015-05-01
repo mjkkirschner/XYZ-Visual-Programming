@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.ComponentModel;
+using System;
 
 namespace Nodeplay.UI
 {
@@ -14,10 +15,24 @@ namespace Nodeplay.UI
 		private List<Color> branchColors;
 		private List<int> branchIndicies;
 		public List<GameObject> tempgeos = new List<GameObject>();
+		private List<NodeModel> visitedList = new List<NodeModel>();
 		// Use this for initialization
 		void Start()
 		{
 			Model = this.GetComponentInParent<NodeModel>();
+			//TODO subscribing to wrong models, we need to subscribe to the most updated list of all nodes under us...
+			//FOUND THOUGH BFS.
+			Model.PropertyChanged += HandlePropertyChanged;
+			Model.Evaluated +=  delegate {
+				UpdateBounding();
+			};
+		}
+		 void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			//if (e.PropertyName == "Location")
+			//{
+				UpdateBounding();
+			//}
 		}
 
 
@@ -81,7 +96,8 @@ namespace Nodeplay.UI
 		}
 
 		// Update is called once per frame
-		void Update()
+
+		void UpdateBounding()
 		{
 			if (initialzed) {
 				if (tempgeos != null) {
@@ -95,6 +111,17 @@ namespace Nodeplay.UI
 				//could also search for the port with the correct naming convention
 				if (Model.ExecutionOutputs [index].IsConnected) {
 					var visited = BFS (Model.ExecutionOutputs [index].connectors[0].PEnd.Owner.gameObject);
+					foreach (var model in visited.Select(x=>x.GetComponent<NodeModel>()))
+						{
+							//if we've visited this node before, then we dont need to 
+							//subscribe to it's location move updates
+							if (!visitedList.Contains(model))
+							{
+								model.PropertyChanged += HandlePropertyChanged;
+							}
+							visitedList.Add(model);
+						}
+
 					if (visited.Any (x => x.transform.hasChanged == true)) {
 
 						tempgeos.Add(GenerateBounds (visited,branchColors[branchIndicies.IndexOf(index)]));
@@ -103,6 +130,8 @@ namespace Nodeplay.UI
 				}
 			
 			}
+
+			//TODO we'll want some logic here to compare the visited list and the 
 		}
 	}
 

@@ -26,12 +26,14 @@ namespace Nodeplay.UI
 			Model.explicitGraphExecution.GraphEvaluationStarted += HandleGraphEvaluationStarted;
 			evalResultsRoot = new GameObject("evalRoot");
 			evalResultsRoot.transform.SetParent(this.transform,false);
+			evalResultsRoot.transform.localScale = new Vector3(.5f,.5f,.5f);
 			evalResultsRoot.AddComponent<GridLayoutGroup>();
 			evalResultsRoot.GetComponent<GridLayoutGroup>().spacing = new Vector2(2,2);
 			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = new Vector2(1,1);
 			(evalResultsRoot.transform as RectTransform).sizeDelta = new Vector2(20,20);
 			evalResultsRoot.GetComponent<GridLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
 			evalResultsRoot.GetComponent<GridLayoutGroup>().startAxis = GridLayoutGroup.Axis.Vertical;
+
 			//evalResultsRoot.GetComponent<GridLayoutGroup>().padding.left = 5;
 
 		}
@@ -42,7 +44,7 @@ namespace Nodeplay.UI
 		{
 			var button = Instantiate(Resources.Load("LibraryButton")) as GameObject;
 			button.GetComponentInChildren<Text>().text = "Toggle Evaluation History";
-			button.GetComponentInChildren<Button>().onClick.AddListener(() => {Debug.Log("WOOWOWOWOOWOWOWO");} );
+			button.GetComponentInChildren<Button>().onClick.AddListener(() => {toggleDisplay();} );
 			return new List<Button>(){button.GetComponentInChildren<Button>()};
 		}
 
@@ -78,12 +80,25 @@ namespace Nodeplay.UI
 			evaluationResults.Add(evalResultParent);
 			evalResultParent.GetComponent<InspectorVisualization>().PopulateTopLevel(vals,0);
 			evalResultParent.AddComponent<LayoutElement>();
-			//now iterate all the items and space them correctly.... we could even try using a layout here....
-			//to do this for us....
+
+			var maxsize =   evaluationResults.Select(x=>x.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta * x.transform.GetChild(0).localScale.x)
+				.Aggregate(Vector2.zero,(max,next) => Vector2.Max(max,next));
+			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = maxsize;
+			Debug.Log(maxsize);
 
 		}
 		
-		
+		private void toggleDisplay()
+		{
+			if (evalResultsRoot.activeSelf == false)
+			{
+				evalResultsRoot.SetActive(true);
+			}
+			else
+			{
+				evalResultsRoot.SetActive(false);
+			}
+		}
 		
 	}
 	

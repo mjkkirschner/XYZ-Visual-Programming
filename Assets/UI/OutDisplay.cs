@@ -20,6 +20,7 @@ namespace Nodeplay.UI
         private Dictionary<string, object> outputDict;
         private GameObject mainPanel;
         private List<OutputDisplayPair> currentOutputdisplaydata;
+		private GameObject outputDisplayPrefab = Resources.Load("OutputPairInputTest") as GameObject;
 
         protected override void Start()
         {
@@ -27,6 +28,7 @@ namespace Nodeplay.UI
 			mainPanel = this.gameObject;
             //find the model
             model = this.gameObject.GetComponentInParent<NodeModel>();
+
         }
 
         public void HandleModelChanges(object sender, PropertyChangedEventArgs e)
@@ -50,23 +52,29 @@ namespace Nodeplay.UI
             //destroy all currentoutputs
             currentOutputdisplaydata = GetComponentsInChildren<OutputDisplayPair>().ToList();
 
-            if (currentOutputdisplaydata != null)
-            {
-                currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x.gameObject));
-            }
-            //create new ones
-            foreach (var entry in outputDict)
-            {
-                //for now, we create the output pairs here based on the out
-                //output dict we have been extracted from the model on its property change
+         
+				//instead of deleting, try just updating the labels instead....
+                //currentOutputdisplaydata.ForEach(x => GameObject.Destroy(x.gameObject));
+				//we need to lookup the name by the output name val
 
-                var newdisplay = Resources.Load("OutputPair") as GameObject;
-                newdisplay = GameObject.Instantiate(newdisplay) as GameObject;
-                newdisplay.GetComponent<RectTransform>().SetParent(mainPanel.GetComponent<RectTransform>(),false);
-                //update the labels with the current output dictionary data
-                newdisplay.GetComponent<OutputDisplayPair>().UpdateLabels(entry.Key, entry.Value);
+				foreach(var entry in outputDict)
+				{
+					var currentLabel = currentOutputdisplaydata.Find(x=>x.outputname == entry.Key);
+					if (currentLabel != null)
+					{
+					currentLabel.UpdateLabels(entry.Key,entry.Value);
+					}
+					// if the value doesnt exist in the list of names, then create a new prefab
+					else
+						{
+						var newdisplay = GameObject.Instantiate(outputDisplayPrefab) as GameObject;
+						newdisplay.GetComponent<RectTransform>().SetParent(mainPanel.GetComponent<RectTransform>(),false);
+						newdisplay.GetComponentInChildren<InputFieldDebug>().enabled = true;
+						//update the labels with the current output dictionary data
+						newdisplay.GetComponent<OutputDisplayPair>().UpdateLabels(entry.Key, entry.Value);
+						}
+					}
+				
+				}
             }
         }
-
-    }
-}

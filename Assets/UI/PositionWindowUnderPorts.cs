@@ -32,15 +32,17 @@ namespace Nodeplay.UI
 
 			//check what kind of children these are, we want to find the node object or it's ports
 			//not visualizations
-			var baseModels = allchildren.SelectMany(x => x.GetComponentsInChildren<BaseModel>()).ToList();
+			var baseModels = allchildren.Select(x => x.GetComponent<BaseModel>()).ToList();
 			//we have a bunch of basemodels, we can remove the first
 			if (baseModels.Count >1){
 
-				allchildren.Remove(Model_GO.transform.GetChild(0).gameObject);
+				//allchildren.Remove(Model_GO.transform.GetChild(0).gameObject);
 			}
 			else{
 				allchildren.Add(Model_GO);
 			}
+
+			allchildren.Remove(this.gameObject);
 			GenerateBounds(allchildren);
 		}
 
@@ -48,7 +50,7 @@ namespace Nodeplay.UI
 		public void GenerateBounds(List<GameObject> toBound)
 		{
 			Vector3 center = Vector3.zero;
-			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
+			var allrenderers = toBound.Select(x => x.GetComponent<MeshRenderer>()).ToList();
 			var totalBounds = allrenderers[0].bounds;
 			foreach (Renderer ren in allrenderers)
 			{

@@ -54,7 +54,6 @@ public class ExtendedFlycam : MonoBehaviour
 		var filterdhits = hits.Where(x=>x.gameObject.transform.root.GetComponentInChildren<ScrollRect>() != null ).ToList();
 		if (filterdhits.Count>0 )
 			{
-
 				return;
 			}
 
@@ -76,9 +75,14 @@ public class ExtendedFlycam : MonoBehaviour
 			transform.Translate(panx, pany, 0);
 		}
 
-		var scrolldelta = Input.GetAxis("Mouse ScrollWheel");
-		var scrollmove = -1f* scrolldelta *cameraSensitivity/80 * transform.forward;
-		transform.Translate(scrollmove, Space.World);
+		//check if we're on a scrollable inputfield
+		var filterForScrolls = hits.Where(x=>x.gameObject.transform.GetComponent<InputFieldDebug>() != null ).ToList();
+		if (filterForScrolls.Count<1 )
+		{
+			var scrolldelta = Input.GetAxis("Mouse ScrollWheel");
+			var scrollmove = -1f* scrolldelta *cameraSensitivity/80 * transform.forward;
+			transform.Translate(scrollmove, Space.World);
+		}
 
 	 	if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift))
 	 	{

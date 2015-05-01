@@ -17,14 +17,16 @@ namespace Nodeplay.UI
         public String outputname { get; set; }
         private String outputstring;
         private Text nameControl;
-        private Text valueControl;
+        private InputFieldDebug valueControl;
         bool started = false;
 
         protected override void Start()
         {
             //find the text controls by name
             nameControl = transform.FindChild("output name").GetComponent<Text>();
-            valueControl = transform.FindChild("output value").GetComponent<Text>();
+			//valueControl = transform.Find("scrollView/output value").GetComponent<Text>();
+			valueControl = transform.FindChild("output value").GetComponentInChildren<InputFieldDebug>();
+			//valueControl.ActivateInputField();
             started = true;
         }
 
@@ -35,8 +37,10 @@ namespace Nodeplay.UI
                 Start();
             }
             nameControl.text = name;
+			outputname = name;
             outputstring = value.ToJSONstring();
             valueControl.text = outputstring;
+
         }
 
 

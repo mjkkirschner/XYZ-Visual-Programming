@@ -26,13 +26,12 @@ namespace Nodeplay.UI
 		public NodeModel Model;
 		public List<GameObject> SubElement;
 		public object TopLevelElement;
-
+		private static GameObject listPrefab = Resources.Load<GameObject>("listele");
 
 		// Use this for initialization
 		void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
-
 		}
 
 
@@ -73,7 +72,7 @@ namespace Nodeplay.UI
 
 			wrapper.tag = "visualization";
 			//TODO replace with call to specific item type depending on item system.type
-			var element = Resources.Load<GameObject>("listele");
+			var element = InspectorVisualization.listPrefab;
 
 			var instantiatedelement = GameObject.Instantiate(element) as GameObject;
 			instantiatedelement.name = (someObject.GetType().ToString());
@@ -119,9 +118,11 @@ namespace Nodeplay.UI
 			//if the newly instantiated element is a list lets open it up by sending a click event
 			if (InspectorVisualization.IsList(someObject))
 			{
+				//if the item is a very long list, we dont want to open it...
+				if(((IList)someObject).Count <15){
 				Debug.Log("the item was a list so open it");
 				ExecuteEvents.Execute<IPointerClickHandler>(instantiatedelement, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
-				
+				}
 			}
 			
 			// when the text is updated the layout is regenerated, this might happen on the next frame

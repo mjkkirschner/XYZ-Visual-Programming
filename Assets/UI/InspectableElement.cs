@@ -28,6 +28,8 @@ namespace Nodeplay.UI
 		public object Reference;
 		private bool exposesubElements = false;
 		public string Name;
+		private GameObject gridprefab = Resources.Load<GameObject>("Grid");
+		private Material linematerial = Resources.Load<Material> ("LineMat");
 		// Use this for initialization
 
 
@@ -65,8 +67,8 @@ namespace Nodeplay.UI
 		private void handleRectChanges(object sender, PropertyChangedEventArgs info)
 		{
 			if (info.PropertyName == "Location"){
-				cleanupVisualization();
-				UpdateVisualization();
+			//	cleanupVisualization();
+			//	UpdateVisualization();
 			}
 		}
 
@@ -122,37 +124,27 @@ namespace Nodeplay.UI
 			var visualization = searchforvisualization(this.Reference);
 			visualization.tag = "visualization";
 
-			
 			//find the visualization parent
 			var fontsize = GetComponentInChildren<Text>().fontSize;
 			var depth = (int)(500/fontsize);
 
 			var viszparent = this.transform.FindChild("visualizationParent");
 			visualization.transform.SetParent(viszparent.transform,false);
-
 			visualization.transform.localScale = visualization.transform.localScale * (1000/depth);
 
-			//visualization.transform.localScale = Vector3.ClampMagnitude(visualization.transform.localScale,1000);
 			if (visualization.GetComponentInChildren<Renderer>()!=null)
 			{
-
 				var allrenderers = visualization.GetComponentsInChildren<Renderer>().ToList();
-				
 				var totalBounds = allrenderers[0].bounds;
 				foreach (Renderer ren in allrenderers)
 				{
-
-					totalBounds.Encapsulate(ren.bounds);
-					
+					totalBounds.Encapsulate(ren.bounds);	
 				}
 				var boundingBox = totalBounds;
-
 
 			viszparent.GetComponent<LayoutElement>().preferredWidth = boundingBox.size.x * (4000)*2;
 				viszparent.GetComponent<LayoutElement>().preferredHeight = boundingBox.size.y* (4000)*2;
 			}
-				//disable all colliders on these visualizations
-			//visualization.GetComponentsInChildren<Collider>().ToList().ForEach(x=>x.enabled = false);
 			visualization.AddComponent<Button>().onClick.AddListener(()=>{toggleWorldSpaceVisualization(this.Reference);});
 
 			//now calculate the 
@@ -228,7 +220,7 @@ namespace Nodeplay.UI
 			var from = this.GetComponentInChildren<Text>().transform.position;
 			linerenderer.SetPosition(0,from);
 			linerenderer.SetPosition(1,To);
-			linerenderer.material = Resources.Load<Material>("LineMat");
+			linerenderer.material = linematerial;
 			linerenderer.SetWidth(.05f,.05f);
 		}
 
@@ -280,7 +272,7 @@ namespace Nodeplay.UI
 				if (objectToVisualize is Vector2 || objectToVisualize is Vector3)
 				{
 					//first load the grid object
-					var gridprefab = Resources.Load<GameObject>("Grid");
+
 					var grid = GameObject.Instantiate(gridprefab);
 					grid.transform.localScale = new Vector3(1,1,1);
 					//then place a point into the grid
@@ -327,17 +319,24 @@ namespace Nodeplay.UI
 		public void UpdateText(object pointer = null)
 		{
 			var fontsize = GetComponentInChildren<Text>().fontSize;
+			var extraText = "";
+			if (InspectorVisualization.IsList(Reference))
+			{
+				extraText = string.Join(string.Empty,Enumerable.Repeat(" ..[.].. ",(Reference as IList).Count).ToArray());
+			}
+
 			if (pointer == null)
 			{
 
 				GetComponentInChildren<Text>().text = "<color=teal>"+ElementType.ToString()+"</color>"  + 
 					" : \n " +"<color=orange>"+Name+"</color>"+
-					": \n " + "<size="+(fontsize*1.5).ToString()+">"+Reference.ToString()+"</size>"; 
+					": \n " + "<size="+(fontsize*1.5).ToString()+">"+Reference.ToString()+extraText+"</size>"; 
 			}
 			else
 			{
+
 				GetComponentInChildren<Text>().text = "<color=teal>"+pointer.GetType().ToString()+"</color>" +
-					": \n "+ "<size="+(fontsize*1.5).ToString()+">"+ pointer.ToString()+"</size>"; 
+					": \n "+ "<size="+(fontsize*1.5).ToString()+">"+ pointer.ToString()+extraText+"</size>"; 
 			}
 		}
 
