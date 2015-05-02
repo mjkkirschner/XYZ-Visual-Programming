@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
+using Nodeplay.Nodes;
+using Nodeplay.Core;
+
 /// <summary>
 /// object representing an input port.
 /// </summary>
@@ -12,7 +15,8 @@ public class ConnectorModel : BaseModel
 		public  PortModel PEnd { get; set; }
 		public  ConnectorView View { get; set; }
 		public GameObject UIsubgeo;	
-
+		public Color modifierColor {get;protected set;}
+		
 		public delegate void ConnectorConnectionChangeHandler (object sender,EventArgs e);
 		public event ConnectorConnectionChangeHandler ConnectorDisconnected;
 		public event ConnectorConnectionChangeHandler ConnectorConnected;
@@ -35,7 +39,7 @@ public class ConnectorModel : BaseModel
 				//create a connector view
             View = this.gameObject.AddComponent<ConnectorView>();
 				View.Model = this;
-			
+		modifierColor = Color.black;
 		}
 
 		
@@ -117,7 +121,9 @@ public class ConnectorModel : BaseModel
 				ConnectorDisconnected+= start.ConnectorDisconnectEventHandler;
 				ConnectorDisconnected+= end.ConnectorDisconnectEventHandler;
 
-				
+				//setup different colors for UI depending on type of object
+
+
 				
 		}
 		//TODO add method to verify the ports that this connector connects
@@ -133,6 +139,11 @@ public class ConnectorModel : BaseModel
         //need to set these parents explicity since on first run redraw wont be able to 
         // nest these inside UI as UI is not created yet
             geo.ForEach(x => x.transform.parent = UI.transform);
+		if (PStart.Owner is CreateVariable || PStart.Owner is GetVariable || PStart.Owner is SetVariable)
+		{
+			modifierColor = Color.green;
+		}
+
             return UI;
 
         }

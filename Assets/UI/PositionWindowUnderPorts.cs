@@ -50,10 +50,18 @@ namespace Nodeplay.UI
 		public void GenerateBounds(List<GameObject> toBound)
 		{
 			Vector3 center = Vector3.zero;
-			var allrenderers = toBound.Select(x => x.GetComponent<MeshRenderer>()).ToList();
+			var allrenderers = toBound.Select(x => {
+				if( x.GetComponent<MeshRenderer>() !=null)
+				{
+					return x.GetComponent<MeshRenderer>();
+				}
+				return null;
+			}).ToList();
+
 			var totalBounds = allrenderers[0].bounds;
+			allrenderers.RemoveAll(item => item == null);
 			foreach (Renderer ren in allrenderers)
-			{
+			{ 
 				center = center + ren.gameObject.transform.position;
 				totalBounds.Encapsulate(ren.bounds);
 				

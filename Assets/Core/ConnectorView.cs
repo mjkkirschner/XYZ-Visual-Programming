@@ -117,6 +117,11 @@ public class ConnectorView:BaseView<ConnectorModel>
 						GameObject.DestroyImmediate (y.GetComponent<Collider>());
 						y.transform.position = x;
 						y.transform.localScale = NormalScale;
+			//check if color is not black, since color is a value type cannot be null
+						if (Model != null && Model.modifierColor != Color.black)
+					{
+				y.GetComponent<Renderer>().material.color = Model.modifierColor;
+					}
 						return y;}).ToList ();
 		
 				TemporaryGeometry = geos;

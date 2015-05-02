@@ -25,6 +25,7 @@ using System.Linq;
 		//create a connector view
 		View = this.gameObject.AddComponent<ExecutionConnectorView>();
 		View.Model = this;
+		modifierColor = Color.black;
 		
 	}
 

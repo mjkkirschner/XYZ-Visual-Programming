@@ -83,18 +83,22 @@ namespace Nodeplay.UI
 
 		}
 
-		private static void SortChildrenByBaseTypeName(GameObject parent) {
+		private static void SortChildrenByBaseTypeName(GameObject parent) 
+		{
 
 				List<Transform> children = new List<Transform>();
-
+			//iterate children of this transform backwards and remove all children
 				for (int i = parent.transform.childCount - 1; i >= 0; i--) {
 					Transform child = parent.transform.GetChild(i);
 					children.Add(child);
+				//remove child from parent 
 					child.SetParent(null,false);
 				}
-			children.Sort((Transform t1, Transform t2) => { return t1.GetComponentInChildren<InspectableElement>().Reference.GetType().Name.CompareTo
-				(t2.GetComponentInChildren<InspectableElement>().Reference.GetType().Name);});
-				foreach (Transform child in children) 
+			//now sort each child using the name of type it represents 
+			children.OrderBy(x=>x.GetComponentInChildren<InspectableElement>().Reference.GetType().Name).ThenBy(y=>y.GetComponent<InspectableElement>().Reference);
+				
+			//put all the children back under their parent
+			foreach (Transform child in children) 
 				{
 					child.SetParent(parent.transform,false);
 				}
