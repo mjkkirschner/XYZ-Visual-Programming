@@ -9,6 +9,10 @@ using System.Xml;
 using System.Reflection;
 using System.Collections;
 using Nodeplay.Engine;
+using Nodeplay.Interfaces;
+using UnityEngine.UI;
+using Nodeplay.UI;
+
 /// <summary>
 /// initially modified from Dynamo's source version .74
 /// https://github.com/DynamoDS/Dynamo/blob/master/src/DynamoCore/Models/WorkspaceModel.cs
@@ -16,11 +20,15 @@ using Nodeplay.Engine;
 using UnityEditor;
 
 
-public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
+public class GraphModel : INotifyPropertyChanged, IPointerClickHandler,IContextable,IPointerDownHandler
 {
 	protected AppModel _appmodel;
 	public List<NodeModel> Nodes { get; set; }
 	public List<ConnectorModel> Connectors { get; set; }
+	private Dictionary<NodeModel,Vector3> loadednodePositions = new Dictionary<NodeModel,Vector3>();
+	private Dictionary<NodeModel,Vector3> currentnodePositions = new Dictionary<NodeModel,Vector3>();
+	private bool regularState = true;
+	private float clicktime;
 	//TODO confusion with name, filename, etc
 	public string Name { get; set; }
 	public float X { get; set; }
@@ -111,7 +119,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		//TODO for both of these methods instantiation points should just be in front of the camera by x units
 
 		var creationPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 30f));
-
+		
 		if(button.GetType() == typeof(CustomNodeLibraryButton))
 		{
 			var nodeinfo = (button as CustomNodeLibraryButton).Info;
@@ -126,8 +134,9 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 			MethodInfo generic = method.MakeGenericMethod(nodetype);
 			//generic is a delegate pointing towards instantiate node, we're passing the nodetype to instantiate
 			//this is a fully qualified type extracted from the libraryButton
-		generic.Invoke(this, new object[]{creationPoint,new Guid()});
+			generic.Invoke(this, new object[]{creationPoint,new Guid()});
 		}
+		
 	}
 	
 	/// <summary>
@@ -150,6 +159,8 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		newnode.GetComponent<NT>().name = "node " + typeof(NT).Name + newnode.GetComponent<NT>().GUID.ToString();
 		newnode.GetComponent<NT>().GraphOwner = this;
 		Nodes.Add(newnode.GetComponent<NodeModel>());
+		loadednodePositions.Add(newnode.GetComponent<NodeModel>(),point);
+		currentnodePositions.Add(newnode.GetComponent<NodeModel>(),point);
 		return newnode;
 	}
 
@@ -694,13 +705,33 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 			return false;
 		}
 	}
+
+	#region IPointerDownHandler implementation
+
+	public void OnPointerDown (PointerEventData eventData)
+	{
+		clicktime = Time.time;
+	}
+
+	#endregion
+
 	//TODO doesnt really belong here
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		if (eventData.clickCount != 2)
+		if (eventData.clickCount != 2 && eventData.button == PointerEventData.InputButton.Right && Time.time - clicktime < .2f)
 		{
+
+			//now open the context menu for this node and populate it with options set at runtime by the components it contains
+			//of type that implement IContextable
+
+			var contextMenubuttons = this.RequestContextButtons();
+			
+			//now finally create the the window, passing the buttons
+			createGraphContextMenuWindow(contextMenubuttons.ToList(),BaseView<NodeModel>.ProjectCurrentDrag(20));
 			return;
 		}
+	}
+	/*
 		var creationPoint = Vector3.zero;
 		var mousePos = eventData.pressPosition;
 		if (Nodes.Count > 0)
@@ -725,11 +756,85 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler
 		var newnode = InstantiateNode<NumberRange>(creationPoint);
 
 	}
+	*/
 	public virtual void OnNodesModified()
 	{
-	
+
 	}
 
 
+	private void layoutOriginalPositions()
+	{
+
+		foreach(var node in Nodes)
+		{	if (regularState)
+			{
+			currentnodePositions[node] = node.transform.position;
+			}
+			node.GetComponent<PositionNodeRelativeToParents>().StartCoroutine(
+				node.GetComponent<PositionNodeRelativeToParents>().slowmove(node.transform.position,loadednodePositions[node],2));
+
+		}
+		regularState = false;
+	}
+
+	private void layoutExecutionBased()
+	{
+		foreach(var node in Nodes)
+		{
+			if (regularState)
+			{
+				currentnodePositions[node] = node.transform.position;
+			}
+			node.GetComponent<PositionNodeRelativeToParents>().ForceManualPositionUpdate();
+
+		}
+		regularState = false;
+	}
+
+	private void layoutCurrent()
+	{
+		foreach(var node in Nodes)
+		{
+			node.GetComponent<PositionNodeRelativeToParents>().StartCoroutine(
+				node.GetComponent<PositionNodeRelativeToParents>().slowmove(node.transform.position,currentnodePositions[node],2));
+
+		}
+		regularState = true;
+	}
+
+	private void createGraphContextMenuWindow(List<Button> contextButtons,Vector3 position)
+	{
+		var prefab = Resources.Load<GameObject>("NodeContextMenu");
+		var portWindow = GameObject.Instantiate(prefab) as GameObject;
+		portWindow.transform.localPosition = position;
+		portWindow.GetComponent<NodeContextMenu>().init(contextButtons);
+	}
+
+	#region IContextable implementation
+	public List<Button> RequestContextButtons ()
+	{
+		var buttons = new List<Button>();
+			
+		var button = GameObject.Instantiate(Resources.Load("LibraryButton")) as GameObject;
+			button.GetComponentInChildren<Text>().text = "Layout Graph: Original Positions";
+			button.GetComponentInChildren<Button>().onClick.AddListener(() => {layoutOriginalPositions();} );
+
+		var button2 = GameObject.Instantiate(Resources.Load("LibraryButton")) as GameObject;
+		button2.GetComponentInChildren<Text>().text = "Layout Graph: Execution Based Positions";
+		button2.GetComponentInChildren<Button>().onClick.AddListener(() => {layoutExecutionBased();} );
+
+		var button3 = GameObject.Instantiate(Resources.Load("LibraryButton")) as GameObject;
+		button3.GetComponentInChildren<Text>().text = "Layout Graph: Current Positions";
+		button3.GetComponentInChildren<Button>().onClick.AddListener(() => {layoutCurrent();} );
+
+
+		buttons.Add (button.GetComponentInChildren<Button>());
+		buttons.Add(button2.GetComponentInChildren<Button>());
+		buttons.Add(button3.GetComponentInChildren<Button>());
+
+		return buttons;
+	}
+	#endregion
 }
 

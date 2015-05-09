@@ -55,7 +55,7 @@ public class BaseModel : MonoBehaviour, INotifyPropertyChanged
 
     protected virtual void Start()
     {
-
+		var view = this.gameObject.AddComponent<BaseView<BaseModel>>();
     }
 
 

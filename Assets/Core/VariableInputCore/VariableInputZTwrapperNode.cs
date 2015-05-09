@@ -45,6 +45,7 @@ namespace Nodeplay.Nodes
 			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
+			viewPrefabs.Add(funcdef.LoadedTypePointer.Name);
 		}
 		
 		protected override Dictionary<string, object> CompiledNodeEval(Dictionary<string, object> inputstate, Dictionary<string, object> intermediateOutVals)

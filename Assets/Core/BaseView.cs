@@ -175,7 +175,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
     //handler for dragging node event//
     public override void OnDrag(PointerEventData pointerdata)
     {
-        Debug.Log("drag called");
+        //Debug.Log("drag called");
 
 		if (this.UI.GetComponentsInChildren<Transform>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)&& pointerdata.button == PointerEventData.InputButton.Left ||
 			this.GetComponentsInChildren<CanvasRenderer>().Select(x=>x.gameObject).ToList().Contains(pointerdata.rawPointerPress)  && pointerdata.button == PointerEventData.InputButton.Left)
@@ -201,16 +201,21 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
         {
             Debug.Log("I" + this.name + " was just clicked");
             dist_to_camera = Vector3.Distance(this.transform.position, Camera.main.transform.position);
-			GameObject.Find("EventSystem").GetComponent<EventSystem>().SetSelectedGameObject(this.gameObject);
-			Debug.Log("setting " + this.name + "to selected game object");
-            if (pointerdata.clickCount != 2)
-            {
 
-            }
+			if (pointerdata.clickCount < 2)
+			{
+				GameObject.Find("EventSystem").GetComponent<EventSystem>().SetSelectedGameObject(this.gameObject);
+				Debug.Log("setting " + this.name + "to selected game object");
+			}
+
+           
             else
             {
                 //a double click occured on a node
                 Debug.Log("I" + this.name + " was just DOUBLE clicked");
+				//if a double click occured lets move the camera to zoom into the selected object or objects...
+				Camera.main.GetComponent<CameraMoveToSelection>().MoveToSelection(new List<GameObject>(){EventSystem.current.currentSelectedGameObject});
+
 
             }
         }
@@ -244,5 +249,31 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
 			.ForEach(x=>x.material.color = this.originalcolors[x.gameObject]);
     }
 
+	/*protected virtual IEnumerator Bounce(Vector3 transVec, float duration)
+	{
+		var orgpositions = UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+			.ToDictionary(x=>x.gameObject,x=>x.transform.localPosition);
+
+		for (float f = 0; f <= duration; f = f + Time.deltaTime)
+		{
+
+			UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+				.ForEach(x=>x.transform.localPosition = Vector3.Lerp(orgpositions[x.gameObject], orgpositions[x.gameObject]+transVec, f));
+			yield return null;
+			
+		}
+		UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+			.ForEach(x=>x.transform.localPosition = orgpositions[x.gameObject]+transVec);
+		for (float f = 0; f <=duration; f = f + Time.deltaTime)
+		{
+			
+			UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+				.ForEach(x=>x.transform.localPosition = Vector3.Lerp(orgpositions[x.gameObject]+transVec,orgpositions[x.gameObject], f));
+			yield return null;
+			
+		}
+		UI.GetComponentsInChildren<Renderer>().Where(x=>!x.CompareTag("visualization")).ToList()
+			.ForEach(x=>x.transform.localPosition = orgpositions[x.gameObject]);
+	}*/
    
 }

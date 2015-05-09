@@ -36,17 +36,17 @@ public class CSGumball : MonoBehaviour, IDragHandler
 		if (eventData.pointerPressRaycast.gameObject == x){
 
 			Vector3 threeddelta = BaseView<BaseModel>.ProjectCurrentDrag (dist) - orginalPoint;
-			m_transform.root.transform.position += new Vector3(threeddelta.x,0,0);
+			m_transform.root.transform.position += new Vector3(threeddelta.x,0,0)*2;
 		}
 
 		if (eventData.pointerPressRaycast.gameObject == y){
 			Vector3 threeddelta = BaseView<BaseModel>.ProjectCurrentDrag (dist) - orginalPoint;
-			m_transform.root.transform.position += new Vector3(0,threeddelta.y,0);
+			m_transform.root.transform.position += new Vector3(0,threeddelta.y,0)*2;
 		}
 
 		if (eventData.pointerPressRaycast.gameObject ==z){
 			Vector3 threeddelta = BaseView<BaseModel>.ProjectCurrentDrag (dist) - orginalPoint;
-			m_transform.root.transform.position += new Vector3(0,0,threeddelta.z);
+			m_transform.root.transform.position += new Vector3(0,0,threeddelta.z)*2;
 		}
 	}
 

@@ -17,6 +17,7 @@ namespace Nodeplay.UI
 
 		public NodeModel Model;
 		private List<GameObject> evaluationResults = new List<GameObject>();
+		public IEnumerable<GameObject> EvaluationResulsts {get {return evaluationResults;}}
 		private GameObject evalResultsRoot;
 		// Use this for initialization
 		void Start()
@@ -65,6 +66,15 @@ namespace Nodeplay.UI
 
 			var keys = Model.Outputs.Select(x=>x.NickName);
 			var vals =keys.Select(x=>Model.StoredValueDict[x]).ToList();
+
+			//we can also inject a component onto any val that is a type of gameobject, this component will let
+			//the user inspect the gameobject in space....//possibly even calling methods on that object... etc etc...
+
+			var gameobjects = vals.OfType<GameObject>().ToList();
+			gameobjects.ForEach(x=>x.AddComponent<ObjectToEvaluation>().Init(this.GetComponent<NodeModel>()));
+
+			//we can inject a reference back to this node so that selection of this node can highlight this geo,
+			// or so that selection of the geo will highlist the particular evaluation that created it.
 
 			//now foreach of these we want to build some representation in 3d, but it needs
 			//to be obvious they outputs from the same eval on the same node.... we can just

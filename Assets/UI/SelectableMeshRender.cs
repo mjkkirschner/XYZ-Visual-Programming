@@ -63,6 +63,7 @@ namespace Nodeplay.UI
 
             }
 			if (obUI != null){
+				obUI = obUI.Where(x=>x!=null).ToList();
             obUI.ForEach(x => x.material.color = ToColor);
 			}
         }

@@ -16,8 +16,13 @@ namespace Nodeplay.UI
 
 		void Start()
 		{
-			Model_GO = this.GetComponentInParent<NodeModel>().gameObject;
+			var model = this.GetComponentInParent<NodeModel>();
 			//subscribe to the model changes
+			if (model == null)
+			{
+				return;
+			}
+			Model_GO = model.gameObject;
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
 			//force a call to properychangehandelr
 			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
@@ -52,6 +57,10 @@ namespace Nodeplay.UI
 
 		protected virtual void OnDestroy()
 		{
+			if (Model_GO == null)
+			{
+				return;
+			}
 			//Debug.Log("unsubscribing from nodemodel property changes");
 			Model_GO.GetComponent<NodeModel>().PropertyChanged -= NodePropertyChangeEventHandler;
 		}

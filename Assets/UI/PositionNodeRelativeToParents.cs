@@ -5,6 +5,9 @@ using System;
 using System.Collections;
 using Pathfinding.Serialization.JsonFx;
 
+using Nodeplay.Core;
+using Nodeplay.Nodes;
+
 namespace Nodeplay.UI
 {
 	/// <summary>
@@ -15,6 +18,10 @@ namespace Nodeplay.UI
 	/// </summary>
 	public class PositionNodeRelativeToParents : MonoBehaviour
 	{
+		public void ForceManualPositionUpdate()
+		{
+			OnPortConnect(this,null);
+		}
 
 		public NodeModel Model;
 
@@ -25,7 +32,6 @@ namespace Nodeplay.UI
 
 			//scan the model and find all input ports, we'll subscribe to port connected events for all input ports
 			// and update the position when ports are first connected...
-			//TODO will want to concat this with executon inputs
 			foreach(var port in Model.Inputs.Concat(Model.ExecutionInputs.Cast<PortModel>()))
 			{
 				port.PortConnected += OnPortConnect;
@@ -114,10 +120,23 @@ namespace Nodeplay.UI
 			//}
 			// now modify newpos by moving in the x vector towards the execution centroid
 
-			var vectoExec = newpos - (execcentroid + new Vector3(rendererbnds.size.x * 15,0,rendererbnds.size.z * -5));
+			var vectoExec = newpos - (execcentroid + new Vector3(rendererbnds.size.x * 2,0,rendererbnds.size.z * -2));
 			newpos = newpos + vectoExec/2;
 
+			//if there is some type of control flow node as our parent, then lets move down alot in relation to that parent.
 
+
+			var controlflownodes = execParents.Where(x=>x.GetComponent<ControlFlowNodeModel>() != null).Union(execParents.Where(x=>x.GetComponent<ControlFlowDelegateNodeModel>() != null)).ToList();
+
+
+
+			if (controlflownodes.Count()>0)
+			{
+				Debug.Log("<color=green>node positioning:</color>" + " parent was a control flow" + this.gameObject.name);
+
+				newpos = newpos - new Vector3(0,rendererbnds.size.y,0);
+
+			}
 			//TODO, this algorithm will produce nodes exactly on top of each other, 3 ideas, 
 			// 1. introduce some randomness into the position calculation, 
 			// 2. count how many downstream nodes there are and use this for the calculation (should be easy, just look at number of connectors)
@@ -148,7 +167,7 @@ namespace Nodeplay.UI
 			return totalBounds;
 		}
 
-		protected virtual IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration)
+		public virtual IEnumerator slowmove(Vector3 frompos,Vector3 topos, float duration)
 		{
 			for (float f = 0; f <= duration; f = f + Time.deltaTime)
 			{

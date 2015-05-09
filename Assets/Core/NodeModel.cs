@@ -16,7 +16,7 @@ using Nodeplay.Nodes;
 
 public class NodeModel : BaseModel
 {
-	protected List<string> viewPrefabs =  new List<string>(){"NodeBaseView"};
+	protected  List<string> viewPrefabs =  new List<string>(){"NodeBaseView"};
 	protected override void NotifyPropertyChanged (string info)
 	{
 		base.NotifyPropertyChanged (info);
@@ -324,7 +324,11 @@ public class NodeModel : BaseModel
 		this.gameObject.AddComponent<EvaluationResultsRenderer>();
 		GameObject UI = null;
 		foreach (var viewPrefab in viewPrefabs){
-
+			if (Resources.Load(viewPrefab) == null)
+			{
+				//if the resource doesnt exist, bail
+				continue;
+			}
 			//if this is first prefab
 			if (viewPrefabs.IndexOf(viewPrefab) == 0)
 			{	UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
