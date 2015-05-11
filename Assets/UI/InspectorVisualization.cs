@@ -120,7 +120,7 @@ namespace Nodeplay.UI
 			{
 				//if the item is a very long list, we dont want to open it...
 				if(((IList)someObject).Count <15){
-				Debug.Log("the item was a list so open it");
+				//Debug.Log("the item was a list so open it");
 				ExecuteEvents.Execute<IPointerClickHandler>(instantiatedelement, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
 				}
 			}
@@ -214,6 +214,6 @@ namespace Nodeplay.UI
 				
 			return site.Target(site, ob);
 		}
-
+		
 	}
 }

@@ -15,9 +15,10 @@ namespace Nodeplay.UI
 		// Use this for initialization
 		void OnEnable ()
 		{
-			Model = this.GetComponentInParent<BaseModel>();
+			//Model = this.GetComponentInParent<BaseModel>();
 			window = this.transform.Find("Window").gameObject;
 			buttons = new List<GameObject>();
+			window.transform.Find("Header/CloseButton").GetComponent<Button>().onClick.AddListener(()=>destroy());
 		}
 		
 		public void init (List<Button> contextButtons)

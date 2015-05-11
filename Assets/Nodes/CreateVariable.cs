@@ -11,8 +11,9 @@ using System.ComponentModel;
 
 namespace Nodeplay.Nodes
 {
-	public class CreateVariable : NodeModel
+	public class CreateVariable : NodeModel,IContextable
 	{
+		private GameObject vizroot;
 		public object variable ="empty";
 		private string variablename;
 		public string VariableName
@@ -63,19 +64,53 @@ namespace Nodeplay.Nodes
 			ExposeVariableInNodeUI("VariableName",VariableName);
 			var UI = base.BuildSceneElements();
 			UI.GetComponent<Renderer>().material.color = new Color(56.0f/256.0f,158.0f/256.0f,201.0f/256.0f);
-			UI.AddComponent<InspectorVisualization>();
+			vizroot = new GameObject("vizroot");
+			vizroot.transform.SetParent(UI.transform);
+			vizroot.AddComponent<InspectorVisualization>();
 			return UI;
 		}
 
 
 		private void updateVisualization(){
-		//this is deleting everything everyframe, and also deleting the node visualization
-		var childrenofVisualization = GetComponentInChildren<InspectorVisualization>().transform.Cast<Transform>().ToList();
+		//this is deleting everything everyframe
+			//TODO MAKE IT FASTER!
+		var childrenofVisualization = vizroot.GetComponent<InspectorVisualization>().transform.Cast<Transform>().ToList();
 		if (childrenofVisualization.Count > 0){
 				childrenofVisualization.Where(x=>x.CompareTag("visualization")).ToList().ForEach(x=>DestroyImmediate(x.gameObject));
 		}
 		transform.root.GetComponentInChildren<InspectorVisualization>().PopulateTopLevel(
 				(StoredValueDict["OUTPUT"] as VariableReference).Get() );
+		}
+
+		#region IContextable implementation
+		
+		public List<Button> RequestContextButtons ()
+		{
+			var button = Instantiate(Resources.Load("LibraryButton")) as GameObject;
+			button.GetComponentInChildren<Text>().text = "Toggle Inspector";
+			button.GetComponentInChildren<Button>().onClick.AddListener(() => {populateInspector(vizroot,new List<object>(){ (StoredValueDict["OUTPUT"] as VariableReference).Get()});} );
+			return new List<Button>(){button.GetComponentInChildren<Button>()};
+		}
+		
+		#endregion
+
+
+		
+	
+	
+	private void populateInspector(GameObject evalparent, List<object> vals){
+		//if the rootwrapper exists
+		if (evalparent.transform.childCount > 0)
+		{
+			//then delete it
+				var inspector = evalparent.transform.Cast<Transform>().ToList();
+			inspector.ForEach(x=>GameObject.Destroy(x.gameObject));
+		}
+		else
+			{
+				//else populate another one
+		evalparent.GetComponent<InspectorVisualization>().PopulateTopLevel(vals,0);
+			}
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Collections;
 using Pathfinding.Serialization.JsonFx;
 using Nodeplay.Interfaces;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Nodeplay.UI
 {
@@ -18,24 +19,14 @@ namespace Nodeplay.UI
 		public NodeModel Model;
 		private List<GameObject> evaluationResults = new List<GameObject>();
 		public IEnumerable<GameObject> EvaluationResulsts {get {return evaluationResults;}}
-		private GameObject evalResultsRoot;
+		private List<GameObject> evalResultsRoots = new List<GameObject>();
 		// Use this for initialization
 		void Start()
 		{
 			Model = this.transform.root.GetComponentInChildren<NodeModel>();
 			Model.Evaluated += HandleEvaluated;
 			Model.explicitGraphExecution.GraphEvaluationStarted += HandleGraphEvaluationStarted;
-			evalResultsRoot = new GameObject("evalRoot");
-			evalResultsRoot.transform.SetParent(this.transform,false);
-			evalResultsRoot.transform.localScale = new Vector3(.5f,.5f,.5f);
-			evalResultsRoot.AddComponent<GridLayoutGroup>();
-			evalResultsRoot.GetComponent<GridLayoutGroup>().spacing = new Vector2(2,2);
-			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = new Vector2(1,1);
-			(evalResultsRoot.transform as RectTransform).sizeDelta = new Vector2(20,20);
-			evalResultsRoot.GetComponent<GridLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
-			evalResultsRoot.GetComponent<GridLayoutGroup>().startAxis = GridLayoutGroup.Axis.Vertical;
-
-			//evalResultsRoot.GetComponent<GridLayoutGroup>().padding.left = 5;
+			AddEvalRoot("first EvalRoot",0);
 
 		}
 
@@ -51,11 +42,34 @@ namespace Nodeplay.UI
 
 		#endregion
 
+
+		private GameObject AddEvalRoot(string name,int zindex)
+		{	
+			var evalResultsRoot = new GameObject(name);
+			evalResultsRoots.Add(evalResultsRoot);
+			evalResultsRoot.transform.SetParent(this.transform,false);
+			evalResultsRoot.transform.localScale = new Vector3(.5f,.5f,.5f);
+			evalResultsRoot.AddComponent<GridLayoutGroup>();
+			evalResultsRoot.GetComponent<GridLayoutGroup>().spacing = new Vector2(2,2);
+			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = new Vector2(1,1);
+			(evalResultsRoot.transform as RectTransform).sizeDelta = new Vector2(20,20);
+			evalResultsRoot.GetComponent<GridLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
+			evalResultsRoot.GetComponent<GridLayoutGroup>().startAxis = GridLayoutGroup.Axis.Vertical;
+			evalResultsRoot.AddComponent<PositionWindowUnderListOfRenderers>().PostitionUnderThese.Add(this.GetComponent<NodeView>().UI);
+			evalResultsRoot.GetComponent<PositionWindowUnderListOfRenderers>().PostPositionTranslation = new Vector3(0,0,zindex*5);
+
+			return evalResultsRoot;
+		}
+
 		//when the graph starts being evaluated, cleanup all the past results we builts
 		void HandleGraphEvaluationStarted ()
 		{
 			evaluationResults.ForEach(x=>GameObject.Destroy(x));
 			evaluationResults.Clear();
+
+			//clear each root that is not the first
+			evalResultsRoots.Skip(1).ToList().ForEach(x=>GameObject.Destroy(x));
+			evalResultsRoots.RemoveRange(1, evalResultsRoots.Count - 1);
 		}
 
 		//when the nodemodel is finished evaluating, then build a record of this evaluation
@@ -81,32 +95,54 @@ namespace Nodeplay.UI
 			//build a new OutputPair... or simply just grab the output pair and save it... this
 			//is not useful for geometry.... what about adding all of these items to a list, and
 			// building an inspector, and inspecting that list... might work nicely, will show geometry...
-			var evalResultParent = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			evalResultParent.GetComponent<Renderer>().material.color  = Color.red;
-			evalResultParent.AddComponent<BaseModel>();
-			evalResultParent.transform.SetParent(evalResultsRoot.transform,false);
+			var evalResultParent = new GameObject(keys.ToString());
+			evalResultParent.AddComponent<ExecutionVisualizationModel>();
+			if (evalResultsRoots.Last().transform.childCount > 30)
+			{
+				AddEvalRoot("newroot",evalResultsRoots.Count+1);
+			}
+			evalResultParent.transform.SetParent(evalResultsRoots.Last().transform,false);
 
 			evalResultParent.AddComponent<InspectorVisualization>();
 			evaluationResults.Add(evalResultParent);
-			evalResultParent.GetComponent<InspectorVisualization>().PopulateTopLevel(vals,0);
 			evalResultParent.AddComponent<LayoutElement>();
-
-			var maxsize =   evaluationResults.Select(x=>x.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta * x.transform.GetChild(0).localScale.x)
-				.Aggregate(Vector2.zero,(max,next) => Vector2.Max(max,next));
-			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = maxsize;
-			Debug.Log(maxsize);
+			evalResultParent.AddComponent<Button>();
+			evalResultParent.GetComponent<Button>().onClick.AddListener(()=> {populateInspector(evalResultParent,vals);} );
 
 		}
-		
+
+		private void populateInspector(GameObject evalparent, List<object> vals){
+
+			if (evalparent.transform.childCount > 0)
+			{
+
+				evalparent.transform.Cast<Transform>().ToList().ForEach(x=>GameObject.Destroy(x.gameObject));
+			}
+
+			evalparent.GetComponent<InspectorVisualization>().PopulateTopLevel(vals,0);
+			StartCoroutine(calcRectSizeNextFrame());
+		}
+
+
+				private IEnumerator calcRectSizeNextFrame()
+				{
+					yield return new WaitForEndOfFrame();
+					var maxsize =   evaluationResults.Where(x=>x.transform.childCount>0).Select(y=>y.transform.GetChild(0)
+					                                                                            .GetComponent<RectTransform>().sizeDelta * y.transform.GetChild(0).localScale.x)
+						.Aggregate(Vector2.zero,(max,next) => Vector2.Max(max,next));
+					evalResultsRoots.ForEach(x=>x.GetComponent<GridLayoutGroup>().cellSize = maxsize);
+				}
+
+
 		private void toggleDisplay()
 		{
-			if (evalResultsRoot.activeSelf == false)
+			if (evalResultsRoots.Any(x=>x.activeSelf == false))
 			{
-				evalResultsRoot.SetActive(true);
+				evalResultsRoots.ForEach(x=>x.SetActive(true));
 			}
 			else
 			{
-				evalResultsRoot.SetActive(false);
+				evalResultsRoots.ForEach(x=>x.SetActive(false));
 			}
 		}
 		

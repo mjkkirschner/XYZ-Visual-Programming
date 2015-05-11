@@ -718,7 +718,7 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler,IContexta
 	//TODO doesnt really belong here
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		if (eventData.clickCount != 2 && eventData.button == PointerEventData.InputButton.Right && Time.time - clicktime < .2f)
+		if (eventData.clickCount != 2 && eventData.button == PointerEventData.InputButton.Right && Time.time - clicktime < .1f)
 		{
 
 			//now open the context menu for this node and populate it with options set at runtime by the components it contains

@@ -110,7 +110,7 @@ public class BaseView<M> : EventTrigger, Iinteractable, INotifyPropertyChanged w
             Start();
         }
 
-        Debug.Log("just turned off BaseView");
+        //Debug.Log("just turned off BaseView");
 
     }
 

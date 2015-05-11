@@ -373,7 +373,7 @@ namespace Nodeplay.UI
 
 			if (InspectorVisualization.IsList(subTreeRoot))
 			{
-				Debug.Log("inputobject is a list");
+//				Debug.Log("inputobject is a list");
 				foreach (var item in (IEnumerable)subTreeRoot)
 				{
 					var inspectabelgo = InspectorVisualization.generateInspectableElementGameObject(item,wrapper);
