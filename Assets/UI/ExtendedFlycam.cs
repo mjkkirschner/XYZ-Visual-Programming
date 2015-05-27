@@ -60,6 +60,7 @@ public class ExtendedFlycam : MonoBehaviour
 		// if the right mouse is clicked then rotate the camera
 		if (Input.GetMouseButton(1))
 		{
+
 			rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
 			rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
 			rotationY = Mathf.Clamp(rotationY, -90, 90);

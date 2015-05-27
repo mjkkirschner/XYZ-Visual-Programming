@@ -16,6 +16,7 @@ namespace Nodeplay.Nodes
 			Code = "Start()";
 			AddExecutionOutPutPort("Start");
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
+			viewPrefabs.Add("execution");
 
 		}
 		

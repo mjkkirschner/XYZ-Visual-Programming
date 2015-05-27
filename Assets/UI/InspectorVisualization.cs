@@ -186,7 +186,7 @@ namespace Nodeplay.UI
 
 			else
 			{
-				Debug.Log("inputobject is a object");
+				//Debug.Log("inputobject is a object");
 				//because this is the top level, we wont reflect over this object
 				//but instead just generate an element that represents it as the root.
 

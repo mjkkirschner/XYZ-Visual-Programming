@@ -9,25 +9,25 @@ using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class xForEach : ControlFlowDelegateNodeModel
+	public class xIF : ControlFlowDelegateNodeModel
 	{
 		
 		protected override void Start()
 		{
+			
 			base.Start();
-			AddOutPutPort("OUTPUT");
-			AddInputPort("input1");
 			
-			AddExecutionInputPort("start");
+			AddInputPort("test");
 			
-			AddExecutionOutPutPort("onIteration");
-			AddExecutionOutPutPort("onIterated");
+			AddExecutionInputPort("startTest");
 			
+			AddExecutionOutPutPort("TrueBranch");
+			AddExecutionOutPutPort("ElseBranch");
+			AddExecutionOutPutPort("done");
 			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
-			viewPrefabs.Add("looptop");
-			viewPrefabs.Add("iteration");
+			viewPrefabs.Add("conditional");
 
 			
 		}
@@ -35,24 +35,28 @@ namespace Nodeplay.Nodes
 		protected override Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)
 		{
 			var output = intermediateOutVals;
-			var tempinput1 = inputstate["input1"] as IEnumerable;
-
-			foreach (var i in tempinput1) 
+			var temptest = (bool)inputstate["test"];
+			
+			if(temptest)
 			{
-				output["OUTPUT"] = i;
-				(inputstate["onIteration"] as Action).Invoke();
+				(inputstate["TrueBranch"] as Action).Invoke();
 			}
 
-			(inputstate["onIterated"] as Action).Invoke();
+			else{
+				(inputstate["ElseBranch"] as Action).Invoke();
+			}
+
+			(inputstate["done"] as Action).Invoke();
 			return output;
 			
 		}
-
+		
 		public override GameObject BuildSceneElements()
 		{
 			var tempUI = base.BuildSceneElements();
 			tempUI.AddComponent<BoundingRenderer>();
-			tempUI.GetComponent<BoundingRenderer> ().initialze (new List<int> (){0}, new List<Color>() {Color.cyan});
+			tempUI.GetComponent<BoundingRenderer> ().initialze (new List<int> (){0,1}, 
+			new List<Color>() {Color.cyan,new Color(.7f,.4f,.1f)});
 			return tempUI;
 			
 		}

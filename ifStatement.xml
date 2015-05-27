@@ -1,21 +1,21 @@
 <Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
   <Elements>
-    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="a56712aa-db2d-43f3-b711-5806af3d3c68" nickname="node StartExecutiona56712aa-db2d-43f3-b711-5806af3d3c68" x="-7.423145" y="19.20168" z="-16.81594">
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="a56712aa-db2d-43f3-b711-5806af3d3c68" nickname="node StartExecutiona56712aa-db2d-43f3-b711-5806af3d3c68" x="-6.16345" y="22.4343" z="-22.43761">
       <nodeinputdict />
     </Nodeplay.Nodes.StartExecution>
-    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="d7e45ef8-3b10-408c-8d2b-bcbafc749431" nickname="node Numberd7e45ef8-3b10-408c-8d2b-bcbafc749431" x="-35.51239" y="26.10152" z="-0.05315733">
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="d7e45ef8-3b10-408c-8d2b-bcbafc749431" nickname="node Numberd7e45ef8-3b10-408c-8d2b-bcbafc749431" x="-17.17942" y="16.96809" z="-2.433386">
       <nodeinputdict Code="OUTPUT = 10;VariableCreated()" />
     </Nodeplay.Nodes.Number>
-    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="53950185-df34-4d5a-8771-8186c4a57f13" nickname="node Number53950185-df34-4d5a-8771-8186c4a57f13" x="-26.55564" y="19.20168" z="-0.7997532">
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="53950185-df34-4d5a-8771-8186c4a57f13" nickname="node Number53950185-df34-4d5a-8771-8186c4a57f13" x="-10.94629" y="19.03806" z="-13.09962">
       <nodeinputdict Code="OUTPUT = 5;VariableCreated()" />
     </Nodeplay.Nodes.Number>
-    <Nodeplay.Nodes.Comparison type="Nodeplay.Nodes.Comparison" guid="ee5f89a2-6241-4b56-8dc1-e433435fb438" nickname="node Comparisonee5f89a2-6241-4b56-8dc1-e433435fb438" x="-54.64485" y="26.10152" z="23.27184">
+    <Nodeplay.Nodes.Comparison type="Nodeplay.Nodes.Comparison" guid="ee5f89a2-6241-4b56-8dc1-e433435fb438" nickname="node Comparisonee5f89a2-6241-4b56-8dc1-e433435fb438" x="-21.39465" y="24.11708" z="8.015972">
       <nodeinputdict Code="boolean = x&gt;y;compared()" />
     </Nodeplay.Nodes.Comparison>
-    <Nodeplay.Nodes.IF type="Nodeplay.Nodes.IF" guid="6d4b7a82-0b19-464a-a7c8-080f2e547027" nickname="node IF6d4b7a82-0b19-464a-a7c8-080f2e547027" x="-61.03035" y="27.5134" z="35.04712">
+    <Nodeplay.Nodes.IF type="Nodeplay.Nodes.IF" guid="6d4b7a82-0b19-464a-a7c8-080f2e547027" nickname="node IF6d4b7a82-0b19-464a-a7c8-080f2e547027" x="-35.55112" y="29.30455" z="22.23217">
       <nodeinputdict />
     </Nodeplay.Nodes.IF>
-    <Nodeplay.Nodes.DebugLogTest type="Nodeplay.Nodes.DebugLogTest" guid="f453166f-9f38-46c4-ae3e-b927888aae00" nickname="node DebugLogTestf453166f-9f38-46c4-ae3e-b927888aae00" x="-80.16281" y="27.5134" z="58.37212">
+    <Nodeplay.Nodes.DebugLogTest type="Nodeplay.Nodes.DebugLogTest" guid="f453166f-9f38-46c4-ae3e-b927888aae00" nickname="node DebugLogTestf453166f-9f38-46c4-ae3e-b927888aae00" x="-38.30602" y="34.13131" z="33.1656">
       <nodeinputdict />
     </Nodeplay.Nodes.DebugLogTest>
   </Elements>

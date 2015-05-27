@@ -11,13 +11,13 @@ namespace Nodeplay.UI
 	{
 
 		public NodeModel Model;
-		private bool initialzed = false;
-		private List<Color> branchColors;
-		private List<int> branchIndicies;
+		protected bool initialzed = false;
+		protected List<Color> branchColors;
+		protected List<int> branchIndicies;
 		public List<GameObject> tempgeos = new List<GameObject>();
 		private List<NodeModel> visitedList = new List<NodeModel>();
 		// Use this for initialization
-		void Start()
+		protected virtual void Start()
 		{
 			Model = this.GetComponentInParent<NodeModel>();
 			//TODO subscribing to wrong models, we need to subscribe to the most updated list of all nodes under us...
@@ -74,10 +74,15 @@ namespace Nodeplay.UI
 		}
 
 
-		public GameObject GenerateBounds(List<GameObject> toBound,Color matColor)
+		public GameObject GenerateBounds(PrimitiveType shape,List<GameObject> toBound,Color matColor)
 		{
 			Vector3 center = Vector3.zero;
 			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
+			if (allrenderers.Count <1)
+			{
+				return null;
+			}
+
 			var totalBounds = allrenderers[0].bounds;
 			foreach (Renderer ren in allrenderers)
 			{
@@ -86,8 +91,8 @@ namespace Nodeplay.UI
 
 			}
 			center = center / (allrenderers.Count);
-			var xx = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-			xx.transform.localScale = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
+			var xx = GameObject.CreatePrimitive(shape);
+			xx.transform.localScale = new Vector3(totalBounds.size.x * 1.1f, totalBounds.size.y, totalBounds.size.z * 1.1f);
 			xx.transform.localPosition = totalBounds.center;
 			xx.GetComponent<Collider>().enabled = false;
 			xx.GetComponent<Renderer>().material = Resources.Load("NestingZone") as Material;
@@ -95,9 +100,8 @@ namespace Nodeplay.UI
 			return xx;
 		}
 
-		// Update is called once per frame
-
-		void UpdateBounding()
+	
+		protected virtual void UpdateBounding()
 		{
 			if (initialzed) {
 				if (tempgeos != null) {
@@ -124,7 +128,7 @@ namespace Nodeplay.UI
 
 					if (visited.Any (x => x.transform.hasChanged == true)) {
 
-						tempgeos.Add(GenerateBounds (visited,branchColors[branchIndicies.IndexOf(index)]));
+						tempgeos.Add(GenerateBounds (PrimitiveType.Capsule,visited,branchColors[branchIndicies.IndexOf(index)]));
 						}
 					}
 				}

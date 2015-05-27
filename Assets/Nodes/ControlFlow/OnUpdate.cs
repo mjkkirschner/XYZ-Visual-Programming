@@ -4,41 +4,41 @@ using System.Linq;
 using Nodeplay.Interfaces;
 using Nodeplay.Engine;
 using System;
+using System.Collections;
+using Nodeplay.UI;
 
 namespace Nodeplay.Nodes
 {
-	public class csharpsum : DelegateNodeModel
+	public class OnUpdate : ControlFlowDelegateNodeModel
 	{
-
+		
 		protected override void Start()
 		{
 			base.Start();
-
-			AddInputPort("x");
-			AddInputPort("y");
-			AddExecutionInputPort("start");
-			AddOutPutPort("OUTPUT");
-			AddExecutionOutPutPort("done");
 			
+			AddExecutionOutPutPort("Update");
 			
 			CodePointer = CompiledNodeEval;
 			Evaluator = this.gameObject.AddComponent<CsharpEvaluator>();
+			viewPrefabs.Add("update");
+			viewPrefabs.Add("execution");
+			explicitGraphExecution.updaters.Add(this);
+			
 		}
 		
 		protected override Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)
 		{
 			var output = intermediateOutVals;
-			var tempx = inputstate["x"];
-			var tempy = inputstate["y"];
-
-			//Debug.Log(tempx.GetType());
-			//Debug.Log(tempy);
-			var sum = (int)tempx + (int)tempy;
-			output["OUTPUT"] = sum;
-			(inputstate["done"] as Action).Invoke();
+			(inputstate["Update"] as Action).Invoke();
 			return output;
-
+			
 		}
 
+		//protected override void Update()
+		//{
+		//	base.Update();
+		//	CallOutPut(0,null);
+		//}
+		
 	}
 }

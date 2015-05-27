@@ -11,6 +11,7 @@ using Nodeplay.Engine;
 using Nodeplay.Core;
 using System.IO;
 using System.Xml;
+using Nodeplay.UI;
 
 namespace Nodeplay.Engine {
 
@@ -208,11 +209,18 @@ public class AppModel : MonoBehaviour
 		void Update ()
 		{
 
-			
-			
-		}
-		
 
+		}
+
+		//TODO this will cause weird behavior on a per node basis.... fix with global state...
+		public void ToggleEvaluationPreviews(Boolean state)
+		{
+			foreach(var renderer in GameObject.FindObjectsOfType<EvaluationResultsRenderer>())
+			{
+				renderer.toggleDisplay();
+
+			}
+		}
 	
 
 	}

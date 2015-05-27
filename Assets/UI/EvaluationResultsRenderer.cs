@@ -15,7 +15,7 @@ namespace Nodeplay.UI
 	//the evaluation results for a particular eval of the node
 	public class EvaluationResultsRenderer : MonoBehaviour, IContextable
 	{
-
+		public event Action UpdatingResultsPositions;
 		public NodeModel Model;
 		private List<GameObject> evaluationResults = new List<GameObject>();
 		public IEnumerable<GameObject> EvaluationResulsts {get {return evaluationResults;}}
@@ -27,6 +27,7 @@ namespace Nodeplay.UI
 			Model.Evaluated += HandleEvaluated;
 			Model.explicitGraphExecution.GraphEvaluationStarted += HandleGraphEvaluationStarted;
 			AddEvalRoot("first EvalRoot",0);
+			Model.gameObject.AddComponent<BaseModelBoundingRenderer>();
 
 		}
 
@@ -42,6 +43,13 @@ namespace Nodeplay.UI
 
 		#endregion
 
+		private void OnUpdatingResultsPositions()
+		{
+			if (UpdatingResultsPositions != null)
+			{
+				UpdatingResultsPositions();
+			}
+		}
 
 		private GameObject AddEvalRoot(string name,int zindex)
 		{	
@@ -55,9 +63,15 @@ namespace Nodeplay.UI
 			(evalResultsRoot.transform as RectTransform).sizeDelta = new Vector2(20,20);
 			evalResultsRoot.GetComponent<GridLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
 			evalResultsRoot.GetComponent<GridLayoutGroup>().startAxis = GridLayoutGroup.Axis.Vertical;
-			evalResultsRoot.AddComponent<PositionWindowUnderListOfRenderers>().PostitionUnderThese.Add(this.GetComponent<NodeView>().UI);
-			evalResultsRoot.GetComponent<PositionWindowUnderListOfRenderers>().PostPositionTranslation = new Vector3(0,0,zindex*5);
+			evalResultsRoot.AddComponent<PositionWindowUnderRect>();
+			evalResultsRoot.GetComponent<PositionWindowUnderRect>().PostitionUnderThese = Model.transform.Find("ToggleLabel(Clone)/Window").GetComponent<RectTransform>();
+			evalResultsRoot.GetComponent<PositionWindowUnderRect>().PostPositionTranslation = new Vector3(0,0,zindex*5);
 
+			//finally if the any evel root was not active, also make this one inactive...
+			if (evalResultsRoots.Any(x=>x.activeSelf == false))
+			{
+				evalResultsRoot.SetActive(false);
+			}
 			return evalResultsRoot;
 		}
 
@@ -113,14 +127,18 @@ namespace Nodeplay.UI
 
 		private void populateInspector(GameObject evalparent, List<object> vals){
 
+
 			if (evalparent.transform.childCount > 0)
 			{
 
 				evalparent.transform.Cast<Transform>().ToList().ForEach(x=>GameObject.Destroy(x.gameObject));
 			}
+			else{
 
 			evalparent.GetComponent<InspectorVisualization>().PopulateTopLevel(vals,0);
 			StartCoroutine(calcRectSizeNextFrame());
+			}
+			OnUpdatingResultsPositions();
 		}
 
 
@@ -134,7 +152,7 @@ namespace Nodeplay.UI
 				}
 
 
-		private void toggleDisplay()
+		public void toggleDisplay()
 		{
 			if (evalResultsRoots.Any(x=>x.activeSelf == false))
 			{

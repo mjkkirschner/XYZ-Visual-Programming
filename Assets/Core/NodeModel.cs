@@ -188,13 +188,13 @@ public class NodeModel : BaseModel
 		ExecutionOutputs.Add(currentPort);
 	}
 
-    public void AddInputPort(string name = null)
+    public void AddInputPort(string name = null,Type type = null)
     {
        //TODO this should create an empty gameobject and port view should create its own UIelements
-        var newport = new GameObject();
+        var newport = new GameObject("inputport");
         newport.AddComponent<PortModel>();
         // initialze the port
-        newport.GetComponent<PortModel>().init(this, Inputs.Count, PortModel.porttype.input, name);
+        newport.GetComponent<PortModel>().init(this, Inputs.Count, PortModel.porttype.input, name,type);
 
         //hookup the ports listener to the nodes propertychanged event, and hook
         // handlers on the node back from the ports connection events
@@ -262,17 +262,18 @@ public class NodeModel : BaseModel
     /// Adds an output portmodel and geometry to the node.
     /// also updates the outputs array
     /// </summary>
-    public void AddOutPutPort(string portName)
-    {
+	public void AddOutPutPort(string portName,Type type = null)
+	{
+
 		//if we're trying to add a port with the same name, breakout
 		if (Outputs.Any(x=>x.NickName == portName))
 		{
 			return;
 		}
-        var newport = new GameObject();
+        var newport = new GameObject("outputport");
         newport.AddComponent<PortModel>();
         // initialze the port
-        newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.output, portName);
+        newport.GetComponent<PortModel>().init(this, Outputs.Count, PortModel.porttype.output, portName,type);
         var currentPort = newport.GetComponent<PortModel>();
         // registers a listener on the port so it gets updates about the nodes property changes
         // we use this to let the port notify it's attached connectors that they need to update
@@ -361,14 +362,17 @@ public class NodeModel : BaseModel
 		//load the togglepanel that will point to the outputpanel and toggle it
 		var togglepanel = Instantiate(Resources.Load("ToggleLabel")) as GameObject;
 		togglepanel.transform.localPosition = this.gameObject.transform.position;
-		//translate position down to the bottom of the bounds of nodeview
-		//togglepanel.transform.Translate(0,-3* UI.renderer.bounds.size.y, 0);
 		togglepanel.transform.SetParent(this.transform,false);
-		togglepanel.transform.localPosition = new Vector3(
-			togglepanel.transform.localPosition.x,
-			//TODO something strange here
-			 UI.GetComponent<Renderer>().bounds.min.y*10,
-			togglepanel.transform.localPosition.z);
+		//togglepanel.transform.localPosition = new Vector3(
+	//		togglepanel.transform.localPosition.x,
+	//		 UI.GetComponent<Renderer>().bounds.min.y*10,
+	//		togglepanel.transform.localPosition.z);
+
+		togglepanel.AddComponent<PositionUnderListOfRenderers>().PostitionUnderThese.Add(UI);
+		//find ports
+			var ports = this.transform.Cast<Transform>().Where(x=>x.name == "outputport" || x.name == "inputport").Select(y=>y.gameObject).ToList();
+		togglepanel.GetComponent<PositionUnderListOfRenderers>().PostitionUnderThese.AddRange(ports);
+		//togglepanel.GetComponent<PositionWindowUnderListOfRenderers>().PostPositionTranslation = new Vector3(0,0,zindex*5);
 
 		togglepanel.AddComponent<TogglePanelButton>();
 		var tpb = togglepanel.GetComponentInChildren<TogglePanelButton>();
@@ -593,6 +597,20 @@ public class NodeModel : BaseModel
 		}
 
 
+	}
+
+	public NodeModel ExecutionRoot()
+	{
+		var node = this;
+		while (node.ExecutionInputs.Count>0 )
+		{
+			if (node.ExecutionInputs.First().connectors.Count>0)
+			{
+			node = node.ExecutionInputs.First().connectors.First().PStart.Owner;
+			}
+		} 
+
+		return node;
 	}
 
 	public virtual void Load(XmlNode node)

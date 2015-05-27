@@ -7,17 +7,16 @@ using System;
 
 namespace Nodeplay.Nodes
 {
-	public class csharpsum : DelegateNodeModel
+	public class ListAdd : DelegateNodeModel
 	{
 
 		protected override void Start()
 		{
 			base.Start();
 
-			AddInputPort("x");
-			AddInputPort("y");
+			AddInputPort("list",typeof(System.Collections.IList));
+			AddInputPort("item to add");
 			AddExecutionInputPort("start");
-			AddOutPutPort("OUTPUT");
 			AddExecutionOutPutPort("done");
 			
 			
@@ -28,13 +27,11 @@ namespace Nodeplay.Nodes
 		protected override Dictionary<string,object> CompiledNodeEval(Dictionary<string,object> inputstate,Dictionary<string,object> intermediateOutVals)
 		{
 			var output = intermediateOutVals;
-			var tempx = inputstate["x"];
-			var tempy = inputstate["y"];
+			var templist= inputstate["list"];
+			var tempitem = inputstate["item to add"];
 
-			//Debug.Log(tempx.GetType());
-			//Debug.Log(tempy);
-			var sum = (int)tempx + (int)tempy;
-			output["OUTPUT"] = sum;
+
+			((System.Collections.IList)templist).Add(tempitem);
 			(inputstate["done"] as Action).Invoke();
 			return output;
 

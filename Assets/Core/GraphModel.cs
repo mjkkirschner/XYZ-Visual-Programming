@@ -18,6 +18,8 @@ using Nodeplay.UI;
 /// https://github.com/DynamoDS/Dynamo/blob/master/src/DynamoCore/Models/WorkspaceModel.cs
 /// </summary>
 using UnityEditor;
+using System.Text;
+using System.Text.RegularExpressions;
 
 
 public class GraphModel : INotifyPropertyChanged, IPointerClickHandler,IContextable,IPointerDownHandler
@@ -792,6 +794,106 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler,IContexta
 		regularState = false;
 	}
 
+	void TypeLayout ()
+	{
+		foreach(var node in Nodes)
+		{
+			if (regularState)
+			{
+				currentnodePositions[node] = node.transform.position;
+			}
+
+		}
+
+		var nodegroups = Nodes.GroupBy(x=> Soundex(x.GetType().BaseType.Name), x=>x);
+		regularState = false;
+
+		var keys = nodegroups.Select(x=>x.Key).ToList();
+		foreach(var group in nodegroups )
+		{
+
+			var index = keys.IndexOf(group.Key);
+
+			Debug.Log(group.Key);
+			//foreach item in this group place it someone in a XY plane at the Z for the index of this key
+				foreach (var item in group)
+			{
+				var x = 	UnityEngine.Random.Range(-20,20);
+				var y = 	UnityEngine.Random.Range(0,20);
+				var newpost = new Vector3(x,y,(index+1)*15);
+
+				item.GetComponent<PositionNodeRelativeToParents>().StartCoroutine(
+					item.GetComponent<PositionNodeRelativeToParents>().slowmove(item.transform.position,newpost,2));
+			}
+
+		}
+
+	}
+
+
+	//http://seesharpdeveloper.blogspot.com/2013/07/soundex-algorithm-in-c.html
+		public static string Soundex(string word)
+		{
+			const int MaxSoundexCodeLength = 4;
+			
+			var soundexCode = new StringBuilder();
+			var previousWasHOrW = false;
+			
+			word = Regex.Replace(
+				word == null ? string.Empty : word.ToUpper(),
+				@"[^\w\s]",
+				string.Empty);
+			
+			if (string.IsNullOrEmpty(word))
+				return string.Empty.PadRight(MaxSoundexCodeLength, '0');
+			
+			soundexCode.Append(word.First());
+			
+			for (var i = 1; i < word.Length; i++)
+			{
+				var numberCharForCurrentLetter =
+					GetCharNumberForLetter(word[i]);
+				
+				if (i == 1 &&
+				    numberCharForCurrentLetter ==
+				    GetCharNumberForLetter(soundexCode[0]))
+					continue;
+				
+				if (soundexCode.Length > 2 && previousWasHOrW &&
+				    numberCharForCurrentLetter ==
+				    soundexCode[soundexCode.Length - 2])
+					continue;
+				
+				if (soundexCode.Length > 0 &&
+				    numberCharForCurrentLetter ==
+				    soundexCode[soundexCode.Length - 1])
+					continue;
+				
+				soundexCode.Append(numberCharForCurrentLetter);
+				
+				previousWasHOrW = "HW".Contains(word[i]);
+			}
+			
+			return soundexCode
+				.Replace("0", string.Empty)
+					.ToString()
+					.PadRight(MaxSoundexCodeLength, '0')
+					.Substring(0, MaxSoundexCodeLength);
+		}
+		
+		private static char GetCharNumberForLetter(char letter)
+		{
+			if ("BFPV".Contains(letter)) return '1';
+			if ("CGJKQSXZ".Contains(letter)) return '2';
+			if ("DT".Contains(letter)) return '3';
+			if ('L' == letter) return '4';
+			if ("MN".Contains(letter)) return '5';
+			if ('R' == letter) return '6';
+			
+			return '0';
+		}
+
+
 	private void layoutCurrent()
 	{
 		foreach(var node in Nodes)
@@ -828,10 +930,15 @@ public class GraphModel : INotifyPropertyChanged, IPointerClickHandler,IContexta
 		button3.GetComponentInChildren<Text>().text = "Layout Graph: Current Positions";
 		button3.GetComponentInChildren<Button>().onClick.AddListener(() => {layoutCurrent();} );
 
+		var button4 = GameObject.Instantiate(Resources.Load("LibraryButton")) as GameObject;
+		button4.GetComponentInChildren<Text>().text = "Layout Graph: Types";
+		button4.GetComponentInChildren<Button>().onClick.AddListener(() => {TypeLayout();} );
+
 
 		buttons.Add (button.GetComponentInChildren<Button>());
 		buttons.Add(button2.GetComponentInChildren<Button>());
 		buttons.Add(button3.GetComponentInChildren<Button>());
+		buttons.Add(button4.GetComponentInChildren<Button>());
 
 		return buttons;
 	}

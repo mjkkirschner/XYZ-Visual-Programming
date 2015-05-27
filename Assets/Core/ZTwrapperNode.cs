@@ -25,12 +25,12 @@ namespace Nodeplay.Nodes
 
 			foreach (var param in funcdef.Parameters)
 			{
-				AddInputPort(param.Name);
+				AddInputPort(param.Name,param.ParameterType);
 			}
 			//add 1 output, 1 start, and end trigger
 			AddExecutionInputPort("start");
 			//TODO support multiout attribute
-			AddOutPutPort("OUTPUT");
+			AddOutPutPort(funcdef.MethodPointer.ReturnType.Name,funcdef.MethodPointer.ReturnType);
 			AddExecutionOutPutPort("done");
 
 
@@ -59,7 +59,7 @@ namespace Nodeplay.Nodes
 	          .ToList();
 			 
 			//TODO throwing errors :(
-			output["OUTPUT"] = funcdef.MethodPointer.Invoke(null,inputportvals.ToArray());
+			output[funcdef.MethodPointer.ReturnType.Name] = funcdef.MethodPointer.Invoke(null,inputportvals.ToArray());
 			(inputstate["done"] as Action).Invoke();
 			return output;
 

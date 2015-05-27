@@ -6,14 +6,21 @@ using System.Collections.ObjectModel;
 using Nodeplay.Interfaces;
 using System.ComponentModel;
 using System;
+using System.Linq;
 
 public class ExecutionVisualizationModel : BaseModel
 {
-
+	protected List<string> viewPrefabs = new List<string>();
 	protected override void Start()
 	{
 		base.Start();
 		var view = this.gameObject.AddComponent<VisualzationView>();
+		//gather types from outputs of the node... unclear if we really want this...
+		//they'll all just be the same
+		foreach (var type in this.transform.root.GetComponent<NodeModel>().Outputs.Select(x => x.ObjectType))
+		{
+			viewPrefabs.Add(type.Name);
+		}
 	}
 	
 
@@ -33,7 +40,35 @@ public class ExecutionVisualizationModel : BaseModel
 		this.gameObject.AddComponent<BoxCollider>();
 		GameObject.Destroy(x);
 		return this.gameObject;
+	/*	GameObject UI = null;
+		foreach (var viewPrefab in viewPrefabs)
+		{
+			if (Resources.Load(viewPrefab) == null)
+			{
+				//if the resource doesnt exist, bail
+				continue;
+			}
+			//if this is first prefab
+			if (viewPrefabs.IndexOf(viewPrefab) == 0)
+			{
+				UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				UI.transform.localPosition = this.gameObject.transform.position;
+				UI.transform.parent = this.gameObject.transform;
+				UI.transform.localScale = new Vector3(.3f, .3f, .3f);
+			}
+			else
+			{
+				GameObject subui = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				var offset = subui.transform.position - UI.transform.localPosition;
+				subui.transform.localPosition = this.gameObject.transform.position;
+				subui.transform.parent = (UI.transform);
+				subui.transform.Translate(offset);
+			}
 
+
+		}
+		return UI;
+*/
 	}
 	
 	

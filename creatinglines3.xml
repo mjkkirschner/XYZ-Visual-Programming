@@ -1,0 +1,73 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
+  <Elements>
+    <Nodeplay.Nodes.StartExecution type="Nodeplay.Nodes.StartExecution" guid="deb73c2b-74af-4d5d-8438-bbab770991d2" nickname="node StartExecutiondeb73c2b-74af-4d5d-8438-bbab770991d2" x="8.430943" y="62.94578" z="-103.9912">
+      <nodeinputdict />
+    </Nodeplay.Nodes.StartExecution>
+    <Nodeplay.Nodes.CreateVariable type="Nodeplay.Nodes.CreateVariable" guid="d307e420-e923-40e8-b340-2c3a8fda9111" nickname="node CreateVariabled307e420-e923-40e8-b340-2c3a8fda9111" x="19.36861" y="19.28693" z="-1.104488">
+      <nodeinputdict VariableName="points" />
+    </Nodeplay.Nodes.CreateVariable>
+    <Nodeplay.Nodes.SetVariable type="Nodeplay.Nodes.SetVariable" guid="1b79e79c-feaa-4a19-9a3d-b7a2d2429026" nickname="node SetVariable1b79e79c-feaa-4a19-9a3d-b7a2d2429026" x="-14.00254" y="62.94578" z="-77.14496">
+      <nodeinputdict />
+    </Nodeplay.Nodes.SetVariable>
+    <UnityEngineNodes.Vector3byXYZNode type="UnityEngineNodes.Vector3byXYZNode" guid="a25ad995-641d-42c3-ab56-2386a60e2ed4" nickname="node Vector3byXYZNodea25ad995-641d-42c3-ab56-2386a60e2ed4" x="-95.86463" y="70.05049" z="-27.43715">
+      <nodeinputdict />
+    </UnityEngineNodes.Vector3byXYZNode>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="cb651326-68af-4195-9847-f73e6ced21c1" nickname="node Numbercb651326-68af-4195-9847-f73e6ced21c1" x="-38.01001" y="62.94578" z="-54.49348">
+      <nodeinputdict Code="OUTPUT = range(5);VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.Number type="Nodeplay.Nodes.Number" guid="e0b959b0-0c3b-4eaf-a19a-3d8d97a0a0e8" nickname="node Numbere0b959b0-0c3b-4eaf-a19a-3d8d97a0a0e8" x="5.879944" y="58.56678" z="-97.58471">
+      <nodeinputdict Code="OUTPUT = [];VariableCreated()" />
+    </Nodeplay.Nodes.Number>
+    <Nodeplay.Nodes.GetVariable type="Nodeplay.Nodes.GetVariable" guid="f0fcb72c-6e3a-4e04-ad53-65876e3611a7" nickname="node GetVariablef0fcb72c-6e3a-4e04-ad53-65876e3611a7" x="-75.75484" y="64.4402" z="-3.953308">
+      <nodeinputdict />
+    </Nodeplay.Nodes.GetVariable>
+    <DSCore.ListAddItemToEndNode type="DSCore.ListAddItemToEndNode" guid="0023bd2e-9e32-4c23-bb7f-e5d698459b31" nickname="node ListAddItemToEndNode0023bd2e-9e32-4c23-bb7f-e5d698459b31" x="-103.1473" y="54.61842" z="32.35555">
+      <nodeinputdict />
+    </DSCore.ListAddItemToEndNode>
+    <Nodeplay.Nodes.SetVariable type="Nodeplay.Nodes.SetVariable" guid="cc70ae14-bd32-4582-9cbc-42fe19abd823" nickname="node SetVariablecc70ae14-bd32-4582-9cbc-42fe19abd823" x="-121.7897" y="59.2516" z="49.81768">
+      <nodeinputdict />
+    </Nodeplay.Nodes.SetVariable>
+    <UnityEngineNodes.GameobjectCreateLineByPointsNode type="UnityEngineNodes.GameobjectCreateLineByPointsNode" guid="b65e73da-c62b-4e82-8873-85df0bc7ec19" nickname="node GameobjectCreateLineByPointsNodeb65e73da-c62b-4e82-8873-85df0bc7ec19" x="-75.06364" y="59.06767" z="-45.76454">
+      <nodeinputdict />
+    </UnityEngineNodes.GameobjectCreateLineByPointsNode>
+    <Nodeplay.Nodes.PythonNode type="Nodeplay.Nodes.PythonNode" guid="84e44757-f460-429a-ada1-297aaf628398" nickname="node PythonNode84e44757-f460-429a-ada1-297aaf628398" x="-74.73364" y="56.37767" z="-50.26274">
+      <nodeinputdict Code="import sys; sys.path.append(&quot;/Users/michaelkirschner/nodeply/Assets/Resources/Lib/&quot; );&#xA;import random;&#xA;OUTPUT0 = random.randrange(10);&#xA;OUTPUT1 = random.randrange(10); &#xA;OUTPUT2 = random.randrange(10); &#xA;run()" />
+      <variablePorts />
+      <variableOutPorts port0="OUTPUT0" port1="OUTPUT1" port2="OUTPUT2" />
+    </Nodeplay.Nodes.PythonNode>
+    <Nodeplay.Nodes.xForEach type="Nodeplay.Nodes.xForEach" guid="ed6c14a2-909c-442d-b120-ff3219b1eaed" nickname="node xForEached6c14a2-909c-442d-b120-ff3219b1eaed" x="-53.55568" y="63.74168" z="-44.67202">
+      <nodeinputdict />
+    </Nodeplay.Nodes.xForEach>
+    <VerbNodes.VerbInteropcreateCurveNode type="VerbNodes.VerbInteropcreateCurveNode" guid="c84c4eab-f2f8-4f27-b819-a7adbe77eb32" nickname="node VerbInteropcreateCurveNodec84c4eab-f2f8-4f27-b819-a7adbe77eb32" x="-122.3693" y="61.90322" z="68.73138">
+      <nodeinputdict />
+    </VerbNodes.VerbInteropcreateCurveNode>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="d307e420-e923-40e8-b340-2c3a8fda9111" start_index="0" end="1b79e79c-feaa-4a19-9a3d-b7a2d2429026" end_index="0" portType="0" />
+    <ConnectorModel start="d307e420-e923-40e8-b340-2c3a8fda9111" start_index="0" end="f0fcb72c-6e3a-4e04-ad53-65876e3611a7" end_index="0" portType="0" />
+    <ConnectorModel start="d307e420-e923-40e8-b340-2c3a8fda9111" start_index="0" end="cc70ae14-bd32-4582-9cbc-42fe19abd823" end_index="0" portType="0" />
+    <ConnectorModel start="a25ad995-641d-42c3-ab56-2386a60e2ed4" start_index="0" end="0023bd2e-9e32-4c23-bb7f-e5d698459b31" end_index="0" portType="0" />
+    <ConnectorModel start="cb651326-68af-4195-9847-f73e6ced21c1" start_index="0" end="ed6c14a2-909c-442d-b120-ff3219b1eaed" end_index="0" portType="0" />
+    <ConnectorModel start="e0b959b0-0c3b-4eaf-a19a-3d8d97a0a0e8" start_index="0" end="1b79e79c-feaa-4a19-9a3d-b7a2d2429026" end_index="1" portType="0" />
+    <ConnectorModel start="f0fcb72c-6e3a-4e04-ad53-65876e3611a7" start_index="0" end="0023bd2e-9e32-4c23-bb7f-e5d698459b31" end_index="1" portType="0" />
+    <ConnectorModel start="0023bd2e-9e32-4c23-bb7f-e5d698459b31" start_index="0" end="cc70ae14-bd32-4582-9cbc-42fe19abd823" end_index="1" portType="0" />
+    <ConnectorModel start="0023bd2e-9e32-4c23-bb7f-e5d698459b31" start_index="0" end="b65e73da-c62b-4e82-8873-85df0bc7ec19" end_index="0" portType="0" />
+    <ConnectorModel start="cc70ae14-bd32-4582-9cbc-42fe19abd823" start_index="0" end="c84c4eab-f2f8-4f27-b819-a7adbe77eb32" end_index="0" portType="0" />
+    <ConnectorModel start="84e44757-f460-429a-ada1-297aaf628398" start_index="0" end="a25ad995-641d-42c3-ab56-2386a60e2ed4" end_index="0" portType="0" />
+    <ConnectorModel start="84e44757-f460-429a-ada1-297aaf628398" start_index="1" end="a25ad995-641d-42c3-ab56-2386a60e2ed4" end_index="1" portType="0" />
+    <ConnectorModel start="84e44757-f460-429a-ada1-297aaf628398" start_index="2" end="a25ad995-641d-42c3-ab56-2386a60e2ed4" end_index="2" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="deb73c2b-74af-4d5d-8438-bbab770991d2" start_index="0" end="e0b959b0-0c3b-4eaf-a19a-3d8d97a0a0e8" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="1b79e79c-feaa-4a19-9a3d-b7a2d2429026" start_index="0" end="cb651326-68af-4195-9847-f73e6ced21c1" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="a25ad995-641d-42c3-ab56-2386a60e2ed4" start_index="0" end="f0fcb72c-6e3a-4e04-ad53-65876e3611a7" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="cb651326-68af-4195-9847-f73e6ced21c1" start_index="0" end="ed6c14a2-909c-442d-b120-ff3219b1eaed" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="e0b959b0-0c3b-4eaf-a19a-3d8d97a0a0e8" start_index="0" end="1b79e79c-feaa-4a19-9a3d-b7a2d2429026" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="f0fcb72c-6e3a-4e04-ad53-65876e3611a7" start_index="0" end="0023bd2e-9e32-4c23-bb7f-e5d698459b31" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="0023bd2e-9e32-4c23-bb7f-e5d698459b31" start_index="0" end="cc70ae14-bd32-4582-9cbc-42fe19abd823" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="cc70ae14-bd32-4582-9cbc-42fe19abd823" start_index="0" end="c84c4eab-f2f8-4f27-b819-a7adbe77eb32" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="84e44757-f460-429a-ada1-297aaf628398" start_index="0" end="a25ad995-641d-42c3-ab56-2386a60e2ed4" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="ed6c14a2-909c-442d-b120-ff3219b1eaed" start_index="0" end="84e44757-f460-429a-ada1-297aaf628398" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="ed6c14a2-909c-442d-b120-ff3219b1eaed" start_index="1" end="b65e73da-c62b-4e82-8873-85df0bc7ec19" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

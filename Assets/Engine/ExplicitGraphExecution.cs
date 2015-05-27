@@ -20,8 +20,10 @@ namespace Nodeplay.Engine
 		public Boolean  ButtonPressed {get;set;}
 		public UnityEngine.UI.Toggle DebugModeToggle;
 		private List<GameObject> SceneState;
-
+		private bool running = false;
 		public event Action Evaluating; 
+		public List<ControlFlowDelegateNodeModel> updaters = new List<ControlFlowDelegateNodeModel>();
+		private bool updateloop = false;
 
 		protected void OnEvaluating()
 		{
@@ -39,7 +41,13 @@ namespace Nodeplay.Engine
 				GraphEvaluationStarted();
 			}
 		} 
+		protected virtual void Update()
+		{
+			if (running){
 
+				updaters.ForEach(x=> TaskSchedule.Add( new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForEndOfFrame())));
+				                 }
+		}
 
 		protected virtual void Start()
 		{
@@ -77,10 +85,12 @@ namespace Nodeplay.Engine
 		/// method that triggers evaluation on nodes and validates inputs before triggering 
 		/// walks from entry points of computation graph to downstream nodes 
 		/// </summary>
-		public void EvaluateNodes()
+		public void EvaluateNodes(bool state)
 		{
-
+			running = state;
+			if (state){
 			StartCoroutine("ObservableEval");
+			}
 		}
 		/// <summary>
 		/// method that checks if a node is ready for eval
@@ -149,21 +159,42 @@ namespace Nodeplay.Engine
 			var entrypoints = FindEntryPoints();
 			List<Task> actions = entrypoints.Select(x=> new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForSeconds(1))).ToList();
 			TaskSchedule = new List<Task>(actions);
-			
+	
 			Task headOfQueue = null;
-			while (TaskSchedule.Count > 0)
+			while (running)
 			{
+
+				if (!(TaskSchedule.Count > 0))
+				{
+					yield return new WaitForEndOfFrame();
+				}
 
 				foreach (var i in Enumerable.Range(0,Math.Min((int)ExecutionsPerFrame,TaskSchedule.Count)).ToList())
 				{
 					headOfQueue = TaskSchedule.First();
 
 					//pop the node we are about to evaluate, otherwise we'll never be able to 
-					
+					//IDEA, if this tasks.... => headOfQueue.NodeRunningOn.ExecutionRoot().GetType() != typeof(OnUpdate)
+					//is true then go through a forloop until thats not true, this way we'll execute all the nodes, but then
+					//we'll yield?... thats the behavior we need, not sure this will get it..
+
+
 					OnEvaluating();
 					CurrentTask = headOfQueue;
 					headOfQueue.MethodCall.Invoke();
 					TaskSchedule.RemoveAt(0);
+
+					//if we're the current task is running on a node that was called by an updater
+					if (headOfQueue.NodeRunningOn.ExecutionRoot().GetType() == typeof(OnUpdate))
+					{
+						//just keep looping, do not yield
+						updateloop = true;
+
+					}
+					else{
+						updateloop = false;
+					}
+			
 
 					//now check state of debug mode, if it's enabled move the camera to the location of the executing node
 					//and simply poll the state of the continue button, do not continue until button pressed.
@@ -183,6 +214,11 @@ namespace Nodeplay.Engine
 
 
 				}
+
+				if (updateloop && ! (CurrentTask.NodeRunningOn.GetType() == typeof(OnUpdate))){
+					continue;
+				}
+
 				if (headOfQueue.Yieldbehavior != null ){
 					yield return headOfQueue.Yieldbehavior;
 				}

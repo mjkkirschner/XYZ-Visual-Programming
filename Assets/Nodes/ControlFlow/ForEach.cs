@@ -33,6 +33,7 @@ onIterated()";
 			
 			Evaluator = this.gameObject.AddComponent<PythonEvaluator>();
 			viewPrefabs.Add("looptop");
+			viewPrefabs.Add("iteration");
 		}
 		
 		public override GameObject BuildSceneElements()

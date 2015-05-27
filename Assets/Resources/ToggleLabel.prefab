@@ -116,7 +116,7 @@ GameObject:
   - 224: {fileID: 22400012}
   - 223: {fileID: 22300000}
   - 114: {fileID: 11400022}
-  - 114: {fileID: 11465914}
+  - 114: {fileID: 11421200}
   m_Layer: 5
   m_Name: ToggleLabel
   m_TagString: Untagged
@@ -384,15 +384,15 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &11465914
+--- !u!114 &11421200
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100012}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38da47a687cea407fb18c203d41759ce, type: 3}
+  m_Script: {fileID: 11500000, guid: 7eb97fc22eb9249b6ae0cc1adb7f81fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Model_GO: {fileID: 0}

@@ -10,7 +10,7 @@ using System.ComponentModel;
 /// </summary>
 public class PortModel :BaseModel
 {
-    
+    	
 		public string NickName { get; set; }
 
 		public NodeModel Owner { get; set; }
@@ -18,6 +18,10 @@ public class PortModel :BaseModel
 		public int Index { get; set; }
 
 		public Boolean IsConnected { get; set; }
+		
+		public Type ObjectType {get;set;}
+		protected  List<string> viewPrefabs =  new List<string>();
+
 
 		public List<ConnectorModel> connectors = new List<ConnectorModel> ();
 
@@ -32,6 +36,10 @@ public class PortModel :BaseModel
 		{
 				// create the view here
 				this.gameObject.AddComponent<PortView> ();
+				viewPrefabs.Add(ObjectType.Name);
+		//TODO we can do some smarter parsing of the code by looking
+		//and then assigning the type if we can't infer it directly
+		//(just look for what it gets cast as)
                
 		}
     
@@ -132,7 +140,7 @@ public class PortModel :BaseModel
 
 		}
 
-		public virtual void init (NodeModel owner, int index, porttype type, string nickname = null)
+		public virtual void init (NodeModel owner, int index, porttype type, string nickname = null,Type objType = null)
 		{
 
 		//TODO need to make sure we dont have any repeated port names in the different sets {inputs,outputs,execin,execout}
@@ -148,19 +156,50 @@ public class PortModel :BaseModel
                 {
                     NickName = nickname;
                 }
+
+				if (objType == null)
+		{
+			ObjectType = typeof(object);
+		}
+		else{
+			ObjectType = objType;
+		}
 		}
 
         public override GameObject BuildSceneElements()
         {
-
+		//TODO inject visualziation loading here
             GameObject UI = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             UI.transform.localPosition = this.gameObject.transform.position;
             UI.transform.parent = this.gameObject.transform;
 
+		foreach (var viewPrefab in viewPrefabs){
+			Debug.Log(viewPrefab);
+			if (Resources.Load(viewPrefab) == null)
+			{
+				//if the resource doesnt exist, bail
+				continue;
+			}
+			//if this is first prefab
+			if (viewPrefabs.IndexOf(viewPrefab) == 0)
+			{	UI = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				UI.transform.localPosition = this.gameObject.transform.position;
+				UI.transform.parent = this.gameObject.transform;
+			}
+			else
+			{
+				GameObject subui = Instantiate(Resources.Load(viewPrefab)) as GameObject;
+				var offset = subui.transform.position - UI.transform.localPosition;
+				subui.transform.localPosition = this.gameObject.transform.position;
+				subui.transform.parent = (UI.transform);
+				subui.transform.Translate(offset);
+			}
+			
+			
+		}
+
 			AddPortLabel();
             return UI;
-
-
 
         }
 
@@ -169,6 +208,7 @@ public class PortModel :BaseModel
 			var labelprefab = Resources.Load<GameObject>("PortLabelSimple");
 			var label = GameObject.Instantiate(labelprefab, Vector3.zero, Quaternion.identity) as GameObject;
 			label.GetComponent<RectTransform>().SetParent(this.transform, false);
+		label.GetComponent<Canvas>().worldCamera = Camera.main;
 			label.AddComponent<UILabel>();
 		}
 
