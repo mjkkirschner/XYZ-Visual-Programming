@@ -21,6 +21,7 @@ namespace Nodeplay.UI
         private GameObject mainPanel;
         private List<OutputDisplayPair> currentOutputdisplaydata;
 		private GameObject outputDisplayPrefab = Resources.Load("OutputPairInputTest") as GameObject;
+		private int lastUpdateFrame = 0;
 
         protected override void Start()
         {
@@ -36,15 +37,17 @@ namespace Nodeplay.UI
 
             // if the property on the model we are watching
             // was the stored value, then we should update our output preview
-            if (e.PropertyName == "StoredValue")
+            if (e.PropertyName == "StoredValue" && Time.frameCount > lastUpdateFrame)
             {
                 outputDict = model.StoredValueDict;
                 UpdateOutputs();
+				lastUpdateFrame = Time.frameCount; 
             }
             else
             {
                // throw new System.NotImplementedException();
             }
+
         }
 
         public void UpdateOutputs()

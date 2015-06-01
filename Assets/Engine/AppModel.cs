@@ -217,7 +217,7 @@ public class AppModel : MonoBehaviour
 		{
 			foreach(var renderer in GameObject.FindObjectsOfType<EvaluationResultsRenderer>())
 			{
-				renderer.toggleDisplay();
+				renderer.toggleDisplay(state);
 
 			}
 		}

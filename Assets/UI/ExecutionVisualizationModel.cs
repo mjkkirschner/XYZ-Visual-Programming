@@ -10,6 +10,9 @@ using System.Linq;
 
 public class ExecutionVisualizationModel : BaseModel
 {
+	static GameObject  cahcedCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+	static Mesh cubemesh = cahcedCube.GetComponent<MeshFilter>().mesh;
+
 	protected List<string> viewPrefabs = new List<string>();
 	protected override void Start()
 	{
@@ -21,6 +24,7 @@ public class ExecutionVisualizationModel : BaseModel
 		{
 			viewPrefabs.Add(type.Name);
 		}
+		cahcedCube.SetActive(false);
 	}
 	
 
@@ -33,12 +37,12 @@ public class ExecutionVisualizationModel : BaseModel
 	public override GameObject BuildSceneElements()
 	{
 
-		var x = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		this.gameObject.AddComponent<MeshFilter>().mesh = x.GetComponent<MeshFilter>().mesh;
+		//var x = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		this.gameObject.AddComponent<MeshFilter>().mesh = cubemesh;
 		this.gameObject.AddComponent<MeshRenderer>();
 		this.gameObject.GetComponent<Renderer>().material.color  = Color.red;
 		this.gameObject.AddComponent<BoxCollider>();
-		GameObject.Destroy(x);
+		//GameObject.Destroy(x);
 		return this.gameObject;
 	/*	GameObject UI = null;
 		foreach (var viewPrefab in viewPrefabs)

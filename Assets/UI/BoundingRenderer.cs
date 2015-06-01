@@ -16,6 +16,9 @@ namespace Nodeplay.UI
 		protected List<int> branchIndicies;
 		public List<GameObject> tempgeos = new List<GameObject>();
 		private List<NodeModel> visitedList = new List<NodeModel>();
+		private int lastUpdateFrame = 0;
+		 private Material nestingmaterial = Resources.Load ("NestingZone") as Material;
+
 		// Use this for initialization
 		protected virtual void Start()
 		{
@@ -31,7 +34,11 @@ namespace Nodeplay.UI
 		{
 			//if (e.PropertyName == "Location")
 			//{
+			if(Time.frameCount > lastUpdateFrame)
+			{
 				UpdateBounding();
+				lastUpdateFrame = Time.frameCount;
+			}
 			//}
 		}
 
@@ -74,28 +81,28 @@ namespace Nodeplay.UI
 		}
 
 
-		public GameObject GenerateBounds(PrimitiveType shape,List<GameObject> toBound,Color matColor)
+		public GameObject GenerateBounds(PrimitiveType shape,IEnumerable<GameObject> toBound,Color matColor)
 		{
 			Vector3 center = Vector3.zero;
-			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>()).ToList();
-			if (allrenderers.Count <1)
+			var allrenderers = toBound.SelectMany(x => x.GetComponentsInChildren<MeshRenderer>());
+			if (allrenderers.FirstOrDefault() == null)
 			{
 				return null;
 			}
 
-			var totalBounds = allrenderers[0].bounds;
+			var totalBounds = allrenderers.First().bounds;
 			foreach (Renderer ren in allrenderers)
 			{
 				center = center + ren.gameObject.transform.position;
 				totalBounds.Encapsulate(ren.bounds);
 
 			}
-			center = center / (allrenderers.Count);
+			center = center / (allrenderers.Count());
 			var xx = GameObject.CreatePrimitive(shape);
 			xx.transform.localScale = new Vector3(totalBounds.size.x * 1.1f, totalBounds.size.y, totalBounds.size.z * 1.1f);
 			xx.transform.localPosition = totalBounds.center;
 			xx.GetComponent<Collider>().enabled = false;
-			xx.GetComponent<Renderer>().material = Resources.Load("NestingZone") as Material;
+			xx.GetComponent<Renderer> ().material = nestingmaterial;
 			xx.GetComponent<Renderer> ().material.color = new Color(matColor.r,matColor.g,matColor.b,.25f);
 			return xx;
 		}

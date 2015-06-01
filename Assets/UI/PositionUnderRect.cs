@@ -37,8 +37,13 @@ namespace Nodeplay.UI
 		
 		/// this handler is used to respond to changes on the node
 		// when the node is modified in some way we update the renderers position
-		public virtual void NodePropertyChangeEventHandler(object sender, EventArgs args)
+		public virtual void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
+//			if (args.PropertyName != "Location")
+//			{
+//				return;
+//			}
+
 			if (PostitionUnderThese == null){
 				throw new Exception("rect to position under is null");
 			}

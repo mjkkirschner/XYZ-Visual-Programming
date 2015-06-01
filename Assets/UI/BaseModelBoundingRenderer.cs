@@ -11,7 +11,8 @@ namespace Nodeplay.UI
 	{
 
 		public BaseModel Model;
-		private List<BaseModel> modelsToBound;
+		private IEnumerable<BaseModel> modelsToBound;
+		private int lastUpdateFrame = 0;
 		protected override void Start()
 		{
 			Model = this.GetComponentInParent<NodeModel>();
@@ -21,10 +22,19 @@ namespace Nodeplay.UI
 		}
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (modelsToBound ==null || modelsToBound.Count()<1)
+			{
+				return;
+			}
+
+			if(Time.frameCount > lastUpdateFrame && modelsToBound.Any(x=>!x.isActiveAndEnabled))
+			{
 			//get the most uptodate list of evaluation results 
-			modelsToBound = Model.GetComponent<EvaluationResultsRenderer>().EvaluationResulsts.Select(x => x.GetComponent<BaseModel>()).ToList();
+			modelsToBound = Model.GetComponent<EvaluationResultsRenderer>().EvaluationResulsts.Select(x => x.GetComponent<BaseModel>());
 			initialzed = true;
 			UpdateBounding();
+				lastUpdateFrame = Time.frameCount;
+			}
 
 		}
 
@@ -38,12 +48,12 @@ namespace Nodeplay.UI
 				}
 
 				//generate the bounds of all gameobjects 
-				if (modelsToBound.Count > 0)
+				if (modelsToBound.Count() > 0)
 				{
 
 					if (modelsToBound.Any(x => x.transform.hasChanged == true))
 					{
-						tempgeos.Add(GenerateBounds(PrimitiveType.Cube, modelsToBound.Select(x => x.gameObject).ToList(), Color.grey));
+						tempgeos.Add(GenerateBounds(PrimitiveType.Cube, modelsToBound.Select(x => x.gameObject), Color.grey));
 					}
 
 				}

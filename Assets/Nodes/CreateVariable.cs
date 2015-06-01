@@ -13,6 +13,7 @@ namespace Nodeplay.Nodes
 {
 	public class CreateVariable : NodeModel,IContextable
 	{
+		private int lastUpdateFrame = 0;
 		private GameObject vizroot;
 		public object variable ="empty";
 		private string variablename;
@@ -74,12 +75,17 @@ namespace Nodeplay.Nodes
 		private void updateVisualization(){
 		//this is deleting everything everyframe
 			//TODO MAKE IT FASTER!
+
+		if(Time.frameCount > lastUpdateFrame){
+
 		var childrenofVisualization = vizroot.GetComponent<InspectorVisualization>().transform.Cast<Transform>().ToList();
 		if (childrenofVisualization.Count > 0){
 				childrenofVisualization.Where(x=>x.CompareTag("visualization")).ToList().ForEach(x=>DestroyImmediate(x.gameObject));
 		}
 		transform.root.GetComponentInChildren<InspectorVisualization>().PopulateTopLevel(
 				(StoredValueDict["OUTPUT"] as VariableReference).Get() );
+				lastUpdateFrame = Time.frameCount;
+			}
 		}
 
 		#region IContextable implementation

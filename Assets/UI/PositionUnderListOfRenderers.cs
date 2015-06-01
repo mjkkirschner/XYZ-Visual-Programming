@@ -33,15 +33,18 @@ namespace Nodeplay.UI
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
 
 			//force a call to properychangehandelr
-			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
+			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("Location"));
 
 		}
 		
 		/// this handler is used to respond to changes on the node
 		// when the node is modified in some way we update the windows position
-		public virtual void NodePropertyChangeEventHandler(object sender, EventArgs args)
+		public virtual void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
-			//Debug.Log("changing position of window");
+			if (args.PropertyName != "Location")
+			{
+				return;
+			}
 			if (PostitionUnderThese.Count < 1)
 			{
 				return;

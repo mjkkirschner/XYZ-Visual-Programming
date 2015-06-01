@@ -7,6 +7,7 @@ using Pathfinding.Serialization.JsonFx;
 using Nodeplay.Interfaces;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Nodeplay.Engine;
 
 namespace Nodeplay.UI
 {
@@ -28,7 +29,6 @@ namespace Nodeplay.UI
 			Model.explicitGraphExecution.GraphEvaluationStarted += HandleGraphEvaluationStarted;
 			AddEvalRoot("first EvalRoot",0);
 			Model.gameObject.AddComponent<BaseModelBoundingRenderer>();
-
 		}
 
 		#region IContextable implementation
@@ -37,7 +37,8 @@ namespace Nodeplay.UI
 		{
 			var button = Instantiate(Resources.Load("LibraryButton")) as GameObject;
 			button.GetComponentInChildren<Text>().text = "Toggle Evaluation History";
-			button.GetComponentInChildren<Button>().onClick.AddListener(() => {toggleDisplay();} );
+			var state = !(GameObject.Find("EvaluationToggle").GetComponent<Toggle>().isOn);
+			button.GetComponentInChildren<Button>().onClick.AddListener(() => {toggleDisplay(state);} );
 			return new List<Button>(){button.GetComponentInChildren<Button>()};
 		}
 
@@ -57,18 +58,20 @@ namespace Nodeplay.UI
 			evalResultsRoots.Add(evalResultsRoot);
 			evalResultsRoot.transform.SetParent(this.transform,false);
 			evalResultsRoot.transform.localScale = new Vector3(.5f,.5f,.5f);
-			evalResultsRoot.AddComponent<GridLayoutGroup>();
-			evalResultsRoot.GetComponent<GridLayoutGroup>().spacing = new Vector2(2,2);
-			evalResultsRoot.GetComponent<GridLayoutGroup>().cellSize = new Vector2(1,1);
+			var grid = evalResultsRoot.AddComponent<GridLayoutGroup>();
+			grid.spacing = new Vector2(2,2);
+			grid.cellSize = new Vector2(1,1);
 			(evalResultsRoot.transform as RectTransform).sizeDelta = new Vector2(20,20);
-			evalResultsRoot.GetComponent<GridLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
-			evalResultsRoot.GetComponent<GridLayoutGroup>().startAxis = GridLayoutGroup.Axis.Vertical;
-			evalResultsRoot.AddComponent<PositionWindowUnderRect>();
-			evalResultsRoot.GetComponent<PositionWindowUnderRect>().PostitionUnderThese = Model.transform.Find("ToggleLabel(Clone)/Window").GetComponent<RectTransform>();
-			evalResultsRoot.GetComponent<PositionWindowUnderRect>().PostPositionTranslation = new Vector3(0,0,zindex*5);
+			grid.childAlignment = TextAnchor.MiddleRight;
+			grid.startAxis = GridLayoutGroup.Axis.Vertical;
+			var positoner = evalResultsRoot.AddComponent<PositionWindowUnderRect>();
+			positoner.PostitionUnderThese = Model.transform.Find("ToggleLabel(Clone)/Window").GetComponent<RectTransform>();
+			positoner.PostPositionTranslation = new Vector3(0,0,zindex*5);
+
+			var state = (GameObject.Find("EvaluationToggle").GetComponent<Toggle>().isOn);
 
 			//finally if the any evel root was not active, also make this one inactive...
-			if (evalResultsRoots.Any(x=>x.activeSelf == false))
+			if (evalResultsRoots.Any(x=>x.activeSelf == false) || !state )
 			{
 				evalResultsRoot.SetActive(false);
 			}
@@ -93,13 +96,14 @@ namespace Nodeplay.UI
 		{
 
 			var keys = Model.Outputs.Select(x=>x.NickName);
-			var vals =keys.Select(x=>Model.StoredValueDict[x]).ToList();
+			var vals =keys.Select(x=>Model.StoredValueDict[x]);
 
 			//we can also inject a component onto any val that is a type of gameobject, this component will let
 			//the user inspect the gameobject in space....//possibly even calling methods on that object... etc etc...
 
 			var gameobjects = vals.OfType<GameObject>().ToList();
-			gameobjects.ForEach(x=>x.AddComponent<ObjectToEvaluation>().Init(this.GetComponent<NodeModel>()));
+
+			gameobjects.ForEach(x=> x.AddComponent<ObjectToEvaluation> ().Init (Model));
 
 			//we can inject a reference back to this node so that selection of this node can highlight this geo,
 			// or so that selection of the geo will highlist the particular evaluation that created it.
@@ -120,12 +124,14 @@ namespace Nodeplay.UI
 			evalResultParent.AddComponent<InspectorVisualization>();
 			evaluationResults.Add(evalResultParent);
 			evalResultParent.AddComponent<LayoutElement>();
-			evalResultParent.AddComponent<Button>();
-			evalResultParent.GetComponent<Button>().onClick.AddListener(()=> {populateInspector(evalResultParent,vals);} );
+			var button = evalResultParent.AddComponent<Button>();
+			button.onClick.AddListener(()=> {populateInspector(evalResultParent,vals);} );
+
 
 		}
-
-		private void populateInspector(GameObject evalparent, List<object> vals){
+		//TODO
+		//need to make this smarter and respond to global value...
+		private void populateInspector(GameObject evalparent, IEnumerable<object> vals){
 
 
 			if (evalparent.transform.childCount > 0)
@@ -152,9 +158,9 @@ namespace Nodeplay.UI
 				}
 
 
-		public void toggleDisplay()
+		public void toggleDisplay(bool state)
 		{
-			if (evalResultsRoots.Any(x=>x.activeSelf == false))
+			if (state == true)
 			{
 				evalResultsRoots.ForEach(x=>x.SetActive(true));
 			}

@@ -25,13 +25,17 @@ namespace Nodeplay.UI
 			Model_GO = model.gameObject;
 			Model_GO.GetComponent<NodeModel>().PropertyChanged += NodePropertyChangeEventHandler;
 			//force a call to properychangehandelr
-			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("null"));
+			NodePropertyChangeEventHandler(null,new PropertyChangedEventArgs("Location"));
 		}
 
 		/// this handler is used to respond to changes on the node
 		// when the node is modified in some way we update the windows position
-		public virtual void NodePropertyChangeEventHandler(object sender, EventArgs args)
+		public virtual void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
+			if (args.PropertyName != "Location")
+			{
+				return;
+			}
 			GenerateBounds(Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList());
 
 		}

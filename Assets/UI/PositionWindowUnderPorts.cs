@@ -28,6 +28,11 @@ namespace Nodeplay.UI
 		// when the node is modified in some way we update the windows position
 		public void NodePropertyChangeEventHandler(object sender, PropertyChangedEventArgs args)
 		{
+
+			if (args.PropertyName != "Location")
+			{
+				return;
+			}
 			 allchildren = Model_GO.transform.Cast<Transform>().Select(t => t.gameObject).ToList();
 
 			//check what kind of children these are, we want to find the node object or it's ports
