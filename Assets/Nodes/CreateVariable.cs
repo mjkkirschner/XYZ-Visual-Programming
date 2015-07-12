@@ -39,7 +39,7 @@ namespace Nodeplay.Nodes
 		{
 			base.Start();
 
-			explicitGraphExecution.Evaluating += updateVisualization;
+			//explicitGraphExecution.Evaluating += updateVisualization;
 
 			AddOutPutPort("OUTPUT");
 			StoredValueDict = new Dictionary<string, object>();

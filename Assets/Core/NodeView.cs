@@ -20,6 +20,8 @@ using Nodeplay.UI;
 
 public class NodeView : BaseView<NodeModel>{
 	    
+	private int lastUpdateFrame = 0;
+
     protected override void Start()
     {
         base.Start();
@@ -29,15 +31,20 @@ public class NodeView : BaseView<NodeModel>{
 
     public void OnEvaluated(object sender, EventArgs e)
     {
-
+		if (Time.frameCount > lastUpdateFrame){
         StartCoroutine(Blunk(Color.red,.1f));
+			lastUpdateFrame = Time.frameCount;
+		}
 
         
     }
 
     public void OnEvaluation(object sender, EventArgs e)
     {
+		if (Time.frameCount > lastUpdateFrame){
         StartCoroutine(Blink(Color.red,.1f));
+			lastUpdateFrame = Time.frameCount;
+		}
     }
 
 	public override void  OnPointerClick(PointerEventData pointerdata)

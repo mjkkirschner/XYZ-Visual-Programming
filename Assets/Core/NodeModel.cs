@@ -25,7 +25,10 @@ public class NodeModel : BaseModel
 		//for now just force a rebuild...
 		//TODO we may also want to update the dictionary if the property has changed on the model...
 		//
+		if (UIInputValueDict != null){
+
 		UpdateModelProperties(UIInputValueDict);
+		}
 	}
 
 	//add a indexer to nodemodels, this allows getting property by name, so we can lookup
@@ -142,8 +145,8 @@ public class NodeModel : BaseModel
         var view = this.gameObject.AddComponent<NodeView>();
         Evaluated += view.OnEvaluated;
         Evaluation += view.OnEvaluation;
-        StoredValueDict = null;
-        
+		StoredValueDict = new Dictionary<string, object>();
+
 		explicitGraphExecution = GameObject.FindObjectOfType<ExplicitGraphExecution> ();
 		//this dictionary might be loaded when the node is laoded 
 		//and we dont want to erase it
@@ -322,7 +325,7 @@ public class NodeModel : BaseModel
         // the base node implementation is to load the basenodeview prefab and set it as child of the root go
 		this.gameObject.AddComponent<PositionNodeRelativeToParents>();
 		this.gameObject.AddComponent<ResizeNodeByDependence>();
-		this.gameObject.AddComponent<EvaluationResultsRenderer>();
+		//this.gameObject.AddComponent<EvaluationResultsRenderer>();
 		GameObject UI = null;
 		foreach (var viewPrefab in viewPrefabs){
 			if (Resources.Load(viewPrefab) == null)
@@ -550,6 +553,37 @@ public class NodeModel : BaseModel
     }
 
 	protected virtual void OnNodeModified(){
+	}
+
+	public virtual Action generateFunc()
+	{
+		return new Action( ()=> {
+		//for now just do this here... TODO eventually put it into another class,
+		//or on the base method of nodemodels...
+		// we only need the inputnames and values gathered from the node at this moment
+		// because we're going to directly call into other nodes and models
+			OnEvaluation();
+		var inputstate = gatherInputPortData();
+		var variableNames = inputstate.Select(x=>x.First).ToList();
+		var variableValues = inputstate.Select(x=>x.Second).ToList();
+		var inputdict = new Dictionary<string,object>();
+		foreach (var variable in variableNames)
+		{
+			var index = variableNames.IndexOf(variable);
+			inputdict[variable] =  variableValues[index];
+		}
+		
+		var output = StoredValueDict;
+
+			var doneport = this.ExecutionOutputs.FirstOrDefault();
+				if (doneport.connectors.Count>0)
+			{
+				doneport.connectors.First().PEnd.Owner.generateFunc().Invoke();
+			}
+			StoredValueDict = output;
+			NotifyPropertyChanged("StoredValue");
+			OnEvaluated();
+			 });
 	}
 
     //this points to evaluation engine or some delegate

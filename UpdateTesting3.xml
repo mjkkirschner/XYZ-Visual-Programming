@@ -1,0 +1,34 @@
+<Graph FilePath="" X="17.5" Y="-1" Z="-13.2" Name="tempload">
+  <Elements>
+    <Nodeplay.Nodes.OnUpdate type="Nodeplay.Nodes.OnUpdate" guid="ee8a5c6a-8c84-48d0-afbe-f57e978bf90a" nickname="node OnUpdateee8a5c6a-8c84-48d0-afbe-f57e978bf90a" x="6.090458" y="15.82352" z="2.016617">
+      <nodeinputdict />
+    </Nodeplay.Nodes.OnUpdate>
+    <Nodeplay.Nodes.xForEach type="Nodeplay.Nodes.xForEach" guid="76db2521-e06a-4bf5-b244-c3fc77954ab1" nickname="node xForEach76db2521-e06a-4bf5-b244-c3fc77954ab1" x="1.942381" y="9.924772" z="14.69859">
+      <nodeinputdict />
+    </Nodeplay.Nodes.xForEach>
+    <Nodeplay.Nodes.Constant type="Nodeplay.Nodes.Constant" guid="510a904c-044a-457a-889c-0dcbcb4764c2" nickname="node Constant510a904c-044a-457a-889c-0dcbcb4764c2" x="19.17206" y="35.68425" z="20.03167">
+      <nodeinputdict Code="OUTPUT = range(50)" />
+    </Nodeplay.Nodes.Constant>
+    <DSCore.MathSinNode type="DSCore.MathSinNode" guid="88981d13-2f75-4b76-a84e-c8d24612600a" nickname="node MathSinNode88981d13-2f75-4b76-a84e-c8d24612600a" x="-2.407804" y="13.523" z="29.60935">
+      <nodeinputdict />
+    </DSCore.MathSinNode>
+    <DSCore.MathAsinNode type="DSCore.MathAsinNode" guid="7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" nickname="node MathAsinNode7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" x="-5.458804" y="13.523" z="42.39968">
+      <nodeinputdict />
+    </DSCore.MathAsinNode>
+    <DSCore.MathSinhNode type="DSCore.MathSinhNode" guid="b019e43e-ce6a-4b92-b4ab-11afcea084ac" nickname="node MathSinhNodeb019e43e-ce6a-4b92-b4ab-11afcea084ac" x="-8.509803" y="13.523" z="55.19001">
+      <nodeinputdict />
+    </DSCore.MathSinhNode>
+  </Elements>
+  <Connectors>
+    <ConnectorModel start="76db2521-e06a-4bf5-b244-c3fc77954ab1" start_index="0" end="88981d13-2f75-4b76-a84e-c8d24612600a" end_index="0" portType="0" />
+    <ConnectorModel start="510a904c-044a-457a-889c-0dcbcb4764c2" start_index="0" end="76db2521-e06a-4bf5-b244-c3fc77954ab1" end_index="0" portType="0" />
+    <ConnectorModel start="88981d13-2f75-4b76-a84e-c8d24612600a" start_index="0" end="7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" end_index="0" portType="0" />
+    <ConnectorModel start="7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" start_index="0" end="b019e43e-ce6a-4b92-b4ab-11afcea084ac" end_index="0" portType="0" />
+  </Connectors>
+  <ExecutionConnectors>
+    <ExecutionConnectorModel start="ee8a5c6a-8c84-48d0-afbe-f57e978bf90a" start_index="0" end="76db2521-e06a-4bf5-b244-c3fc77954ab1" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="76db2521-e06a-4bf5-b244-c3fc77954ab1" start_index="0" end="88981d13-2f75-4b76-a84e-c8d24612600a" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="88981d13-2f75-4b76-a84e-c8d24612600a" start_index="0" end="7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" end_index="0" portType="0" />
+    <ExecutionConnectorModel start="7e6ebb1f-0f2f-41e4-a7d0-f8583cc4f3b3" start_index="0" end="b019e43e-ce6a-4b92-b4ab-11afcea084ac" end_index="0" portType="0" />
+  </ExecutionConnectors>
+</Graph>

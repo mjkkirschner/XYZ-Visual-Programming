@@ -237,7 +237,7 @@ namespace Nodeplay.UI
 		{
 			//if a gameobject then just copy the gameobject which will use its
 			//renderer if it has one
-			if (objectToVisualize is UnityEngine.GameObject)
+			if (objectToVisualize is UnityEngine.GameObject && ((GameObject)objectToVisualize) != null)
 			{
 
 				if (((GameObject)objectToVisualize).GetComponent<Renderer>() != null)

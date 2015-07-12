@@ -110,7 +110,7 @@ namespace Nodeplay.UI
 			
 			if (someObject == null || ReferenceEquals(someObject,null) ||someObject.ToString() == "null" )
 			{
-				Debug.Log("if something is null");
+				//Debug.Log("if something is null");
 				inspectable.GetComponentInChildren<Text>().fontSize /= 2;
 				instantiatedelement.GetComponent<Image>().color = Color.red;
 			}

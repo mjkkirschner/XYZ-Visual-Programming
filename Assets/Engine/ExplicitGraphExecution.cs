@@ -45,7 +45,7 @@ namespace Nodeplay.Engine
 		{
 			if (running){
 
-				updaters.ForEach(x=> TaskSchedule.Add( new Task(null,x,0,new System.Action (() => x.Evaluate()), new WaitForEndOfFrame())));
+				updaters.ForEach(x=> TaskSchedule.Add( new Task(null,x,0, new Action(()=>{x.Evaluate();}), new WaitForEndOfFrame())));
 				                 }
 		}
 
@@ -74,7 +74,7 @@ namespace Nodeplay.Engine
 			var allnodes = GameObject.FindObjectsOfType<NodeModel>();
 			//list of nodemodels where the input list is empty, so
 			// this node has no input ports, or where all inputs are connected...think this does that :P
-			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable ||x is InputExecutionNode) || x is StartExecution).ToList();
+			var nodeps = allnodes.Where(x => x.ExecutionInputs.Count == 0 && !(x is CreateVariable ||x is InputExecutionNode || x is Nodes.OnUpdate) || x is StartExecution).ToList();
 			//nodeps.ForEach(x=>Debug.Log(x.name));
 			return nodeps;
 			
@@ -163,7 +163,7 @@ namespace Nodeplay.Engine
 			Task headOfQueue = null;
 			while (running)
 			{
-
+				//do not gointo infinte loop...
 				if (!(TaskSchedule.Count > 0))
 				{
 					yield return new WaitForEndOfFrame();
