@@ -3,6 +3,8 @@ nodeply
 node play, playing around with 3d nodes in unity
 Code orginally forked from a gist of @AngryAnt, https://gist.github.com/AngryAnt/2935408
 
+https://dspace.mit.edu/handle/1721.1/99246
+
 ###Iron Python
 
 http://ironpython.net/
